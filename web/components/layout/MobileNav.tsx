@@ -21,7 +21,7 @@ export function MobileNav() {
   return (
     <nav
       aria-label="Mobile and Tablet Navigation"
-      className="xl:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-[#C9BFA0] bg-[#F3EFE5]/95 backdrop-blur-md px-1 sm:px-2 shadow-lg pb-safe md:bottom-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-[560px] md:max-w-2xl md:rounded-2xl md:border md:shadow-2xl md:px-3 md:pb-0"
+      className="xl:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-[#C9BFA0] bg-[#F3EFE5]/95 backdrop-blur-md px-1 sm:px-2 shadow-lg pb-safe md:bottom-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-140 md:max-w-2xl md:rounded-2xl md:border md:shadow-2xl md:px-3 md:pb-0"
     >
       <div className="flex w-full items-center justify-between gap-0.5 py-1.5 md:py-1">
         {navItems.map((item) => {

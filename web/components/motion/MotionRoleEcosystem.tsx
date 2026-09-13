@@ -98,7 +98,7 @@ export function MotionRoleEcosystem() {
 
       {/* Central Interactive Animal Hub (The connecting focal point) */}
       <div className="lg:col-span-4 flex flex-col items-center justify-center relative my-2 sm:my-0">
-        <div className="relative w-full aspect-square max-w-[260px] sm:max-w-[300px] lg:max-w-[320px] rounded-3xl overflow-hidden border-2 border-[#E5E0D8] shadow-md bg-stone-100 group transition-all duration-500 hover:shadow-xl hover:border-emerald-600">
+        <div className="relative w-full aspect-square max-w-65 sm:max-w-75 lg:max-w-[320px] rounded-3xl overflow-hidden border-2 border-[#E5E0D8] shadow-md bg-stone-100 group transition-all duration-500 hover:shadow-xl hover:border-emerald-600">
           <Image
             src="/images/buffalo_dairy_care.jpg"
             alt="Maharashtra Dairy Buffalo at the center of care"

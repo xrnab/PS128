@@ -45,7 +45,7 @@ export default async function AuthorityLayout({ children }: { children: React.Re
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 border-t border-[#E5E0D8] flex items-center gap-1 overflow-x-auto no-scrollbar py-1.5 bg-[#FAF8F3] -mx-1 px-1">
+        <div className="max-w-7xl sm:px-6 lg:px-8 border-t border-[#E5E0D8] flex items-center gap-1 overflow-x-auto no-scrollbar py-1.5 bg-[#FAF8F3] -mx-1 px-1">
           <Link href="/authority" className="shrink-0">
             <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl hover:bg-emerald-50 text-stone-700 hover:text-emerald-800 transition-colors cursor-pointer whitespace-nowrap">
               <Activity className="h-3.5 w-3.5 text-emerald-700 shrink-0" />

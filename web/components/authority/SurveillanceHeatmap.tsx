@@ -30,7 +30,7 @@ import { useTranslations } from "next-intl";
 function HeatmapLoading() {
   const t = useTranslations("authority");
   return (
-    <div className="h-[520px] sm:h-[620px] w-full rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex flex-col items-center justify-center text-xs text-stone-600 gap-3">
+    <div className="h-130 sm:h-155 w-full rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex flex-col items-center justify-center text-xs text-stone-600 gap-3">
       <div className="h-7 w-7 border-3 border-emerald-700 border-t-transparent rounded-full animate-spin" />
       <span className="font-semibold">{t("loadingGis")}</span>
     </div>

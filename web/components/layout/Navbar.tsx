@@ -36,7 +36,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 flex h-[4.25rem] w-full items-center justify-between border-b border-[#C9BFA0] bg-[#F3EFE5]/95 px-3 sm:px-4 md:px-8 backdrop-blur-md">
+    <header className="sticky top-0 z-50 flex h-17 w-full items-center justify-between border-b border-[#C9BFA0] bg-[#F3EFE5]/95 px-3 sm:px-4 md:px-8 backdrop-blur-md">
       {/* Brand Logo & Identity */}
       <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0 mr-2">
         <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] overflow-hidden transition-colors group-hover:bg-[#D4DDC3]">

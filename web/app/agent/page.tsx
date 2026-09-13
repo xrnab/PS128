@@ -81,7 +81,7 @@ export default async function FieldAgentPage() {
         </div>
 
         <Link href="/agent/report" className="w-full sm:w-auto">
-          <Button size="sm" className="w-full sm:w-auto gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm min-h-[40px] rounded-xl cursor-pointer">
+          <Button size="sm" className="w-full sm:w-auto gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm min-h-10 rounded-xl cursor-pointer">
             <FilePlus2 className="h-4 w-4" />
             <span>{t("recordInspection")}</span>
           </Button>
@@ -189,7 +189,7 @@ export default async function FieldAgentPage() {
           </div>
         </div>
         <Link href="/agent/report">
-          <Button size="sm" className="bg-amber-700 hover:bg-amber-800 text-white font-semibold text-xs whitespace-nowrap rounded-xl min-h-[36px]">
+          <Button size="sm" className="bg-amber-700 hover:bg-amber-800 text-white font-semibold text-xs whitespace-nowrap rounded-xl min-h-9">
             {t("recordInspection")}
           </Button>
         </Link>

@@ -42,7 +42,7 @@ export default async function VetLayout({ children }: { children: React.ReactNod
 
         {/* Sub-Navigation Tabs */}
         <div className="border-t border-[#CFC6AF] bg-[#F3EFE5] px-3 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto flex items-center gap-1 overflow-x-auto no-scrollbar py-2 -mx-1 px-1">
+          <div className="max-w-7xl  flex items-center gap-1 overflow-x-auto no-scrollbar py-2 -mx-1 px-1">
             <Link
               href="/vet"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-stone-700 hover:text-[#274C36] hover:bg-[#E1E6D6] transition-colors whitespace-nowrap shrink-0"

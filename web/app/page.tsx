@@ -156,7 +156,7 @@ export default async function Home() {
             <p className="text-xs sm:text-sm text-[#5C5645] mb-2 sm:mb-3">
               {t("heroAudience")}
             </p>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#191F1C] leading-[1.18] font-normal max-w-xl break-words">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#191F1C] leading-[1.18] font-normal max-w-xl wrap-break-words">
               {t("heroHeading")}
             </h1>
             <p className="text-[#3A3D30] text-sm sm:text-base leading-relaxed max-w-md mt-4 sm:mt-5">
@@ -318,7 +318,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
             <div className="lg:col-span-5">
               <MotionFadeIn direction="none" duration={600}>
-                <div className="relative h-[280px] sm:h-[360px] md:h-[420px] border border-[#3E5443]">
+                <div className="relative h-70 sm:h-90 md:h-105 border border-[#3E5443]">
                   <Image
                     src="/images/pashusakhi_field_visit.jpg"
                     alt="Pashusakhi field inspection visit in a village"
@@ -455,7 +455,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative h-64 lg:h-auto min-h-[300px] border-t lg:border-t-0 lg:border-l border-[#3E5443]">
+          <div className="lg:col-span-5 relative h-64 lg:h-auto min-h-75 border-t lg:border-t-0 lg:border-l border-[#3E5443]">
             <Image
               src="/images/indian_livestock_hero.jpg"
               alt="Healthy Indian cattle herd"

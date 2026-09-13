@@ -77,31 +77,31 @@ export default async function FarmerPortalPage() {
         {/* PROMINENT ENTRY PATHS */}
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto pt-1 sm:pt-0">
           <Link href="/farmer/profile" className="w-full sm:w-auto">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-10 shadow-2xs hover-lift-sm">
               <User className="h-4 w-4 text-emerald-700" />
               <span>{t("myProfile")}</span>
             </Button>
           </Link>
           <Link href="/farmer/talk" className="w-full sm:w-auto">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-10 shadow-2xs hover-lift-sm">
               <MessageSquare className="h-4 w-4 text-emerald-700" />
               <span>{t("farmerTalkAi")}</span>
             </Button>
           </Link>
           <Link href="/farmer/iot" className="w-full sm:w-auto">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm font-semibold">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 rounded-xl min-h-10 shadow-2xs hover-lift-sm font-semibold">
               <Cpu className="h-4 w-4 text-emerald-700" />
               <span>{t("iotVitals")}</span>
             </Button>
           </Link>
           <Link href="/farmer/request-help" className="w-full sm:w-auto">
-            <Button size="sm" variant="outline" className="w-full sm:w-auto gap-2 text-xs border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 font-semibold rounded-xl min-h-[40px] shadow-xs hover-lift-sm">
+            <Button size="sm" variant="outline" className="w-full sm:w-auto gap-2 text-xs border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 font-semibold rounded-xl min-h-10 shadow-xs hover-lift-sm">
               <UserCheck className="h-4 w-4 text-amber-700" />
               <span>{t("requestFieldAgent")}</span>
             </Button>
           </Link>
           <Link href="/farmer/report" className="col-span-2 sm:col-span-1 w-full sm:w-auto">
-            <Button size="sm" className="w-full sm:w-auto gap-2 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl min-h-[40px] shadow-sm hover-lift-sm">
+            <Button size="sm" className="w-full sm:w-auto gap-2 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl min-h-10 shadow-sm hover-lift-sm">
               <PlusCircle className="h-4 w-4" />
               <span>{t("reportHealthConcern")}</span>
             </Button>
@@ -186,7 +186,7 @@ export default async function FarmerPortalPage() {
               const isUnderCare = recentCase && recentCase.status !== "CLOSED_HARMLESS";
               return (
                 <MotionFadeIn key={animal.id} delay={idx * 60} direction="right">
-                  <div className="min-w-[280px] sm:min-w-[320px] max-w-[340px] bg-white rounded-3xl border border-[#E5E0D8] overflow-hidden shadow-xs hover-lift group flex flex-col justify-between shrink-0 snap-start h-full">
+                  <div className="min-w-70 sm:min-w-[320px] max-w-70 bg-white rounded-3xl border border-[#E5E0D8] overflow-hidden shadow-xs hover-lift group flex flex-col justify-between shrink-0 snap-start h-full">
                     <Link href={`/farmer/animals/${animal.id}`} className="block">
                       <div className="relative h-44 w-full bg-stone-100 overflow-hidden">
                         <Image
@@ -347,7 +347,7 @@ export default async function FarmerPortalPage() {
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="text-stone-500">{tCommon("symptoms")}:</span>
-                          <span className="text-stone-800 truncate max-w-[200px]">{c.symptoms.join(", ")}</span>
+                          <span className="text-stone-800 truncate max-w-150">{c.symptoms.join(", ")}</span>
                         </div>
                       </div>
 
@@ -440,7 +440,7 @@ export default async function FarmerPortalPage() {
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="text-stone-500">{t("reasonForHelp")}:</span>
-                          <span className="text-stone-800 truncate max-w-[200px]">{req.reason}</span>
+                          <span className="text-stone-800 truncate max-w-50">{req.reason}</span>
                         </div>
                       </div>
 
@@ -477,7 +477,7 @@ export default async function FarmerPortalPage() {
           </div>
         </div>
         <Link href="/farmer/report">
-          <Button size="sm" className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs whitespace-nowrap rounded-xl min-h-[36px]">
+          <Button size="sm" className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs whitespace-nowrap rounded-xl min-h-9">
             {t("reportHealthConcern")}
           </Button>
         </Link>
