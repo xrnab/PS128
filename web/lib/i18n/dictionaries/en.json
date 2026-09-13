@@ -276,6 +276,9 @@
       "resolving": "Resolving location hierarchy...",
       "typePlaceholder": "Type village, town, or area name"
     },
+    "reporting": {
+      "location": "Location"
+    },
     "photo": {
       "noPhoto": "No Clinical Photograph Attached",
       "noPhotoDesc": "No field lesion or inspection photo was uploaded with this case intake.",

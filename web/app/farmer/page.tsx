@@ -27,6 +27,7 @@ export default async function FarmerPortalPage() {
   const farmer = await requireFarmer();
   const t = await getTranslations("farmer");
   const tCommon = await getTranslations("common");
+  const tReporting = await getTranslations("reporting");
 
   const {
     metrics,
@@ -342,7 +343,7 @@ export default async function FarmerPortalPage() {
                         ) : null}
 
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-stone-500">{tCommon("reporting.location")}:</span>
+                          <span className="text-stone-500">{tReporting("location")}:</span>
                           <span className="text-stone-700">{locText}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
@@ -435,7 +436,7 @@ export default async function FarmerPortalPage() {
                           )}
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-stone-500">{tCommon("reporting.location")}:</span>
+                          <span className="text-stone-500">{tReporting("location")}:</span>
                           <span className="text-stone-700">{locText}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
