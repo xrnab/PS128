@@ -149,6 +149,9 @@ export interface ChartDataPoint {
   meta?: string;
 }
 
+export const VACCINATION_GAP_THRESHOLD_PERCENT = 60;
+export const HIGH_PRIORITY_RISK_LEVELS = ["HIGH", "CRITICAL"] as const;
+
 export interface VillageAnalysisRow {
   villageId: string;
   villageName: string;
@@ -160,6 +163,10 @@ export interface VillageAnalysisRow {
   activeCases: number;
   activeAlerts: number;
   highestRisk: string;
+  vaccinationCoveragePercent: number;
+  priorityFlag: boolean;
+  gapPriorityScore: number;
+  vaccinatedAnimalsCount: number;
 }
 
 export interface DistrictMapLayersData {
@@ -531,6 +538,8 @@ export async function getDistrictAuthorityCommandData(
     ...(dateFilter.gte || dateFilter.lte ? { requestedAt: dateFilter } : {}),
   };
 
+  const twelveMonthsAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+
   // 3. Parallel Database Aggregations
   const [
     farmersCount,
@@ -901,6 +910,12 @@ export async function getDistrictAuthorityCommandData(
                         status: true,
                         analysisResult: true,
                       },
+                    },
+                    vaccinations: {
+                      where: {
+                        dateGiven: { gte: twelveMonthsAgo },
+                      },
+                      select: { id: true },
                     },
                   },
                 },
@@ -1528,6 +1543,7 @@ export async function getDistrictAuthorityCommandData(
   const villageAnalysis: VillageAnalysisRow[] = allVillagesInScope.map((v) => {
     const farmCount = v.farms.length;
     let animalCount = 0;
+    let vaccinatedAnimalsCount = 0;
     let totalCases = 0;
     let activeCases = 0;
     let maxRiskRank = 0;
@@ -1539,6 +1555,9 @@ export async function getDistrictAuthorityCommandData(
       f.herds.forEach((h) => {
         animalCount += h.animals.length;
         h.animals.forEach((a) => {
+          if (a.vaccinations && a.vaccinations.length > 0) {
+            vaccinatedAnimalsCount++;
+          }
           totalCases += a.cases.length;
           a.cases.forEach((c) => {
             if (["PENDING_REVIEW", "UNDER_EXAMINATION", "LAB_REFERRAL"].includes(c.status)) {
@@ -1556,6 +1575,21 @@ export async function getDistrictAuthorityCommandData(
       });
     });
 
+    const finalHighestRisk = highestRisk === "NONE" && activeCases > 0 ? "LOW" : highestRisk;
+    const vaccinationCoveragePercent =
+      animalCount > 0 ? Math.round((vaccinatedAnimalsCount / animalCount) * 100) : 0;
+
+    const isHighOrCriticalRisk = HIGH_PRIORITY_RISK_LEVELS.includes(
+      finalHighestRisk as (typeof HIGH_PRIORITY_RISK_LEVELS)[number]
+    );
+    const priorityFlag =
+      vaccinationCoveragePercent < VACCINATION_GAP_THRESHOLD_PERCENT && isHighOrCriticalRisk;
+
+    // gapPriorityScore: worst coverage + worst risk sorts first
+    const riskRank = getRiskRank(finalHighestRisk);
+    const coverageGap = 100 - vaccinationCoveragePercent;
+    const gapPriorityScore = riskRank * 100 + coverageGap;
+
     return {
       villageId: v.id,
       villageName: v.name,
@@ -1566,7 +1600,11 @@ export async function getDistrictAuthorityCommandData(
       totalCases,
       activeCases,
       activeAlerts: v.alerts.length,
-      highestRisk: highestRisk === "NONE" && activeCases > 0 ? "LOW" : highestRisk,
+      highestRisk: finalHighestRisk,
+      vaccinationCoveragePercent,
+      priorityFlag,
+      gapPriorityScore,
+      vaccinatedAnimalsCount,
     };
   });
 

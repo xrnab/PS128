@@ -365,6 +365,119 @@ async function main() {
     },
   });
 
+  // 13. Deterministic Seed for North 24 Parganas / Bidhannagar (High-Risk Vaccination Gap)
+  const districtN24 = await prisma.district.upsert({
+    where: { name: "North 24 Parganas" },
+    update: {},
+    create: {
+      id: "district_north_24_parganas",
+      name: "North 24 Parganas",
+    },
+  });
+
+  const blockBidhannagar = await prisma.block.upsert({
+    where: { districtId_name: { districtId: districtN24.id, name: "Bidhannagar Block" } },
+    update: {},
+    create: {
+      id: "block_bidhannagar_01",
+      districtId: districtN24.id,
+      name: "Bidhannagar Block",
+    },
+  });
+
+  const villageBidhannagar = await prisma.village.upsert({
+    where: { blockId_name: { blockId: blockBidhannagar.id, name: "Bidhannagar" } },
+    update: {},
+    create: {
+      id: "village_bidhannagar_01",
+      blockId: blockBidhannagar.id,
+      name: "Bidhannagar",
+    },
+  });
+
+  const farmN24 = await prisma.farm.upsert({
+    where: { id: "farm_bidhannagar_01" },
+    update: {},
+    create: {
+      id: "farm_bidhannagar_01",
+      name: "Bidhannagar Model Livestock Farm",
+      villageId: villageBidhannagar.id,
+      farmerUserId: farmerUser.id,
+      fieldAgentUserId: agentUser.id,
+      latitude: 22.5867,
+      longitude: 88.4178,
+    },
+  });
+
+  const herdN24 = await prisma.herd.upsert({
+    where: { id: "herd_bidhannagar_01" },
+    update: {},
+    create: {
+      id: "herd_bidhannagar_01",
+      farmId: farmN24.id,
+      species: "COW",
+      name: "Bidhannagar Crossbred Herd",
+    },
+  });
+
+  const animalN24_1 = await prisma.animal.upsert({
+    where: { herdId_tag: { herdId: herdN24.id, tag: "IN-WB-COW-201" } },
+    update: {},
+    create: {
+      id: "animal_n24_cow_201",
+      herdId: herdN24.id,
+      tag: "IN-WB-COW-201",
+      species: "COW",
+      breed: "Jersey Cross",
+      ageMonths: 28,
+    },
+  });
+
+  await prisma.animal.upsert({
+    where: { herdId_tag: { herdId: herdN24.id, tag: "IN-WB-COW-202" } },
+    update: {},
+    create: {
+      id: "animal_n24_cow_202",
+      herdId: herdN24.id,
+      tag: "IN-WB-COW-202",
+      species: "COW",
+      breed: "Sahiwal",
+      ageMonths: 34,
+    },
+  });
+
+  await prisma.case.upsert({
+    where: { caseNumber: "CASE-2026-N24-SEED-01" },
+    update: {},
+    create: {
+      id: "case_n24_seed_01",
+      caseNumber: "CASE-2026-N24-SEED-01",
+      animalId: animalN24_1.id,
+      createdByUserId: farmerUser.id,
+      reportSource: "FARMER",
+      status: "UNDER_EXAMINATION",
+      symptoms: ["High Fever", "Blisters in Mouth and Feet"],
+      durationDays: 2,
+      affectedCount: 3,
+      mortalityCount: 0,
+      analysisResult: masterAnalysisPayload,
+      reportedAt: new Date(Date.now() - 3600 * 1000 * 6),
+    },
+  });
+
+  await prisma.vaccinationRecord.upsert({
+    where: { id: "vac_n24_001" },
+    update: {},
+    create: {
+      id: "vac_n24_001",
+      animalId: animalN24_1.id,
+      vaccineName: "Foot and Mouth Disease (FMD) Oil Adjuvant Vaccine",
+      dateGiven: new Date(Date.now() - 30 * 86400 * 1000),
+      nextDueDate: new Date(Date.now() + 150 * 86400 * 1000),
+      administeredByUserId: vetUser.id,
+    },
+  });
+
   console.log("✅ Maitri seed completed successfully against Neon PostgreSQL!");
 }
 
