@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, Trash2, Image as ImageIcon, Loader2, AlertCircle, RefreshCw, Sparkles, CheckCircle2 } from "lucide-react";
+import { Camera, Upload, Trash2, Image as ImageIcon, Loader2, AlertCircle, RefreshCw, Sparkles, CheckCircle2, ShieldAlert } from "lucide-react";
 import { predictYoloImage } from "@/lib/api/livestock";
 import type { YoloVisionAnalysis } from "@/lib/types/livestock";
 import { Badge } from "@/components/ui/badge";
@@ -253,10 +253,21 @@ export function PhotoCapture({
 
           {visionResult && !analyzing && (
             <div className="absolute bottom-3 left-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <Badge className="bg-emerald-600/90 text-white border-emerald-400 backdrop-blur-sm gap-1.5 px-2.5 py-1 shadow-lg">
-                <Sparkles className="h-3 w-3" />
+              <Badge
+                className={`${
+                  visionResult.primary_prediction?.startsWith("Rejected")
+                    ? "bg-red-600/90 text-white border-red-400"
+                    : "bg-emerald-600/90 text-white border-emerald-400"
+                } backdrop-blur-sm gap-1.5 px-2.5 py-1 shadow-lg`}
+              >
+                {visionResult.primary_prediction?.startsWith("Rejected") ? (
+                  <ShieldAlert className="h-3 w-3" />
+                ) : (
+                  <Sparkles className="h-3 w-3" />
+                )}
                 <span className="text-[10px] font-bold tracking-wide">
-                  AI: {visionResult.primary_prediction} ({Math.round(visionResult.confidence)}%)
+                  AI: {visionResult.primary_prediction}{" "}
+                  {visionResult.confidence > 0 ? `(${Math.round(visionResult.confidence)}%)` : ""}
                 </span>
               </Badge>
             </div>

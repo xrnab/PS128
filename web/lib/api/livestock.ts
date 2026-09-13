@@ -20,12 +20,22 @@ export class LivestockApiError extends Error {
 }
 
 function getApiBaseUrl() {
+  const isBrowserLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.startsWith("192.168."));
+
+  const defaultUrl = isBrowserLocalhost
+    ? "http://localhost:8000"
+    : DEFAULT_API_URL;
+
   const raw =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     process.env.AI_ENGINE_URL ||
     process.env.BACKEND_URL ||
-    DEFAULT_API_URL;
+    defaultUrl;
   let url = raw.replace(/\/$/, "");
   if (url.endsWith("/api")) {
     url = url.slice(0, -4);
@@ -103,12 +113,29 @@ function isVisionAnalysis(value: unknown): value is YoloVisionAnalysis {
 }
 
 function extractVisionResult(value: unknown): YoloVisionAnalysis | null {
-  if (isVisionAnalysis(value)) return value;
   if (typeof value !== "object" || value === null) return null;
 
   const response = value as Record<string, unknown>;
-  if (isVisionAnalysis(response.yolo_result)) return response.yolo_result;
-  if (isVisionAnalysis(response.data)) return response.data;
+  const rawObj = (response.yolo_result || response.data || response) as Record<string, unknown>;
+
+  if (typeof rawObj === "object" && rawObj !== null) {
+    const primary = typeof rawObj.primary_prediction === "string" ? rawObj.primary_prediction : undefined;
+    const confidence = typeof rawObj.confidence === "number" ? rawObj.confidence : 0;
+    const anomaly = typeof rawObj.visual_anomaly_detected === "boolean" ? rawObj.visual_anomaly_detected : false;
+    const message = ((rawObj.message as string) || (response.message as string) || undefined);
+    const success = typeof rawObj.success === "boolean" ? rawObj.success : typeof response.success === "boolean" ? response.success : true;
+
+    if (primary !== undefined) {
+      return {
+        visual_anomaly_detected: anomaly,
+        primary_prediction: primary,
+        confidence,
+        message,
+        success,
+      };
+    }
+  }
+
   return null;
 }
 

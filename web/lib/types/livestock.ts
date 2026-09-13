@@ -20,6 +20,8 @@ export interface YoloVisionAnalysis {
   visual_anomaly_detected: boolean;
   primary_prediction: string;
   confidence: number;
+  message?: string;
+  success?: boolean;
 }
 
 export interface DiseasePrediction {

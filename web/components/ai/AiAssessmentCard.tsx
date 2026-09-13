@@ -244,14 +244,29 @@ export function AiAssessmentCard({
               </div>
             )}
 
-            {/* 3. Vision Analysis Card */}
-            {hasPhoto && (
+            {/* 3. Vision Analysis Card (With Pre-Filter Rejection UI) */}
+            {hasPhoto && (visionResult?.success === false || (typeof visionResult?.primary_prediction === "string" && visionResult.primary_prediction.startsWith("Rejected"))) ? (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs flex items-start gap-3 shadow-2xs">
+                <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold uppercase tracking-wider text-[11px] text-amber-900">
+                    Image Scan Rejected
+                  </p>
+                  <p className="text-amber-800 font-medium leading-relaxed">
+                    {String(
+                      visionResult.message ||
+                        "Invalid image detected. Please upload a clear photo of the animal's affected skin or lesion."
+                    )}
+                  </p>
+                </div>
+              </div>
+            ) : hasPhoto ? (
               <VisionPredictionCard
                 caseId={caseId}
                 visionResult={visionResult}
                 onVisionUpdated={(newVision) => setVisionResult(newVision)}
               />
-            )}
+            ) : null}
 
             {/* 4. Multi-Modal Auxiliary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

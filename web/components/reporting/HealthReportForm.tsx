@@ -34,6 +34,7 @@ import {
   WifiOff,
   MapPin,
   PhoneCall,
+  ShieldAlert,
 } from "lucide-react";
 
 interface HealthReportFormProps {
@@ -68,6 +69,13 @@ export function HealthReportForm({
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
   const [photoUploadStatus, setPhotoUploadStatus] = useState<"idle" | "uploading" | "uploaded" | "failed">("idle");
   const [yoloVisionResult, setYoloVisionResult] = useState<YoloVisionAnalysis | null>(null);
+
+  // Check if the backend explicitly rejected the image (e.g., "Rejected: Person" or "Rejected: Cell Phone")
+  const isImageRejected = yoloVisionResult?.primary_prediction?.startsWith("Rejected");
+
+  // The Next button should be disabled if an upload is currently processing OR if the image was rejected
+  const isUploading = photoUploadStatus === "uploading";
+  const isNextButtonDisabled = step === 4 ? (isUploading || Boolean(isImageRejected)) : false;
   const [gpsLat, setGpsLat] = useState<number | null>(null);
   const [gpsLng, setGpsLng] = useState<number | null>(null);
 
@@ -154,6 +162,13 @@ export function HealthReportForm({
     }
     if (step === 4 && photoUploadStatus === "uploading") {
       setFormError("Please wait for the photo upload to complete before proceeding.");
+      return;
+    }
+    if (step === 4 && isImageRejected) {
+      setFormError(
+        yoloVisionResult?.message ||
+          "Invalid photo detected. You must delete this photo and upload a clear picture of the animal to proceed."
+      );
       return;
     }
     setStep((prev) => Math.min(prev + 1, 7));
@@ -717,24 +732,42 @@ export function HealthReportForm({
 
         {/* STEP 4: Photo Capture */}
         {step === 4 && (
-          <PhotoCapture
-            photoUrl={photoUrl}
-            onChangePhoto={(url, blob) => {
-              setPhotoUrl(url);
-              setPhotoBlob(blob);
-            }}
-            onChangePhotoUrl={setPhotoUrl}
-            onUploadStatusChange={setPhotoUploadStatus}
-            onVisionResult={setYoloVisionResult}
-            submissionId={submissionId}
-            animalCategory={
-              selectedAnimal?.species?.toUpperCase().includes("DOG") || 
-              selectedAnimal?.species?.toUpperCase().includes("CAT") || 
-              selectedAnimal?.species?.toUpperCase().includes("PET") 
-                ? "pet" 
-                : selectedAnimal?.species || "cow"
-            }
-          />
+          <div className="space-y-4">
+            <PhotoCapture
+              photoUrl={photoUrl}
+              onChangePhoto={(url, blob) => {
+                setPhotoUrl(url);
+                setPhotoBlob(blob);
+              }}
+              onChangePhotoUrl={setPhotoUrl}
+              onUploadStatusChange={setPhotoUploadStatus}
+              onVisionResult={setYoloVisionResult}
+              submissionId={submissionId}
+              animalCategory={
+                selectedAnimal?.species?.toUpperCase().includes("DOG") || 
+                selectedAnimal?.species?.toUpperCase().includes("CAT") || 
+                selectedAnimal?.species?.toUpperCase().includes("PET") 
+                  ? "pet" 
+                  : selectedAnimal?.species || "cow"
+              }
+            />
+
+            {/* Only show this hard-block warning if the image is rejected */}
+            {isImageRejected && (
+              <div className="mt-4 p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2">
+                <ShieldAlert className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-red-900 uppercase tracking-wider">
+                    Submission Blocked
+                  </p>
+                  <p className="text-xs text-red-800 mt-1 font-medium leading-relaxed">
+                    {yoloVisionResult?.message ||
+                      "Invalid photo detected. You must delete this photo and upload a clear picture of the animal to proceed."}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* STEP 5: GPS Location */}
@@ -849,7 +882,12 @@ export function HealthReportForm({
             type="button"
             size="sm"
             onClick={handleNextStep}
-            className="gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold min-h-[40px] rounded-xl cursor-pointer shadow-sm"
+            disabled={isNextButtonDisabled}
+            className={`gap-1.5 text-xs font-semibold min-h-[40px] rounded-xl shadow-sm transition-colors ${
+              isImageRejected && step === 4
+                ? "bg-stone-300 text-stone-500 cursor-not-allowed hover:bg-stone-300"
+                : "bg-[#006B4D] hover:bg-[#005a41] text-white cursor-pointer"
+            }`}
           >
             <span>{t("nextStepBtn")}</span>
             <ArrowRight className="h-3.5 w-3.5" />

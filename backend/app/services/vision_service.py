@@ -87,13 +87,20 @@ def disease_metadata(label: str, animal_lower: str) -> dict:
 class VisionService:
     def __init__(self, models_dir: str | Path | None = None):
         if models_dir is None:
-            models_dir = Path(__file__).resolve().parents[1] / "ml_artifacts"
+            self.models_dir = Path(__file__).resolve().parents[1] / "ml_artifacts"
         else:
-            models_dir = Path(models_dir)
+            self.models_dir = Path(models_dir)
 
-        self.models_dir = models_dir
         self._pet_model = None
         self._cow_model = None
+        self._coco_model = None
+
+    @property
+    def coco_model(self) -> YOLO:
+        # Tier 1 Pre-filter Model (loads automatically from Ultralytics)
+        if self._coco_model is None:
+            self._coco_model = YOLO("yolov8n.pt")
+        return self._coco_model
 
     @property
     def pet_model(self) -> YOLO:
@@ -133,15 +140,48 @@ class VisionService:
             raise ValueError("image_data must be base64 image data or bytes")
 
         prediction = self.predict(image_bytes, animal_type=animal_type)
+        
+        # Ensure visual anomaly is False if rejected
         prediction["visual_anomaly_detected"] = (
             prediction.get("primary_prediction") != "Healthy"
             and prediction.get("primary_prediction") != "No disease detected"
+            and not str(prediction.get("primary_prediction", "")).startswith("Rejected")
         )
+            
         return prediction
 
     def predict(self, image_bytes: bytes, animal_type: str = "cow") -> dict:
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
+        # =======================================================
+        # TIER 1: STRICT REJECTION FILTER (Humans & Screenshots)
+        # =======================================================
+        coco_results = self.coco_model(image, verbose=False)[0]
+        detected_coco_classes = [
+            coco_results.names[int(box.cls[0])] for box in coco_results.boxes
+        ] if coco_results.boxes else []
+
+        # List of objects that prove this is NOT a valid livestock photo
+        forbidden_classes = {
+            "person", "tv", "laptop", "cell phone", "monitor", 
+            "keyboard", "mouse", "book", "car", "chair", "couch"
+        }
+
+        found_forbidden = [cls for cls in detected_coco_classes if cls in forbidden_classes]
+
+        if found_forbidden:
+            reason = found_forbidden[0].replace("_", " ").title()
+            return {
+                "success": True,  # CRITICAL: Forces the frontend badge to update!
+                "primary_prediction": f"Rejected: {reason}", # Updates the UI text directly
+                "confidence": 0.0,
+                "visual_anomaly_detected": False,
+                "message": f"Invalid photo. {reason} detected."
+            }
+
+        # =======================================================
+        # TIER 2: CUSTOM DISEASE CLASSIFICATION
+        # =======================================================
         animal_lower = str(animal_type).strip().lower()
 
         # Select the requested model on-demand
@@ -156,18 +196,27 @@ class VisionService:
         elif animal_lower in ["cow", "cattle", "livestock", "buffalo", "sheep", "goat"]:
             model = self.cow_model
         else:
-            # Fallback to cow model for general livestock
             model = self.cow_model
 
-        # Perform inference with verbose=False to minimize overhead
+        # Perform inference
         results = model(image, verbose=False)
-        result = results[0]  # First image output
+        result = results[0]
 
         # For Classification Models (YOLOv8-cls)
         if hasattr(result, "probs") and result.probs is not None:
             top_idx = int(result.probs.top1)
             top_conf = float(result.probs.top1conf)
             class_name = format_label(result.names[top_idx])
+
+            # Apply Confidence Threshold (Reject blurry/unrecognized images)
+            if top_conf < 0.60:
+                return {
+                    "success": True,
+                    "primary_prediction": "Rejected: Unrecognized Image",
+                    "confidence": round(top_conf * 100, 2),
+                    "visual_anomaly_detected": False,
+                    "message": "No clear animal lesion patterns recognized. Please try again."
+                }
 
             top_predictions = []
             if hasattr(result.probs, "top5") and hasattr(result.probs, "top5conf"):
@@ -178,25 +227,40 @@ class VisionService:
                     })
 
             return {
+                "success": True,
                 "primary_prediction": class_name,
                 "confidence": round(top_conf * 100, 2),
                 **disease_metadata(result.names[top_idx], animal_lower),
                 "top_predictions": top_predictions
             }
 
-        # For Object Detection Models (YOLOv8-det)
+        # For Object Detection Models (YOLOv8-det fallback)
         detections = []
+        highest_conf = 0.0
         if hasattr(result, "boxes") and result.boxes is not None:
             for box in result.boxes:
                 cls_id = int(box.cls[0].item() if hasattr(box.cls[0], "item") else box.cls[0])
                 conf = float(box.conf[0].item() if hasattr(box.conf[0], "item") else box.conf[0])
+                if conf > highest_conf:
+                    highest_conf = conf
                 detections.append({
                     "condition": format_label(result.names[cls_id]),
                     "confidence": round(conf * 100, 2)
                 })
 
+        # Apply Confidence Threshold for Detection Models
+        if not detections or highest_conf < 0.60:
+             return {
+                "success": True,
+                "primary_prediction": "Rejected: Unrecognized Image",
+                "confidence": round(highest_conf * 100, 2),
+                "visual_anomaly_detected": False,
+                "message": "No clear animal lesion patterns recognized."
+            }
+
         primary_prediction = detections[0]["condition"] if detections else "No disease detected"
         response = {
+            "success": True,
             "primary_prediction": primary_prediction,
             "confidence": detections[0]["confidence"] if detections else 0.0,
             "all_detections": detections,
@@ -206,4 +270,4 @@ class VisionService:
         return response
 
 
-vision_engine = VisionService()
+vision_engine = VisionService()
