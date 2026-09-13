@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 export function FirstLoadExperience() {
-  const [hasMounted, setHasMounted] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
   const [phase, setPhase] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [isExiting, setIsExiting] = useState(false);
@@ -24,11 +23,6 @@ export function FirstLoadExperience() {
 
   const dismiss = useCallback(() => {
     setIsExiting(true);
-    try {
-      localStorage.setItem("maitri_intro_seen", "true");
-    } catch {
-      // ignore storage errors
-    }
     const timer = setTimeout(() => {
       setHasFinished(true);
     }, 450);
@@ -36,8 +30,6 @@ export function FirstLoadExperience() {
   }, []);
 
   useEffect(() => {
-    setHasMounted(true);
-
     if (typeof window === "undefined") return;
 
     // Support query param ?intro=true or ?splash=1 to force replay during dev/testing
@@ -45,14 +37,12 @@ export function FirstLoadExperience() {
     const forceReplay = urlParams.get("intro") === "true" || urlParams.get("splash") === "1";
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hasSeen = localStorage.getItem("maitri_intro_seen");
 
-    if ((hasSeen && !forceReplay) || (prefersReducedMotion && !forceReplay)) {
-      setHasFinished(true);
+    if (prefersReducedMotion && !forceReplay) {
       return;
     }
 
-    setShouldShow(true);
+    const showTimer = window.setTimeout(() => setShouldShow(true), 0);
 
     // Timeline configuration (Total ~3.6s)
     // 0.0s - 0.6s: Phase 0 (Identity)
@@ -68,11 +58,6 @@ export function FirstLoadExperience() {
     const t4 = setTimeout(() => setPhase(4), 2700);
     const tExit = setTimeout(() => setIsExiting(true), 3400);
     const tFinish = setTimeout(() => {
-      try {
-        localStorage.setItem("maitri_intro_seen", "true");
-      } catch {
-        // ignore
-      }
       setHasFinished(true);
     }, 3850);
 
@@ -100,6 +85,7 @@ export function FirstLoadExperience() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      clearTimeout(showTimer);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
@@ -112,7 +98,7 @@ export function FirstLoadExperience() {
   }, [dismiss]);
 
   // If not mounted yet (SSR) or already finished, do not render overlay
-  if (!hasMounted || !shouldShow || hasFinished) {
+  if (!shouldShow || hasFinished) {
     return null;
   }
 
