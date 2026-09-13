@@ -342,7 +342,7 @@ export default async function FarmerPortalPage() {
                         ) : null}
 
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-stone-500">{tCommon("location")}:</span>
+                          <span className="text-stone-500">{tCommon("reporting.location")}:</span>
                           <span className="text-stone-700">{locText}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
@@ -435,7 +435,7 @@ export default async function FarmerPortalPage() {
                           )}
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-stone-500">{tCommon("location")}:</span>
+                          <span className="text-stone-500">{tCommon("reporting.location")}:</span>
                           <span className="text-stone-700">{locText}</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px]">
