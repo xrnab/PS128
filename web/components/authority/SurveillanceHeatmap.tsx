@@ -242,16 +242,17 @@ export function SurveillanceHeatmap({
         )}
 
         {/* Search & Layer Toggles Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+        {/* Search & Layer Toggles Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-stone-400" />
             <Input
               type="text"
               placeholder={t("searchGisPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 pl-8 text-xs bg-[#FAF8F3] border-[#D9D3C7] rounded-xl focus:border-emerald-700"
+              className="h-8 pl-8 text-xs bg-[#FAF8F3] border-[#D9D3C7] rounded-xl focus:border-emerald-700 w-full"
             />
             {searchQuery && (
               <button
@@ -263,16 +264,16 @@ export function SurveillanceHeatmap({
             )}
           </div>
 
-          {/* Layer Filter Toggles */}
-          <div className="flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="text-[11px] font-semibold text-stone-500 flex items-center gap-1 mr-1">
+          {/* Layer Filter Toggles (horizontally swipeable on mobile/tablet) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 w-full sm:w-auto -mx-1 px-1 shrink-0">
+            <span className="text-[11px] font-semibold text-stone-500 flex items-center gap-1 mr-1 shrink-0">
               <Layers className="h-3.5 w-3.5" />
-              <span>{t("layers")}</span>
+              <span className="hidden xs:inline">{t("layers")}</span>
             </span>
 
             <button
               onClick={() => toggleLayer("heatmap")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.heatmap
                   ? "bg-amber-100 text-amber-900 border-amber-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -284,7 +285,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("farms")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.farms
                   ? "bg-emerald-100 text-emerald-900 border-emerald-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -296,7 +297,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("cases")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.cases
                   ? "bg-red-100 text-red-900 border-red-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -308,7 +309,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("vets")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.vets
                   ? "bg-purple-100 text-purple-900 border-purple-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -320,7 +321,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("agents")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.agents
                   ? "bg-blue-100 text-blue-900 border-blue-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -332,7 +333,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("visits")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.visits
                   ? "bg-teal-100 text-teal-900 border-teal-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
@@ -344,7 +345,7 @@ export function SurveillanceHeatmap({
 
             <button
               onClick={() => toggleLayer("alerts")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
                 layers.alerts
                   ? "bg-rose-100 text-rose-900 border-rose-300 font-semibold"
                   : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"

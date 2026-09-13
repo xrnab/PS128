@@ -40,8 +40,6 @@ export const viewport: Viewport = {
   themeColor: "#F3EFE5",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export default async function RootLayout({
@@ -58,7 +56,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#F3EFE5] text-[#20271F] selection:bg-[#B9C69E] selection:text-[#20271F] pb-16 lg:pb-0">
+      <body className="min-h-full flex flex-col bg-[#F3EFE5] text-[#20271F] selection:bg-[#B9C69E] selection:text-[#20271F] pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] xl:pb-0">
         <meta name="language" content={locale} />
         <ClerkProvider>
           <NextIntlClientProvider messages={messages} locale={locale}>

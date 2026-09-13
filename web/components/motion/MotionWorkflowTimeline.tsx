@@ -76,18 +76,18 @@ export function MotionWorkflowTimeline() {
       </div>
 
       {/* Dynamic Workflow Mockup Card */}
-      <div className="rounded-3xl border border-[#E5E0D8] bg-white p-6 md:p-8 shadow-sm transition-all duration-300">
+      <div className="rounded-3xl border border-[#E5E0D8] bg-white p-4 sm:p-6 md:p-8 shadow-sm transition-all duration-300">
         {/* Step 1: Field Evidence */}
         {activeStep === 1 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5E0D8] pb-3">
               <div>
                 <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
                   {t("step1Badge")}
                 </span>
-                <h3 className="text-lg font-bold text-[#191F1C] mt-1.5">{t("step1Title")}</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#191F1C] mt-1.5">{t("step1Title")}</h3>
               </div>
-              <Badge variant="outline" className="text-stone-600 font-mono text-xs">TAG: MH-12-8492</Badge>
+              <Badge variant="outline" className="text-stone-600 font-mono text-xs w-fit">TAG: MH-12-8492</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8]">
@@ -129,14 +129,14 @@ export function MotionWorkflowTimeline() {
         {/* Step 2: AI Support */}
         {activeStep === 2 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5E0D8] pb-3">
               <div>
                 <span className="text-xs font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
                   Step 2 • AI Assistive Signal
                 </span>
-                <h3 className="text-lg font-bold text-[#191F1C] mt-1.5">Differential Probability Matrix (Advisory Only)</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#191F1C] mt-1.5">Differential Probability Matrix (Advisory Only)</h3>
               </div>
-              <Badge className="bg-amber-50 text-amber-800 border-amber-200 text-xs">Overall Risk: HIGH</Badge>
+              <Badge className="bg-amber-50 text-amber-800 border-amber-200 text-xs w-fit">Overall Risk: HIGH</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div className="p-4 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8] space-y-2.5">
@@ -184,14 +184,14 @@ export function MotionWorkflowTimeline() {
         {/* Step 3: Vet Assessment (The Decision Authority) */}
         {activeStep === 3 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5E0D8] pb-3">
               <div>
                 <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                   Step 3 • Primary Decision Authority
                 </span>
-                <h3 className="text-lg font-bold text-[#191F1C] mt-1.5">Dr. K. S. Patil, B.V.Sc • Clinical Diagnosis</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#191F1C] mt-1.5">Dr. K. S. Patil, B.V.Sc • Clinical Diagnosis</h3>
               </div>
-              <Badge className="bg-emerald-700 text-white border-transparent text-xs font-bold">CONFIRMED DIAGNOSIS</Badge>
+              <Badge className="bg-emerald-700 text-white border-transparent text-xs font-bold w-fit">CONFIRMED DIAGNOSIS</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
               <div className="md:col-span-8 p-4 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8] space-y-3">
@@ -227,14 +227,14 @@ export function MotionWorkflowTimeline() {
         {/* Step 4: Lab & Follow-up */}
         {activeStep === 4 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5E0D8] pb-3">
               <div>
                 <span className="text-xs font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
                   Step 4 • Lab & Village Follow-up
                 </span>
-                <h3 className="text-lg font-bold text-[#191F1C] mt-1.5">Lab Verification & Surveillance Continuity</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#191F1C] mt-1.5">Lab Verification & Surveillance Continuity</h3>
               </div>
-              <Badge className="bg-blue-50 text-blue-800 border-blue-200 text-xs">PCR Test Dispatched</Badge>
+              <Badge className="bg-blue-50 text-blue-800 border-blue-200 text-xs w-fit">PCR Test Dispatched</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8]">

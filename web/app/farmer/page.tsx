@@ -75,33 +75,33 @@ export default async function FarmerPortalPage() {
         </div>
 
         {/* PROMINENT ENTRY PATHS */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link href="/farmer/profile">
-            <Button variant="outline" size="sm" className="gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto pt-1 sm:pt-0">
+          <Link href="/farmer/profile" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
               <User className="h-4 w-4 text-emerald-700" />
               <span>{t("myProfile")}</span>
             </Button>
           </Link>
-          <Link href="/farmer/talk">
-            <Button variant="outline" size="sm" className="gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
+          <Link href="/farmer/talk" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm">
               <MessageSquare className="h-4 w-4 text-emerald-700" />
               <span>{t("farmerTalkAi")}</span>
             </Button>
           </Link>
-          <Link href="/farmer/iot">
-            <Button variant="outline" size="sm" className="gap-2 text-xs border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm font-semibold">
+          <Link href="/farmer/iot" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto gap-2 text-xs border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 rounded-xl min-h-[40px] shadow-2xs hover-lift-sm font-semibold">
               <Cpu className="h-4 w-4 text-emerald-700" />
               <span>{t("iotVitals")}</span>
             </Button>
           </Link>
-          <Link href="/farmer/request-help">
-            <Button size="sm" variant="outline" className="gap-2 text-xs border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 font-semibold rounded-xl min-h-[40px] shadow-xs hover-lift-sm">
+          <Link href="/farmer/request-help" className="w-full sm:w-auto">
+            <Button size="sm" variant="outline" className="w-full sm:w-auto gap-2 text-xs border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 font-semibold rounded-xl min-h-[40px] shadow-xs hover-lift-sm">
               <UserCheck className="h-4 w-4 text-amber-700" />
               <span>{t("requestFieldAgent")}</span>
             </Button>
           </Link>
-          <Link href="/farmer/report">
-            <Button size="sm" className="gap-2 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl min-h-[40px] shadow-sm hover-lift-sm">
+          <Link href="/farmer/report" className="col-span-2 sm:col-span-1 w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto gap-2 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl min-h-[40px] shadow-sm hover-lift-sm">
               <PlusCircle className="h-4 w-4" />
               <span>{t("reportHealthConcern")}</span>
             </Button>
@@ -351,11 +351,11 @@ export default async function FarmerPortalPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
                         <span className="text-[10px] font-mono text-stone-500">
                           {formatDateTime(c.reportedAt)}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <Link href={`/farmer/animals/${c.animalId}`}>
                             <Button size="sm" variant="outline" className="text-xs border-[#D9D3C7] text-stone-700 hover:bg-stone-50 rounded-xl h-7 px-2.5">
                               {t("animalProfileBtn")}

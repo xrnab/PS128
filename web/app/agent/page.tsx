@@ -69,9 +69,9 @@ export default async function FieldAgentPage() {
       {/* Top Banner */}
       <div className="workspace-heading flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-editorial text-3xl font-semibold text-[#20271F] tracking-tight">{t("fieldAgentWorkstation")}</h1>
-            <Badge className="text-[10px] bg-amber-50 text-amber-900 border-amber-200">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="font-editorial text-2xl sm:text-3xl font-semibold text-[#20271F] tracking-tight">{t("fieldAgentWorkstation")}</h1>
+            <Badge className="text-[10px] bg-amber-50 text-amber-900 border-amber-200 shrink-0">
               {t("jurisdiction")}: {jurisdictionName}
             </Badge>
           </div>
@@ -80,8 +80,8 @@ export default async function FieldAgentPage() {
           </p>
         </div>
 
-        <Link href="/agent/report">
-          <Button size="sm" className="gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm min-h-[40px] rounded-xl cursor-pointer">
+        <Link href="/agent/report" className="w-full sm:w-auto">
+          <Button size="sm" className="w-full sm:w-auto gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm min-h-[40px] rounded-xl cursor-pointer">
             <FilePlus2 className="h-4 w-4" />
             <span>{t("recordInspection")}</span>
           </Button>

@@ -13,23 +13,23 @@ export default async function VetLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-[#F3EFE5] text-[#20271F] flex flex-col font-sans">
       {/* Top Navigation Bar */}
-      <header className="border-b border-[#CFC6AF] bg-[#FBF9F3]/95 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] overflow-hidden flex items-center justify-center">
+      <header className="border-b border-[#CFC6AF] bg-[#FBF9F3]/95 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] overflow-hidden flex items-center justify-center shrink-0">
               <Image src="/images/maitri-livestock-logo.png" alt="Maitri" width={36} height={36} className="h-full w-full object-contain scale-125" priority />
             </div>
-            <div>
-              <span className="font-editorial font-semibold text-lg tracking-tight text-[#20271F] flex items-center gap-2">
-                Maitri {t("clinical")} <span className="text-[#274C36] font-mono font-semibold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm bg-[#E1E6D6] border border-[#AEBB9D]">{t("clinic")}</span>
+            <div className="min-w-0">
+              <span className="font-editorial font-semibold text-base sm:text-lg tracking-tight text-[#20271F] flex items-center gap-1.5 sm:gap-2 truncate">
+                Maitri {t("clinical")} <span className="text-[#274C36] font-mono font-semibold text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] shrink-0">{t("clinic")}</span>
               </span>
-              <p className="text-[11px] text-stone-500 hidden sm:block">
+              <p className="text-[10px] sm:text-[11px] text-stone-500 hidden sm:block truncate">
                 {t("clinicalDeskSubtitle")}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <div className="text-right hidden md:block">
               <p className="text-xs font-semibold text-[#191F1C]">{vetUser.name}</p>
               <p className="text-[10px] text-emerald-800 font-mono">
@@ -41,45 +41,45 @@ export default async function VetLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="border-t border-[#CFC6AF] bg-[#F3EFE5] px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
+        <div className="border-t border-[#CFC6AF] bg-[#F3EFE5] px-3 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto flex items-center gap-1 overflow-x-auto no-scrollbar py-2 -mx-1 px-1">
             <Link
               href="/vet"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-stone-700 hover:text-[#274C36] hover:bg-[#E1E6D6] transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold text-stone-700 hover:text-[#274C36] hover:bg-[#E1E6D6] transition-colors whitespace-nowrap shrink-0"
             >
-              <Activity className="h-4 w-4 text-emerald-700" />
+              <Activity className="h-4 w-4 text-emerald-700 shrink-0" />
               <span>{t("triageQueue")}</span>
             </Link>
 
             <Link
               href="/vet/cases"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap shrink-0"
             >
-              <ClipboardList className="h-4 w-4 text-stone-500" />
+              <ClipboardList className="h-4 w-4 text-stone-500 shrink-0" />
               <span>{t("allCases")}</span>
             </Link>
 
             <Link
               href="/vet/samples"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap shrink-0"
             >
-              <FlaskConical className="h-4 w-4 text-amber-600" />
+              <FlaskConical className="h-4 w-4 text-amber-600 shrink-0" />
               <span>{t("labSamples")}</span>
             </Link>
 
             <Link
               href="/vet/follow-ups"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap shrink-0"
             >
-              <Calendar className="h-4 w-4 text-purple-600" />
+              <Calendar className="h-4 w-4 text-purple-600 shrink-0" />
               <span>{t("visitsSchedule")}</span>
             </Link>
 
             <Link
               href="/vet/profile"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors whitespace-nowrap shrink-0"
             >
-              <User className="h-4 w-4 text-emerald-700" />
+              <User className="h-4 w-4 text-emerald-700 shrink-0" />
               <span>{t("vetProfile")}</span>
             </Link>
           </div>

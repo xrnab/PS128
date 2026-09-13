@@ -36,10 +36,10 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 flex h-[4.25rem] w-full items-center justify-between border-b border-[#C9BFA0] bg-[#F3EFE5]/95 px-4 md:px-8 backdrop-blur-md">
+    <header className="sticky top-0 z-50 flex h-[4.25rem] w-full items-center justify-between border-b border-[#C9BFA0] bg-[#F3EFE5]/95 px-3 sm:px-4 md:px-8 backdrop-blur-md">
       {/* Brand Logo & Identity */}
-      <Link href="/" className="flex items-center gap-3 group">
-        <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] overflow-hidden transition-colors group-hover:bg-[#D4DDC3]">
+      <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0 mr-2">
+        <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-sm bg-[#E1E6D6] border border-[#AEBB9D] overflow-hidden transition-colors group-hover:bg-[#D4DDC3]">
           <Image
             src="/images/maitri-livestock-logo.png"
             alt="Maitri livestock care logo"
@@ -49,14 +49,16 @@ export function Navbar() {
             priority
           />
         </div>
-        <div className="flex flex-col text-left">
-          <span className="font-editorial text-lg md:text-xl font-semibold text-[#20271F] flex items-center gap-2">
-            {dictionary.app.title}
-            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-[#DCE3CF] text-[#274C36] border border-[#AEBB9D]">
+        <div className="flex flex-col text-left min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="font-editorial text-base sm:text-lg md:text-xl font-semibold text-[#20271F] tracking-tight truncate">
+              {dictionary.app.title}
+            </span>
+            <span className="text-[9px] sm:text-[10px] font-mono font-semibold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-sm bg-[#DCE3CF] text-[#274C36] border border-[#AEBB9D] shrink-0 truncate max-w-[90px] sm:max-w-none">
               {roleLabel}
             </span>
-          </span>
-          <span className="text-[11px] text-[#5C5645] hidden sm:inline leading-tight">
+          </div>
+          <span className="text-[10px] sm:text-[11px] text-[#5C5645] hidden sm:inline leading-tight truncate">
             {dictionary.app.subtitle}
           </span>
         </div>
@@ -85,13 +87,13 @@ export function Navbar() {
       </nav>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Language Switcher Toggle */}
-        <div className="flex items-center rounded-sm border border-[#C9BFA0] bg-[#FBF9F3] p-0.5 text-xs font-semibold" role="group" aria-label="Language switcher">
+        <div className="flex items-center rounded-sm border border-[#C9BFA0] bg-[#FBF9F3] p-0.5 text-[11px] sm:text-xs font-semibold" role="group" aria-label="Language switcher">
           <button
             type="button"
             onClick={() => setLocale("en")}
-            className={`px-2 py-1 rounded-xs transition-colors cursor-pointer ${
+            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-xs transition-colors cursor-pointer ${
               locale === "en"
                 ? "bg-[#274C36] text-[#F3EFE5]"
                 : "text-[#5C5645] hover:text-[#20271F] hover:bg-[#EDE7D3]"
@@ -103,7 +105,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setLocale("mr")}
-            className={`px-2 py-1 rounded-xs transition-colors cursor-pointer ${
+            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-xs transition-colors cursor-pointer ${
               locale === "mr"
                 ? "bg-[#274C36] text-[#F3EFE5]"
                 : "text-[#5C5645] hover:text-[#20271F] hover:bg-[#EDE7D3]"
@@ -115,30 +117,32 @@ export function Navbar() {
         </div>
 
         <Show when="signed-out">
-          <SignInButton mode="modal">
-            <Button variant="outline" size="sm" className="text-xs">
-              {dictionary.nav.signIn}
-            </Button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <Button size="sm" className="text-xs">
-              {dictionary.nav.signUp}
-            </Button>
-          </SignUpButton>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <SignInButton mode="modal">
+              <Button variant="outline" size="sm" className="text-xs h-8 px-2 sm:px-3">
+                {dictionary.nav.signIn}
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button size="sm" className="text-xs h-8 px-2 sm:px-3 hidden xs:inline-flex sm:inline-flex">
+                {dictionary.nav.signUp}
+              </Button>
+            </SignUpButton>
+          </div>
         </Show>
 
         <Show when="signed-in">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <Link href="/dashboard">
-              <Button size="sm" variant="outline" className="text-xs flex items-center gap-1.5">
+              <Button size="sm" variant="outline" className="text-xs h-8 px-2 sm:px-3 flex items-center gap-1.5">
                 <Home className="h-3.5 w-3.5 text-[#2F5233]" />
-                <span>{dictionary.nav.dashboard}</span>
+                <span className="hidden sm:inline">{dictionary.nav.dashboard}</span>
               </Button>
             </Link>
             <UserButton
               appearance={{
                 elements: {
-                  userButtonAvatarBox: "h-9 w-9 border-2 border-[#2F5233]/60 hover:border-[#2F5233] transition-all rounded-full",
+                  userButtonAvatarBox: "h-8 w-8 sm:h-9 sm:w-9 border-2 border-[#2F5233]/60 hover:border-[#2F5233] transition-all rounded-full",
                 },
               }}
             />
