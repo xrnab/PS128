@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { SyncStatusBadge } from "@/components/offline/SyncStatusBadge";
 import { LocaleProvider } from "@/components/layout/LocaleProvider";
+import { FirstLoadExperience } from "@/components/motion/FirstLoadExperience";
 import { Locale } from "@/lib/i18n";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default async function RootLayout({
         <ClerkProvider>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <LocaleProvider initialLocale={locale as Locale}>
+              <FirstLoadExperience />
               <PwaRegister />
               <Navbar />
               <main className="flex-1 flex flex-col">{children}</main>
