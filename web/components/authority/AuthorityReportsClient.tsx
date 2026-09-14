@@ -181,45 +181,45 @@ export function AuthorityReportsClient({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
       {/* Header & Jurisdiction Banner */}
-      <div className="bg-white rounded-3xl p-6 border border-[#E5E0D8] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-[#191F1C] tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display">
               {t("districtDataExports")}
-            </span>
-            <Badge className="bg-purple-100 text-purple-900 border-purple-200 text-xs font-semibold">
+            </h1>
+            <Badge className="bg-[#3F6B4A]/12 text-[#1E3A2B] border border-white/60 text-xs font-semibold">
               {t("dataExportsReports")}
             </Badge>
           </div>
-          <p className="text-xs text-stone-500">
+          <p className="text-xs sm:text-sm text-[#4A3324]/75">
             {t("generateExportOfficial")}
           </p>
         </div>
 
-        <div className="p-3 bg-[#FAF8F3] border border-[#E5E0D8] rounded-2xl flex items-center gap-3">
-          <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl">
+        <div className="p-3 bg-white/65 backdrop-blur-md border border-white/80 shadow-xs rounded-2xl flex items-center gap-3">
+          <div className="p-2 bg-[#3F6B4A]/12 text-[#3F6B4A] rounded-xl">
             <Building2 className="h-4 w-4" />
           </div>
           <div className="text-xs">
-            <span className="text-stone-500 block">Authorized Jurisdiction</span>
-            <strong className="text-stone-900 font-bold text-sm">{districtName} District</strong>
+            <span className="text-[#4A3324]/60 block font-medium">Authorized Jurisdiction</span>
+            <strong className="text-[#1E3A2B] font-bold text-sm">{districtName} District</strong>
           </div>
         </div>
       </div>
 
       {/* Error Banner */}
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-900 text-xs flex items-center justify-between shadow-xs">
+        <div className="p-4 rounded-2xl bg-[#C1622D]/10 border border-[#C1622D]/20 text-[#C1622D] text-xs flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="h-4 w-4 text-red-700 shrink-0" />
+            <AlertCircle className="h-4 w-4 text-[#C1622D] shrink-0" />
             <span className="font-semibold">{errorMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-red-700 hover:text-red-900 font-bold text-xs p-1 cursor-pointer"
+            className="text-[#C1622D] hover:text-[#933B18] font-bold text-xs p-1 cursor-pointer"
           >
             ✕
           </button>
@@ -228,40 +228,40 @@ export function AuthorityReportsClient({
 
       {/* Success Notification */}
       {successInfo && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs flex items-center justify-between shadow-xs animate-in fade-in">
+        <div className="p-4 rounded-2xl bg-[#3F6B4A]/12 border border-[#3F6B4A]/25 text-[#1E3A2B] text-xs flex items-center justify-between shadow-xs animate-in fade-in">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="h-5 w-5 text-emerald-700 shrink-0" />
+            <CheckCircle2 className="h-5 w-5 text-[#3F6B4A] shrink-0" />
             <div>
-              <span className="font-bold block">
+              <span className="font-bold block text-sm">
                 {successInfo.format} Export Generated Successfully!
               </span>
-              <span className="text-stone-600">
+              <span className="text-[#4A3324]/80">
                 {t("downloadedFile")} <strong className="font-mono">{successInfo.filename}</strong> ({successInfo.recordCount} records).
               </span>
             </div>
           </div>
-          <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 font-mono">
+          <Badge className="bg-white/80 text-[#1E3A2B] border border-white/80 font-mono">
             {successInfo.recordCount} rows
           </Badge>
         </div>
       )}
 
       {/* Main Configuration Card */}
-      <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-        <CardHeader className="bg-[#FAF8F3] border-b border-[#E5E0D8] pb-4">
-          <CardTitle className="text-base text-[#191F1C] font-bold flex items-center gap-2">
-            <FileSpreadsheet className="h-5 w-5 text-emerald-800" />
+      <Card className="liquid-glass-card rounded-3xl overflow-hidden p-6 space-y-6">
+        <div className="border-b border-[#1E3A2B]/8 pb-4">
+          <div className="text-base text-[#1E3A2B] font-bold flex items-center gap-2 font-display">
+            <FileSpreadsheet className="h-5 w-5 text-[#3F6B4A]" />
             <span>{t("reportParamsExportConfig")}</span>
-          </CardTitle>
-          <CardDescription className="text-xs text-stone-500">
+          </div>
+          <p className="text-xs text-[#4A3324]/70 mt-0.5">
             {t("configReportTypeDates")}
-          </CardDescription>
-        </CardHeader>
+          </p>
+        </div>
 
-        <CardContent className="p-6 space-y-6">
+        <div className="space-y-6">
           {/* 1. Report Type Selector */}
           <div className="space-y-3">
-            <Label className="text-xs font-bold text-stone-800 uppercase tracking-wider block">
+            <Label className="text-xs font-bold text-[#1E3A2B] uppercase tracking-wider block">
               1. Select report type
             </Label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -277,8 +277,8 @@ export function AuthorityReportsClient({
                     }}
                     className={`text-left p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                       isSelected
-                        ? `${opt.colorClasses.border} ${opt.colorClasses.bg} shadow-xs`
-                        : "border-[#E5E0D8] bg-[#FAF8F3]/50 hover:bg-[#FAF8F3]"
+                        ? "border-[#3F6B4A] bg-white/90 shadow-md ring-2 ring-[#3F6B4A]/20"
+                        : "border-white/80 bg-white/55 hover:bg-white/80 shadow-xs"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -395,11 +395,11 @@ export function AuthorityReportsClient({
             </Label>
 
             <div className="flex flex-col sm:flex-row items-center gap-3">
-              <Button
+              <button
                 type="button"
                 onClick={() => handleExport("CSV")}
                 disabled={loadingFormat !== null}
-                className="w-full sm:w-auto min-w-[180px] bg-emerald-800 hover:bg-emerald-900 text-white font-semibold rounded-xl text-xs h-11 gap-2 shadow-xs cursor-pointer"
+                className="w-full sm:w-auto min-w-[180px] liquid-button-primary text-white font-bold rounded-full text-xs h-11 gap-2 shadow-md cursor-pointer flex items-center justify-center transition-all disabled:opacity-50"
               >
                 {loadingFormat === "CSV" ? (
                   <>
@@ -412,13 +412,13 @@ export function AuthorityReportsClient({
                     <span>{t("downloadCsv")}</span>
                   </>
                 )}
-              </Button>
+              </button>
 
-              <Button
+              <button
                 type="button"
                 onClick={() => handleExport("PDF")}
                 disabled={loadingFormat !== null}
-                className="w-full sm:w-auto min-w-[180px] bg-stone-900 hover:bg-black text-white font-semibold rounded-xl text-xs h-11 gap-2 shadow-xs cursor-pointer"
+                className="w-full sm:w-auto min-w-[180px] bg-[#1E3A2B] hover:bg-[#15281E] text-white font-bold rounded-full text-xs h-11 gap-2 shadow-md cursor-pointer flex items-center justify-center transition-all disabled:opacity-50"
               >
                 {loadingFormat === "PDF" ? (
                   <>
@@ -431,14 +431,14 @@ export function AuthorityReportsClient({
                     <span>{t("downloadPdf")}</span>
                   </>
                 )}
-              </Button>
+              </button>
             </div>
 
-            <p className="text-[11px] text-stone-500 pt-1">
+            <p className="text-[11px] text-[#4A3324]/60 pt-1">
               • {t("exportsScopedAudit", { districtName })}
             </p>
           </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );

@@ -33,26 +33,24 @@ export function DistrictCasePipeline({ pipeline }: DistrictCasePipelineProps) {
   };
 
   return (
-    <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-      <CardHeader className="pb-3 border-b border-[#E5E0D8]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <CardTitle className="text-base font-bold text-[#191F1C] flex items-center gap-2">
-              <span>{t("districtCasePipeline")}</span>
-            </CardTitle>
-            <CardDescription className="text-xs text-stone-500">
-              Live case triage stages across the authorized jurisdiction • {totalCases} total cases tracked
-            </CardDescription>
+    <Card className="liquid-glass-card rounded-3xl overflow-hidden p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E3A2B]/8 pb-4">
+        <div>
+          <div className="text-base font-bold text-[#1E3A2B] flex items-center gap-2 font-display">
+            <span>{t("districtCasePipeline")}</span>
           </div>
-          <Badge className="bg-stone-100 text-stone-700 border-stone-200 text-xs w-fit">
-            5 Prisma Case Stages
-          </Badge>
+          <p className="text-xs text-[#4A3324]/70 mt-0.5">
+            Live case triage stages across the authorized jurisdiction • {totalCases} total cases tracked
+          </p>
         </div>
-      </CardHeader>
+        <Badge className="bg-[#1E3A2B]/10 text-[#1E3A2B] border border-white/60 text-xs w-fit font-medium">
+          5 Prisma Case Stages
+        </Badge>
+      </div>
 
-      <CardContent className="p-4 sm:p-6 space-y-5">
+      <div className="space-y-5">
         {/* Progress Bar Ribbon */}
-        <div className="w-full h-3 bg-stone-100 rounded-full overflow-hidden flex">
+        <div className="w-full h-3 bg-white/70 rounded-full overflow-hidden flex shadow-inner border border-white/80 p-0.5">
           {pipeline.map((stage) => {
             if (stage.percentage <= 0 && stage.count === 0) return null;
             return (
@@ -62,7 +60,7 @@ export function DistrictCasePipeline({ pipeline }: DistrictCasePipelineProps) {
                   width: totalCases > 0 ? `${(stage.count / totalCases) * 100}%` : "20%",
                   backgroundColor: stage.color,
                 }}
-                className="h-full transition-all duration-500"
+                className="h-full rounded-full transition-all duration-500"
                 title={`${stage.label}: ${stage.count} cases (${stage.percentage}%)`}
               />
             );
@@ -74,31 +72,33 @@ export function DistrictCasePipeline({ pipeline }: DistrictCasePipelineProps) {
           {pipeline.map((stage, idx) => (
             <div
               key={stage.status}
-              className="p-3.5 rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex flex-col justify-between space-y-2 relative"
+              className="p-4 rounded-2xl bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_4px_16px_rgba(30,58,43,0.04)] flex flex-col justify-between space-y-3 relative hover:bg-white/85 hover:scale-[1.02] transition-all"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  {getStageIcon(stage.status)}
-                  <span className="text-xs font-bold text-stone-800">{stage.label}</span>
+                  <div className="p-1 rounded-lg bg-white/80 shadow-xs">
+                    {getStageIcon(stage.status)}
+                  </div>
+                  <span className="text-xs font-bold text-[#1E3A2B]">{stage.label}</span>
                 </div>
                 {idx < pipeline.length - 1 && (
-                  <ArrowRight className="h-3 w-3 text-stone-300 hidden lg:block absolute -right-2 top-4 z-10" />
+                  <ArrowRight className="h-3 w-3 text-[#1E3A2B]/20 hidden lg:block absolute -right-2 top-5 z-10" />
                 )}
               </div>
 
               <div>
-                <div className="text-2xl font-bold font-mono" style={{ color: stage.color }}>
+                <div className="text-2xl font-bold font-mono tracking-tight" style={{ color: stage.color }}>
                   {stage.count}
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-stone-500 mt-0.5">
+                <div className="flex items-center justify-between text-[11px] text-[#4A3324]/65 mt-1 font-medium">
                   <span>{t("shareOfTotal")}</span>
-                  <span className="font-semibold text-stone-700 font-mono">{stage.percentage}%</span>
+                  <span className="font-semibold text-[#1E3A2B] font-mono">{stage.percentage}%</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

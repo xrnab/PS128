@@ -110,62 +110,62 @@ export function TelegramConnectCard({
   const formattedDate = connectedAt ? formatDate(connectedAt) : null;
 
   return (
-    <div className="p-5 bg-white border border-[#E5E0D8] rounded-3xl space-y-4 text-[#191F1C] shadow-xs">
+    <div className="liquid-glass-card rounded-3xl border border-white/80 p-6 sm:p-7 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_16px_36px_rgba(30,58,43,0.06)] space-y-4 text-[#1E3A2B]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-200">
+          <div className="p-2.5 rounded-2xl bg-white/80 border border-white/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] text-[#1E3A2B]">
             <Send className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#191F1C]">{t("title")}</h3>
-            <p className="text-xs text-stone-500">
+            <h3 className="text-base font-bold text-[#1E3A2B] font-display">{t("title")}</h3>
+            <p className="text-xs text-[#4A3324]/70">
               {t("subtitle")}
             </p>
           </div>
         </div>
 
         {isConnected ? (
-          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold rounded-full flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_1px_2px_rgba(30,58,43,0.04)] text-[11px] font-bold text-[#3F6B4A] tracking-wider uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3F6B4A] animate-pulse" />
             <span>{t("connected")}</span>
           </span>
         ) : (
-          <span className="px-2.5 py-1 bg-stone-100 text-stone-700 border border-[#D9D3C7] text-xs font-semibold rounded-full">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_1px_2px_rgba(30,58,43,0.04)] text-[11px] font-bold text-[#4A3324]/60 tracking-wider uppercase">
             Not connected
           </span>
         )}
       </div>
 
       {isConnected ? (
-        <div className="space-y-3">
-          <div className="p-3.5 bg-[#FAF8F3] border border-[#E5E0D8] rounded-2xl text-xs text-stone-700 space-y-1.5">
+        <div className="space-y-3.5">
+          <div className="p-4 bg-white/70 backdrop-blur-md border border-white/90 rounded-2xl text-xs text-[#1E3A2B] space-y-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_1px_3px_rgba(30,58,43,0.03)]">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-emerald-900 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
+              <span className="font-bold text-[#3F6B4A] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#3F6B4A]" />
                 <span>{t("botConnected")}</span>
               </span>
               {username && (
-                <span className="font-mono text-[11px] px-2 py-0.5 bg-white border border-[#D9D3C7] rounded-md text-stone-800">
+                <span className="font-mono text-[11px] px-2.5 py-0.5 bg-white/90 border border-white rounded-full text-[#1E3A2B] font-semibold shadow-2xs">
                   @{username}
                 </span>
               )}
             </div>
-            <p className="text-stone-500 text-[11px]">
+            <p className="text-[#4A3324]/75 text-[11px]">
               {t("botConnectedDesc")}
             </p>
             {formattedDate && (
-              <p className="text-[10px] text-stone-400 flex items-center gap-1 pt-0.5">
+              <p className="text-[10px] text-[#4A3324]/60 flex items-center gap-1 pt-0.5">
                 <Clock className="w-3 h-3" />
                 <span>Connected on {formattedDate}</span>
               </p>
             )}
           </div>
 
-          <Button
+          <button
+            type="button"
             onClick={handleUnlink}
             disabled={unlinking}
-            variant="outline"
-            className="w-full border-red-200 text-red-700 hover:bg-red-50 text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-2 min-h-[38px] cursor-pointer"
+            className="w-full h-9 border border-white/80 bg-white/80 hover:bg-red-50 text-red-700 text-xs font-semibold rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all"
           >
             {unlinking ? (
               <>
@@ -178,15 +178,16 @@ export function TelegramConnectCard({
                 <span>{t("disconnect")}</span>
               </>
             )}
-          </Button>
+          </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {!token ? (
-            <Button
+            <button
+              type="button"
               onClick={handleGenerateToken}
               disabled={loading}
-              className="w-full bg-[#047857] hover:bg-[#065f46] text-white font-semibold text-xs py-2.5 rounded-2xl shadow-xs flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
+              className="w-full h-10 bg-[#1E3A2B] hover:bg-[#3F6B4A] text-[#F4EEE1] font-semibold text-xs rounded-full shadow-[0_4px_10px_rgba(30,58,43,0.18),inset_0_1px_1px_rgba(255,255,255,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               {loading ? (
                 <>
@@ -199,10 +200,10 @@ export function TelegramConnectCard({
                   <span>{t("connect")}</span>
                 </>
               )}
-            </Button>
+            </button>
           ) : (
-            <div className="p-3.5 bg-[#FAF8F3] border border-[#E5E0D8] rounded-2xl space-y-3">
-              <p className="text-xs text-stone-700 font-medium">
+            <div className="p-4 bg-white/70 backdrop-blur-md border border-white/90 rounded-2xl space-y-3 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_1px_3px_rgba(30,58,43,0.03)]">
+              <p className="text-xs text-[#1E3A2B] font-medium">
                 Click below to open the bot and link your account:
               </p>
 
@@ -211,7 +212,7 @@ export function TelegramConnectCard({
                   href={deepLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-semibold rounded-xl transition shadow-xs"
+                  className="flex items-center justify-center gap-2 w-full h-10 bg-[#1E3A2B] hover:bg-[#3F6B4A] text-[#F4EEE1] text-xs font-semibold rounded-full shadow-[0_4px_10px_rgba(30,58,43,0.18),inset_0_1px_1px_rgba(255,255,255,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
                   <span>Open {botUsername || "Maitri Bot"}</span>
                   <ExternalLink className="w-3.5 h-3.5" />

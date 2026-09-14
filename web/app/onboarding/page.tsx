@@ -162,23 +162,23 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-10 relative bg-[#FAF8F3] text-[#191F1C] min-h-screen">
-      <div className="max-w-3xl w-full flex flex-col gap-6">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-24 space-y-8 text-[#1D1C14]">
+      <div className="max-w-3xl mx-auto w-full flex flex-col gap-6">
         <div className="text-center flex flex-col items-center gap-2">
-          <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50 text-xs px-3 py-1">
+          <Badge className="border-white/80 text-[#3F6B4A] bg-[#3F6B4A]/12 text-xs px-3.5 py-1 rounded-full font-semibold">
             {t("onboardingSetup")}
           </Badge>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-[#191F1C] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display">
             {t("selectRole")}
           </h1>
-          <p className="text-stone-600 text-xs md:text-sm max-w-md">
+          <p className="text-[#4A3324]/75 text-xs sm:text-sm max-w-md">
             {t("onboardingDesc")}
           </p>
         </div>
 
         {errorMessage && (
-          <div className="p-4 rounded-2xl border border-red-200 bg-red-50 text-red-700 text-xs flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+          <div className="p-4 rounded-2xl border border-[#C1622D]/25 bg-[#C1622D]/10 text-[#C1622D] text-xs flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-[#C1622D] flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -192,10 +192,10 @@ export default function OnboardingPage() {
               <div
                 key={role.id}
                 onClick={() => setSelectedRole(role.id as "FARMER" | "FIELD_AGENT" | "VETERINARIAN" | "DISTRICT_AUTHORITY")}
-                className={`relative cursor-pointer rounded-3xl border p-5 transition-all flex flex-col justify-between gap-4 shadow-2xs ${
+                className={`relative cursor-pointer rounded-3xl border p-5 transition-all flex flex-col justify-between gap-4 ${
                   isSelected
-                    ? "border-emerald-600 bg-emerald-50/70 ring-2 ring-emerald-500/30 shadow-xs"
-                    : "border-[#E5E0D8] bg-white hover:border-stone-400 hover:bg-[#FAF8F3]"
+                    ? "border-[#3F6B4A] bg-white/90 shadow-md ring-2 ring-[#3F6B4A]/25"
+                    : "liquid-glass-card hover:bg-white/80"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -203,20 +203,19 @@ export default function OnboardingPage() {
                     <div
                       className={`h-10 w-10 rounded-2xl flex items-center justify-center ${
                         isSelected
-                          ? "bg-[#047857] text-white shadow-xs"
-                          : "bg-[#FAF8F3] text-stone-600 border border-[#E5E0D8]"
+                          ? "bg-[#1E3A2B] text-white shadow-xs"
+                          : "bg-white/80 text-[#3F6B4A] border border-white/80 shadow-xs"
                       }`}
                     >
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#191F1C] text-sm">{role.title}</h3>
+                      <h3 className="font-bold text-[#1E3A2B] text-sm">{role.title}</h3>
                       <Badge
-                        variant="secondary"
                         className={`text-[10px] mt-0.5 ${
                           role.id === "FARMER"
-                            ? "bg-emerald-100 text-emerald-900 border-emerald-200"
-                            : "bg-amber-100 text-amber-900 border-amber-200"
+                            ? "bg-[#3F6B4A]/15 text-[#3F6B4A] border border-[#3F6B4A]/30 font-semibold"
+                            : "bg-[#D9A441]/15 text-[#8F6612] border border-white/60 font-semibold"
                         }`}
                       >
                         {role.badge}
@@ -224,10 +223,10 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   {isSelected && (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-700 flex-shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-[#3F6B4A] flex-shrink-0" />
                   )}
                 </div>
-                <p className="text-xs text-stone-600 leading-relaxed">{role.description}</p>
+                <p className="text-xs text-[#4A3324]/75 leading-relaxed">{role.description}</p>
               </div>
             );
           })}
@@ -235,14 +234,14 @@ export default function OnboardingPage() {
 
         {/* Profile Form */}
         <form onSubmit={handleSubmit}>
-          <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-            <CardHeader className="bg-[#FAF8F3] border-b border-[#E5E0D8]">
-              <CardTitle className="text-base text-[#191F1C] font-bold">{t("profileJurisdiction")}</CardTitle>
-              <CardDescription className="text-xs text-stone-500">
+          <Card className="liquid-glass-card rounded-3xl overflow-hidden p-6 space-y-6">
+            <div className="border-b border-[#1E3A2B]/8 pb-4">
+              <div className="text-base text-[#1E3A2B] font-bold font-display">{t("profileJurisdiction")}</div>
+              <p className="text-xs text-[#4A3324]/70 mt-0.5">
                 {t("profileJurisdictionDesc")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-5">
+              </p>
+            </div>
+            <div className="space-y-4 pt-1">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="name" className="text-xs text-stone-700 font-medium">Full Name *</Label>
@@ -359,14 +358,18 @@ export default function OnboardingPage() {
                   </div>
                 </div>
               </div>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center border-t border-[#E5E0D8] pt-4 pb-4">
-              <span className="text-xs text-stone-500">
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center border-t border-[#1E3A2B]/8 pt-5 pb-1 gap-4">
+              <span className="text-xs text-[#4A3324]/70">
                 {selectedRole === "FARMER"
                   ? "Farmer accounts are activated immediately upon registration."
                   : "Officer accounts require district authority approval."}
               </span>
-              <Button type="submit" disabled={submitting} className="gap-2 bg-[#047857] hover:bg-[#065f46] text-white text-xs font-semibold min-h-[44px] shadow-xs cursor-pointer">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="gap-2 liquid-button-primary text-white text-xs font-bold px-6 py-3 rounded-full shadow-md cursor-pointer transition-all hover:scale-[1.02] flex items-center justify-center disabled:opacity-50"
+              >
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -378,8 +381,8 @@ export default function OnboardingPage() {
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
-              </Button>
-            </CardFooter>
+              </button>
+            </div>
           </Card>
         </form>
       </div>

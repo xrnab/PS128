@@ -42,39 +42,42 @@ export default async function FarmerTalkAnimalSelectorPage() {
   });
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8 max-w-5xl mx-auto w-full gap-6 text-[#191F1C]">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-[#191F1C] tracking-tight">{dict.farmerTalk.title}</h1>
-            <Badge className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display">{dict.farmerTalk.title}</h1>
+            <Badge className="text-[10px] bg-[#3F6B4A]/12 text-[#3F6B4A] border-white/60 font-semibold px-2.5 py-0.5 rounded-full">
               {t("livestockHealthTalk")}
             </Badge>
           </div>
-          <p className="text-stone-600 text-xs mt-1">
+          <p className="text-xs sm:text-sm text-[#4A3324]/75 mt-1">
             {dict.farmerTalk.selectAnimalPrompt}
           </p>
         </div>
 
         <Link href="/farmer">
-          <Button variant="outline" size="sm" className="text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 gap-1.5 rounded-xl">
+          <button
+            type="button"
+            className="h-9 px-4 text-xs font-semibold border border-white/80 bg-white/80 hover:bg-white text-[#1E3A2B] gap-1.5 rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all"
+          >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>{t("backToFarmerPortal")}</span>
-          </Button>
+          </button>
         </Link>
       </div>
 
       {animals.length === 0 ? (
-        <Card className="border-[#E5E0D8] bg-white p-8 text-center rounded-3xl shadow-xs">
-          <MessageSquare className="w-12 h-12 text-stone-400 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-stone-900">{t("noRegisteredAnimalsFound")}</h3>
-          <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+        <Card className="liquid-glass-card p-12 text-center rounded-3xl space-y-3">
+          <MessageSquare className="w-12 h-12 text-[#3F6B4A]/40 mx-auto" />
+          <h3 className="text-lg font-bold text-[#1E3A2B]">{t("noRegisteredAnimalsFound")}</h3>
+          <p className="text-xs text-[#4A3324]/60 max-w-sm mx-auto">
             {t("noAnimalsTalkDesc")}
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {animals.map((animal) => {
             const recentCase = animal.cases[0];
             const analysis = (recentCase?.analysisResult as Record<string, unknown> | null) || {};
@@ -82,49 +85,49 @@ export default async function FarmerTalkAnimalSelectorPage() {
             const isHighRisk = riskLevel === "HIGH" || riskLevel === "CRITICAL";
 
             return (
-              <Card key={animal.id} className="border-[#E5E0D8] bg-white hover:border-emerald-600 transition-all rounded-3xl shadow-xs flex flex-col justify-between overflow-hidden">
-                <CardHeader className="pb-3 flex flex-row items-center justify-between border-b border-[#E5E0D8]">
+              <Card key={animal.id} className="liquid-glass-card rounded-3xl p-6 flex flex-col justify-between overflow-hidden hover:scale-[1.01] transition-all space-y-4">
+                <div className="flex flex-row items-start justify-between border-b border-[#1E3A2B]/8 pb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <CardTitle className="text-base text-[#191F1C]">Tag: {animal.tag}</CardTitle>
-                      <Badge className="text-[10px] bg-stone-100 text-stone-700 border-stone-200">
+                      <span className="text-base font-bold text-[#1E3A2B] font-display">Tag: {animal.tag}</span>
+                      <Badge className="text-[10px] bg-[#1E3A2B]/10 text-[#1E3A2B] border-white/60">
                         {animal.species}
                       </Badge>
                     </div>
-                    <CardDescription className="text-xs text-stone-500 mt-1">
+                    <p className="text-xs text-[#4A3324]/70 mt-1">
                       {animal.herd.farm.name} • Breed: {animal.breed || "Standard"} • Age: {animal.ageMonths ? `${animal.ageMonths} Months` : "Not recorded"}
-                    </CardDescription>
+                    </p>
                   </div>
 
                   {riskLevel && (
                     <span
-                      className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
+                      className={`px-3 py-1 text-[10px] font-bold rounded-full border ${
                         isHighRisk
-                          ? "bg-red-50 text-red-700 border-red-200"
-                          : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          ? "bg-[#C1622D]/15 text-[#C1622D] border-[#C1622D]/30 font-mono"
+                          : "bg-[#3F6B4A]/12 text-[#3F6B4A] border-[#3F6B4A]/25 font-mono"
                       }`}
                     >
                       {riskLevel}
                     </span>
                   )}
-                </CardHeader>
+                </div>
 
-                <CardContent className="flex items-center justify-between pt-4">
-                  <div className="text-xs text-stone-500">
+                <div className="flex items-center justify-between pt-1">
+                  <div className="text-xs text-[#4A3324]/65">
                     {recentCase ? (
-                      <span>Last Record: <strong className="text-stone-800">{recentCase.status}</strong></span>
+                      <span>Last Record: <strong className="text-[#1E3A2B]">{recentCase.status}</strong></span>
                     ) : (
                       <span>{t("routineCare")}</span>
                     )}
                   </div>
 
                   <Link href={`/farmer/talk/${animal.id}`}>
-                    <Button size="sm" className="gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm font-semibold rounded-xl">
+                    <button type="button" className="h-8 px-4 gap-1.5 text-xs liquid-button-primary text-white font-bold rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all hover:scale-[1.02]">
                       <span>{t("startHealthTalk")}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
-                    </Button>
+                    </button>
                   </Link>
-                </CardContent>
+                </div>
               </Card>
             );
           })}

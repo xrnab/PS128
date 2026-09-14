@@ -73,25 +73,28 @@ export default async function FarmerRequestHelpPage({
   }));
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8 max-w-4xl mx-auto w-full gap-6 text-[#191F1C]">
-      <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-4">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-6 text-[#1D1C14]">
+      <div className="flex items-center justify-between border-b border-[#1E3A2B]/8 pb-4">
         <div>
-          <span className="text-xs font-bold text-amber-800 uppercase tracking-wide">
+          <span className="text-xs font-bold text-[#D9A441] uppercase tracking-wide">
             {t("doorstepFieldSupport")}
           </span>
-          <h1 className="text-2xl font-bold text-[#191F1C] tracking-tight mt-1">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display mt-1">
             {t("requestFieldAgentVisit")}
           </h1>
-          <p className="text-xs text-stone-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-[#4A3324]/75 mt-0.5">
             {t("requestFieldAgentLead")}
           </p>
         </div>
 
         <Link href="/farmer">
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs border-[#D9D3C7] text-stone-700 hover:bg-white rounded-xl">
+          <button
+            type="button"
+            className="h-9 px-4 text-xs font-semibold border border-white/80 bg-white/80 hover:bg-white text-[#1E3A2B] gap-1.5 rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all"
+          >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>{t("farmerPortal")}</span>
-          </Button>
+          </button>
         </Link>
       </div>
 

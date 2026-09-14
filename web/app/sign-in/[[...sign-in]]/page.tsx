@@ -13,20 +13,24 @@ export default async function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#FAF8F3] text-[#191F1C]">
-      <div className="w-full max-w-md space-y-6 flex flex-col items-center">
+    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#FBF8F3] text-[#1D1C14] overflow-hidden">
+      {/* Ambient background light blobs */}
+      <div className="ambient-blob -top-24 -left-20 h-96 w-96 bg-[#3F6B4A]/15 blur-3xl pointer-events-none" />
+      <div className="ambient-blob top-1/2 -right-28 h-96 w-96 bg-[#D9A441]/12 blur-3xl pointer-events-none [animation-delay:-5s]" />
+
+      <div className="relative z-10 w-full max-w-md space-y-6 flex flex-col items-center">
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center space-y-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-800 text-white font-extrabold shadow-xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E3A2B] text-[#FBF8F3] font-bold shadow-md">
             <span className="text-xl tracking-tight font-serif font-black">M</span>
           </div>
-          <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50 text-[11px] px-3 py-0.5">
+          <Badge className="border-white/80 text-[#1E3A2B] bg-white/70 backdrop-blur-md text-[11px] px-3 py-0.5 rounded-full shadow-2xs font-semibold">
             {t("maitriLivestockHealth")}
           </Badge>
-          <h1 className="text-2xl font-bold tracking-tight text-[#191F1C]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1E3A2B] font-display">
             {t("welcomeBack")}
           </h1>
-          <p className="text-xs text-stone-600 max-w-xs">
+          <p className="text-xs text-[#1D1C14]/70 max-w-xs leading-relaxed">
             {t("signInDesc")}
           </p>
         </div>
@@ -36,23 +40,23 @@ export default async function SignInPage() {
           <SignIn
             appearance={{
               elements: {
-                rootBox: "w-full shadow-xs",
-                card: "bg-white border border-[#E5E0D8] rounded-3xl shadow-xs p-3 sm:p-6",
-                headerTitle: "text-[#191F1C] text-lg font-bold",
-                headerSubtitle: "text-stone-500 text-xs",
-                socialButtonsBlockButton: "bg-[#FAF8F3] border border-[#D9D3C7] hover:bg-stone-100 text-[#191F1C] text-xs font-semibold rounded-xl min-h-[42px] transition-colors",
-                socialButtonsBlockButtonText: "text-[#191F1C] font-semibold text-xs",
-                formButtonPrimary: "bg-[#047857] hover:bg-[#065f46] text-white text-xs font-semibold shadow-xs rounded-xl transition-all min-h-[42px] cursor-pointer",
-                formFieldLabel: "text-stone-700 text-xs font-medium",
-                formFieldInput: "bg-[#FAF8F3] border border-[#D9D3C7] text-[#191F1C] focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 text-xs rounded-xl min-h-[42px]",
-                footerActionLink: "text-emerald-700 hover:text-emerald-800 text-xs font-semibold",
-                footerActionText: "text-stone-500 text-xs",
-                dividerLine: "bg-[#E5E0D8]",
-                dividerText: "text-stone-400 text-xs uppercase font-medium",
-                footer: "bg-[#FAF8F3] border-t border-[#E5E0D8] text-xs text-stone-500 rounded-b-3xl",
-                identityPreview: "bg-[#FAF8F3] border border-[#E5E0D8] rounded-xl text-xs",
-                identityPreviewText: "text-[#191F1C] text-xs",
-                identityPreviewEditButton: "text-emerald-700 hover:text-emerald-800 text-xs font-semibold",
+                rootBox: "w-full shadow-xl",
+                card: "liquid-glass-card border border-white/80 rounded-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_16px_36px_rgba(30,58,43,0.08)] p-4 sm:p-7 backdrop-blur-[24px]",
+                headerTitle: "text-[#1E3A2B] text-lg font-bold font-display",
+                headerSubtitle: "text-[#1D1C14]/60 text-xs",
+                socialButtonsBlockButton: "bg-white/60 border border-white/80 hover:bg-white text-[#1E3A2B] text-xs font-semibold rounded-full min-h-[42px] transition-all shadow-xs cursor-pointer",
+                socialButtonsBlockButtonText: "text-[#1E3A2B] font-semibold text-xs",
+                formButtonPrimary: "liquid-button-primary text-xs font-semibold shadow-md rounded-full transition-all min-h-[44px] cursor-pointer",
+                formFieldLabel: "text-[#1E3A2B] text-xs font-semibold",
+                formFieldInput: "bg-white/80 border border-white/80 text-[#1D1C14] focus:border-[#3F6B4A] focus:ring-2 focus:ring-[#3F6B4A]/20 text-xs rounded-full min-h-[42px] px-4 shadow-2xs",
+                footerActionLink: "text-[#3F6B4A] hover:text-[#1E3A2B] text-xs font-bold",
+                footerActionText: "text-[#1D1C14]/60 text-xs",
+                dividerLine: "bg-[#1E3A2B]/10",
+                dividerText: "text-[#1D1C14]/40 text-xs uppercase font-medium",
+                footer: "bg-white/40 border-t border-[#1E3A2B]/8 text-xs text-[#1D1C14]/60 rounded-b-3xl",
+                identityPreview: "bg-white/60 border border-white/80 rounded-2xl text-xs",
+                identityPreviewText: "text-[#1E3A2B] text-xs font-semibold",
+                identityPreviewEditButton: "text-[#3F6B4A] hover:text-[#1E3A2B] text-xs font-bold",
               },
             }}
           />

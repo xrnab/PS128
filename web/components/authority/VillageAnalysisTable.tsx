@@ -84,17 +84,17 @@ export function VillageAnalysisTable({ villages }: VillageAnalysisTableProps) {
   };
 
   return (
-    <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-      <CardHeader className="pb-3 border-b border-[#E5E0D8]">
+    <Card className="liquid-glass-card rounded-3xl overflow-hidden p-0">
+      <div className="p-6 border-b border-[#1E3A2B]/8 space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-base font-bold text-[#191F1C] flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-emerald-700" />
+            <div className="text-base font-bold text-[#1E3A2B] flex items-center gap-2 font-display">
+              <Building2 className="h-5 w-5 text-[#3F6B4A]" />
               <span>{t("villageAnalysisTitle")}</span>
-            </CardTitle>
-            <CardDescription className="text-xs text-stone-500">
+            </div>
+            <p className="text-xs text-[#4A3324]/70 mt-0.5">
               {t("villageMatrixDesc")}
-            </CardDescription>
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
@@ -104,21 +104,21 @@ export function VillageAnalysisTable({ villages }: VillageAnalysisTableProps) {
               role="switch"
               aria-checked={showPriorityOnly}
               onClick={() => setShowPriorityOnly((prev) => !prev)}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                 showPriorityOnly
-                  ? "bg-red-50 text-red-900 border-red-300 ring-2 ring-red-500/20 shadow-xs"
-                  : "bg-[#FAF8F3] text-stone-600 border-[#D9D3C7] hover:bg-stone-100"
+                  ? "bg-[#C1622D] text-white border-[#C1622D] shadow-sm"
+                  : "bg-white/70 text-[#1E3A2B] border-white/80 hover:bg-white"
               }`}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  showPriorityOnly ? "bg-red-600 animate-pulse" : "bg-stone-400"
+                  showPriorityOnly ? "bg-white animate-pulse" : "bg-[#C1622D]"
                 }`}
               />
               <span>{t("showPriorityOnly")}</span>
               <span
-                className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-                  showPriorityOnly ? "bg-red-200 text-red-950" : "bg-stone-200 text-stone-700"
+                className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                  showPriorityOnly ? "bg-white/25 text-white" : "bg-[#1E3A2B]/10 text-[#1E3A2B]"
                 }`}
               >
                 {priorityVillagesCount}
@@ -127,13 +127,13 @@ export function VillageAnalysisTable({ villages }: VillageAnalysisTableProps) {
 
             {/* Search Input */}
             <div className="relative max-w-xs w-full">
-              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-stone-400" />
+              <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-[#4A3324]/40" />
               <Input
                 type="text"
                 placeholder={t("filterVillageBlock")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-8 text-xs bg-[#FAF8F3] border-[#D9D3C7] rounded-xl"
+                className="h-8 pl-9 text-xs bg-white/80 border-white/80 rounded-full shadow-inner text-[#1E3A2B] placeholder:text-[#4A3324]/40"
               />
             </div>
           </div>
@@ -165,7 +165,7 @@ export function VillageAnalysisTable({ villages }: VillageAnalysisTableProps) {
             </button>
           </div>
         )}
-      </CardHeader>
+      </div>
 
       <CardContent className="p-0">
         <div className="overflow-x-auto">

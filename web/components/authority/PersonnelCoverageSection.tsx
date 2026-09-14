@@ -50,33 +50,33 @@ export function PersonnelCoverageSection({
 
   return (
     <div className="space-y-6">
-      <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-        <CardHeader className="pb-3 border-b border-[#E5E0D8]">
+      <Card className="liquid-glass-card rounded-3xl overflow-hidden p-0">
+        <div className="p-6 border-b border-[#1E3A2B]/8 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-base font-bold text-[#191F1C] flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-emerald-700" />
+              <div className="text-base font-bold text-[#1E3A2B] flex items-center gap-2 font-display">
+                <ShieldCheck className="h-5 w-5 text-[#3F6B4A]" />
                 <span>{t("personnelCoverageTitle")}</span>
-              </CardTitle>
-              <CardDescription className="text-xs text-stone-500">
+              </div>
+              <p className="text-xs text-[#4A3324]/70 mt-0.5">
                 {t("personnelCoverageDesc")}
-              </CardDescription>
+              </p>
             </div>
 
             {/* Tab Switches */}
-            <div className="flex items-center gap-2 bg-[#FAF8F3] p-1 rounded-2xl border border-[#E5E0D8]">
+            <div className="flex items-center gap-1.5 bg-white/65 backdrop-blur-md p-1 rounded-full border border-white/80 shadow-xs">
               <button
                 onClick={() => {
                   setActiveTab("VETS");
                   setSearchQuery("");
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === "VETS"
-                    ? "bg-white text-purple-950 shadow-xs border border-[#E5E0D8]"
-                    : "text-stone-600 hover:text-stone-900"
+                    ? "bg-[#1E3A2B] text-white shadow-xs"
+                    : "text-[#4A3324]/70 hover:text-[#1E3A2B] hover:bg-white/60"
                 }`}
               >
-                <Stethoscope className="h-3.5 w-3.5 text-purple-700" />
+                <Stethoscope className="h-3.5 w-3.5 text-[#3F6B4A]" />
                 <span>{t("veterinariansCount", { count: veterinarians.length })}</span>
               </button>
 
@@ -85,30 +85,30 @@ export function PersonnelCoverageSection({
                   setActiveTab("AGENTS");
                   setSearchQuery("");
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === "AGENTS"
-                    ? "bg-white text-blue-950 shadow-xs border border-[#E5E0D8]"
-                    : "text-stone-600 hover:text-stone-900"
+                    ? "bg-[#1E3A2B] text-white shadow-xs"
+                    : "text-[#4A3324]/70 hover:text-[#1E3A2B] hover:bg-white/60"
                 }`}
               >
-                <User className="h-3.5 w-3.5 text-blue-700" />
+                <User className="h-3.5 w-3.5 text-[#3F6B4A]" />
                 <span>{t("fieldAgentsCount", { count: fieldAgents.length })}</span>
               </button>
             </div>
           </div>
 
           {/* Search bar */}
-          <div className="pt-2 max-w-xs relative">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-stone-400" />
+          <div className="pt-1 max-w-xs relative">
+            <Search className="absolute left-3.5 top-2.5 h-3.5 w-3.5 text-[#4A3324]/40" />
             <Input
               type="text"
               placeholder={activeTab === "VETS" ? t("searchVetPlaceholder") : t("searchAgentPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 pl-8 text-xs bg-[#FAF8F3] border-[#D9D3C7] rounded-xl"
+              className="h-8 pl-9 text-xs bg-white/80 border-white/80 rounded-full shadow-inner text-[#1E3A2B] placeholder:text-[#4A3324]/40"
             />
           </div>
-        </CardHeader>
+        </div>
 
         <CardContent className="p-0">
           {activeTab === "VETS" ? (
@@ -116,7 +116,7 @@ export function PersonnelCoverageSection({
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#FAF8F3] border-b border-[#E5E0D8] text-stone-600 font-semibold">
+                  <tr className="bg-white/40 border-b border-[#1E3A2B]/8 text-[#1E3A2B] font-semibold">
                     <th className="py-3 px-4">{t("veterinarian")}</th>
                     <th className="py-3 px-3">{t("serviceArea")}</th>
                     <th className="py-3 px-2 text-center">{t("assignedCasesHeader")}</th>

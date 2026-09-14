@@ -58,30 +58,29 @@ export default async function FarmerCaseDetailPage({
   };
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8 max-w-5xl mx-auto w-full gap-6 text-[#191F1C]">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
       {/* Top Breadcrumbs & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div className="flex items-center gap-3">
           <Link href="/farmer">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 text-xs border-[#D9D3C7] text-stone-700 hover:bg-stone-50 rounded-xl gap-1.5 min-h-[36px]"
+            <button
+              type="button"
+              className="h-9 px-4 text-xs font-semibold border border-white/80 bg-white/80 hover:bg-white text-[#1E3A2B] rounded-full gap-1.5 shadow-xs inline-flex items-center cursor-pointer transition-all"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>{t("farmerPortal")}</span>
-            </Button>
+            </button>
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#191F1C]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A2B] tracking-tight font-display">
                 Case #{healthCase.caseNumber}
               </h1>
-              <Badge className="bg-amber-100 text-amber-950 border-amber-300 text-xs font-semibold">
+              <Badge className="bg-[#D9A441]/15 text-[#8F6612] border border-white/60 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                 {healthCase.status}
               </Badge>
             </div>
-            <p className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs text-[#4A3324]/75 mt-0.5">
               Animal: {animal.tag} ({animal.species}) • Reported:{" "}
               {formatDateTime(healthCase.reportedAt, true)}
             </p>
@@ -89,14 +88,13 @@ export default async function FarmerCaseDetailPage({
         </div>
 
         <Link href={`/farmer/animals/${animal.id}`}>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs gap-1.5 border-emerald-300 text-emerald-800 bg-emerald-50/50 hover:bg-emerald-100 rounded-xl min-h-[36px]"
+          <button
+            type="button"
+            className="h-9 px-4 text-xs font-semibold border border-white/80 text-[#3F6B4A] bg-white/80 hover:bg-white rounded-full gap-1.5 shadow-xs inline-flex items-center cursor-pointer transition-all"
           >
             <span>{t("viewPassport")}</span>
             <ChevronRight className="h-3.5 w-3.5" />
-          </Button>
+          </button>
         </Link>
       </div>
 
