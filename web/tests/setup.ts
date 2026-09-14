@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 import "@testing-library/jest-dom/vitest";
-import { vi } from "vitest";
+import { vi, beforeEach } from "vitest";
 
 import enMessages from "@/messages/en.json";
 
@@ -123,3 +123,13 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
+
+beforeEach(() => {
+  if (typeof document !== "undefined") {
+    document.cookie = "maitri-locale=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "NEXT_LOCALE=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+  if (typeof window !== "undefined" && window.localStorage) {
+    window.localStorage.clear();
+  }
+});

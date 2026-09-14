@@ -16,6 +16,7 @@ import { runCaseAnalysisAction } from "@/lib/actions/analysis";
 import { enqueueReport } from "@/lib/offline/db";
 import { checkServerReachability } from "@/lib/offline/sync";
 import type { YoloVisionAnalysis } from "@/lib/types/livestock";
+import { ReportResultFlow } from "./ReportResultFlow";
 import { AiAssessmentCard } from "@/components/ai/AiAssessmentCard";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -425,131 +426,21 @@ export function HealthReportForm({
 
   // Render Success Screen after Case creation
   if (submitResult?.success) {
-    const assignedVet = submitResult.assignedVeterinarian;
-    const assignmentLevel = submitResult.assignmentLevel;
-    const location = submitResult.location;
-
     return (
-      <Card className="max-w-xl mx-auto w-full border-emerald-200 bg-white text-center shadow-sm p-6 space-y-5 rounded-3xl text-[#191F1C]">
-        <CardHeader className="flex flex-col items-center gap-3 p-0">
-          <div className="h-16 w-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-center shadow-xs">
-            <CheckCircle2 className="h-9 w-9 text-emerald-700" />
-          </div>
-
-          <Badge className="text-xs px-3 py-1 bg-emerald-100 text-emerald-900 border-emerald-300 font-semibold">
-            {t("reportSubmittedTitle")}
-          </Badge>
-
-          <CardTitle className="text-2xl font-bold text-[#191F1C]">
-            Case #{submitResult.caseNumber}
-          </CardTitle>
-
-          <CardDescription className="text-xs text-stone-600 max-w-sm">
-            {t("reportCreatedFor", { tag: selectedAnimal?.tag || "", species: selectedAnimal?.species || "" })}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="space-y-4 text-left p-0">
-          {/* Location & Routing Summary Card */}
-          <div className="bg-[#FAF8F3] p-4 rounded-2xl border border-[#E5E0D8] text-xs space-y-3 text-stone-700">
-            {/* 1. Location */}
-            <div className="space-y-1 border-b border-[#E5E0D8] pb-2.5">
-              <span className="text-stone-500 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-emerald-700" />
-                <span>{tCommon("location")}</span>
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
-                <div className="bg-white px-2.5 py-1 rounded-lg border border-[#E5E0D8]">
-                  <span className="text-stone-500 block text-[10px]">Village / Town:</span>
-                  <strong className="text-stone-900">{location?.villageName || selectedAnimal?.villageName || "-"}</strong>
-                </div>
-                <div className="bg-white px-2.5 py-1 rounded-lg border border-[#E5E0D8]">
-                  <span className="text-stone-500 block text-[10px]">Block / Taluka:</span>
-                  <strong className="text-stone-900">{location?.blockName || "-"}</strong>
-                </div>
-                <div className="bg-white px-2.5 py-1 rounded-lg border border-[#E5E0D8]">
-                  <span className="text-stone-500 block text-[10px]">District:</span>
-                  <strong className="text-stone-900">{location?.districtName || "-"}</strong>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Destination & Assigned Veterinarian */}
-            <div className="space-y-1.5 border-b border-[#E5E0D8] pb-2.5">
-              <span className="text-stone-500 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1">
-                <Stethoscope className="h-3 w-3 text-emerald-700" />
-                <span>{t("sentToVet")}</span>
-              </span>
-              {assignedVet ? (
-                <div className="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-sm text-emerald-950 block">Dr. {assignedVet.name}</span>
-                    <span className="text-[11px] text-emerald-800">
-                      Assigned at: <strong className="uppercase">{assignmentLevel || "District"}</strong> level
-                    </span>
-                  </div>
-                  <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 text-[10px]">
-                    Assigned
-                  </Badge>
-                </div>
-              ) : (
-                <div className="bg-amber-50/80 p-3 rounded-xl border border-amber-200 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-amber-950">{t("awaitingVetAssignment")}</span>
-                    <Badge className="bg-amber-100 text-amber-950 border-amber-300 text-[10px]">
-                      {t("pendingAssignmentBadge")}
-                    </Badge>
-                  </div>
-                  <p className="text-[11px] text-amber-900">
-                    {t("noVetFoundQueued")}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* 3. Status & Details */}
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="text-stone-500">Current status:</span>
-                <Badge className="text-[10px] bg-amber-100 text-amber-900 border-amber-300 font-bold">
-                  {submitResult.status === "PENDING_REVIEW" ? "Pending veterinarian review" : (submitResult.status || "Pending veterinarian review")}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-stone-500">Recorded symptoms:</span>
-                <span className="font-medium text-amber-800">{symptoms.join(", ")}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-stone-500">Reported at:</span>
-                <span className="text-stone-600">{formatDateTime(submitResult.reportedAt || new Date(), true)}</span>
-              </div>
-            </div>
-          </div>
-
-          <AiAssessmentCard
-            caseId={submitResult.caseId!}
-            analysisResult={aiState?.analysisResult}
-            visionResult={aiState?.visionResult}
-            hasPhoto={Boolean(photoUrl)}
-          />
-        </CardContent>
-
-        <CardFooter className="flex flex-col sm:flex-row gap-2.5 pt-4 border-t border-[#E5E0D8] p-0">
-          {selectedAnimal && (
-            <Link href={`/farmer/animals/${selectedAnimal.id}`} className="flex-1 w-full">
-              <Button variant="outline" size="sm" className="w-full text-xs border-emerald-300 text-emerald-800 hover:bg-emerald-50 rounded-xl min-h-[40px] font-semibold">
-                <span>{t("viewAnimalHealthHistory")}</span>
-              </Button>
-            </Link>
-          )}
-          <Button
-            onClick={resetReport}
-            className="flex-1 w-full text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold min-h-[40px] rounded-xl"
-          >
-            <span>{t("createAnotherReport")}</span>
-          </Button>
-        </CardFooter>
-      </Card>
+      <ReportResultFlow
+        submitResult={submitResult}
+        selectedAnimal={selectedAnimal}
+        symptoms={symptoms}
+        durationDays={durationDays}
+        temperature={temperature}
+        activity={activity}
+        heartRate={heartRate}
+        photoUrl={photoUrl}
+        yoloVisionResult={yoloVisionResult}
+        aiState={aiState}
+        onReset={resetReport}
+        mode={mode}
+      />
     );
   }
 

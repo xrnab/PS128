@@ -177,7 +177,7 @@ export function AiAssessmentCard({
                   </div>
                   {Boolean(diseasePrediction?.confidence) && (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-stone-500 font-medium">Diagnostic Confidence:</span>
+                      <span className="text-xs text-stone-500 font-medium">Model Confidence:</span>
                       <Badge className="bg-blue-50 text-blue-800 border-blue-200 font-mono text-xs font-bold">
                         {Math.round(Number(diseasePrediction?.confidence) * 100)}% Match
                       </Badge>

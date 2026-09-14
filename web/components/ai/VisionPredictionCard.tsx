@@ -57,10 +57,18 @@ export function VisionPredictionCard({
     visual_features_observed: (d.visual_features_observed || (d.description ? [d.description] : [])) as string[],
   }));
 
-  const lesionSeverity =
-    (effectiveVision?.severity as string) ||
-    (effectiveVision?.lesion_severity as string) ||
-    (effectiveVision?.visual_anomaly_detected ? "ELEVATED" : "NONE DETECTED");
+  const isHealthyOrNone =
+    !effectiveVision?.visual_anomaly_detected ||
+    !effectiveVision?.primary_prediction ||
+    String(effectiveVision.primary_prediction).toLowerCase() === "healthy" ||
+    String(effectiveVision.primary_prediction).toLowerCase() === "none" ||
+    String(effectiveVision.primary_prediction).toLowerCase() === "none detected";
+
+  const lesionSeverity = isHealthyOrNone
+    ? "NONE DETECTED"
+    : (effectiveVision?.severity as string) ||
+      (effectiveVision?.lesion_severity as string) ||
+      "ELEVATED";
 
   const rawConf = Number(
     effectiveVision?.confidence ??
@@ -69,8 +77,9 @@ export function VisionPredictionCard({
   );
   const confidenceScore = rawConf > 1 ? rawConf : rawConf * 100;
 
-  const diagnosticConfidence =
+  const modelConfidence =
     (effectiveVision?.diagnostic_confidence as string) ||
+    (effectiveVision?.model_confidence as string) ||
     (confidenceScore > 80 ? "HIGH" : confidenceScore > 40 ? "MODERATE" : "LOW");
 
   const primaryPrediction = effectiveVision?.primary_prediction as string | undefined;
@@ -146,12 +155,12 @@ export function VisionPredictionCard({
               </span>
             </div>
             <div className="p-2 rounded-xl bg-white border border-[#E5E0D8]/80 shadow-2xs">
-              <span className="text-[10px] font-bold text-stone-500 uppercase block tracking-wider">{t("diagnosticConfidence")}</span>
-              <span className="font-bold text-slate-900 font-mono text-sm">{diagnosticConfidence}</span>
+              <span className="text-[10px] font-bold text-stone-500 uppercase block tracking-wider">Model Confidence</span>
+              <span className="font-bold text-slate-900 font-mono text-sm">{modelConfidence}</span>
             </div>
           </div>
 
-          {Boolean(primaryPrediction) && (
+          {!isHealthyOrNone && Boolean(primaryPrediction) ? (
             <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-emerald-600" />
@@ -161,7 +170,15 @@ export function VisionPredictionCard({
                 {t("verifiedSignatures")}
               </Badge>
             </div>
+          ) : (
+            <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-emerald-900 text-xs font-semibold">
+              No significant visual abnormality detected.
+            </div>
           )}
+
+          <p className="text-[11px] text-[#4A3324]/75 italic text-center">
+            “AI-assisted visual signal only. Clinical examination required.”
+          </p>
 
           {detectedDiseases.length > 0 && (
             <div className="space-y-2">

@@ -1481,7 +1481,7 @@
     "analyzingLesions": "Analyzing skin lesions and symptoms with computer vision model...",
     "lesionSeverity": "Lesion Severity",
     "confidenceScore": "Confidence Score",
-    "diagnosticConfidence": "Diagnostic Confidence",
+    "diagnosticConfidence": "Model Confidence",
     "verifiedSignatures": "Verified Signatures",
     "primaryFinding": "Primary Finding: {finding}",
     "detectedSignatures": "Detected Visual Signatures & Patterns:",

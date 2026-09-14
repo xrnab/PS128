@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix=settings.API_V1_STR)
+app.include_router(health.router, prefix="/api")
 app.include_router(predict.router, prefix=settings.API_V1_STR)
 app.include_router(iot.router, prefix=settings.API_V1_STR)
 app.include_router(analytics.router, prefix=settings.API_V1_STR)

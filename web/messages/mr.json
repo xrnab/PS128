@@ -1483,7 +1483,7 @@
     "analyzingLesions": "संगणक दृष्टी मॉडेलसह त्वचेच्या जखमा आणि लक्षणांचे विश्लेषण करत आहे...",
     "lesionSeverity": "जखमेची तीव्रता",
     "confidenceScore": "विश्वासार्हता गुण",
-    "diagnosticConfidence": "निदान विश्वासार्हता",
+    "diagnosticConfidence": "मॉडेल विश्वासार्हता",
     "verifiedSignatures": "प्रमाणित लक्षणे",
     "primaryFinding": "मुख्य निष्कर्ष: {finding}",
     "detectedSignatures": "आढळलेली दृश्य लक्षणे आणि पॅटर्न:",

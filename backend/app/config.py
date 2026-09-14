@@ -13,6 +13,10 @@ try:
         VERSION: str = "1.0.0"
         ENVIRONMENT: str = "development"
         DEBUG: bool = True
+        
+        # FIX 1: Added missing API_V1_STR to the primary Settings class
+        API_V1_STR: str = "/api" 
+        
         ALLOWED_ORIGINS: str = (
             "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,"
             "http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000,"
@@ -23,7 +27,10 @@ try:
         DATABASE_URL: str = ""
         GEMINI_API_KEY_1: str = ""
         GEMINI_API_KEY_2: str = ""
-        GEMINI_MODEL: str = "gemini-3.8-flash"
+        
+        # FIX 2: Updated invalid model name from 3.8 to 2.5
+        GEMINI_MODEL: str = "gemini-2.5-flash" 
+        
         GROQ_API_KEY: str = ""
         GROQ_MODEL: str = "openai/gpt-oss-120b"
 
@@ -67,7 +74,7 @@ except ImportError:
             self.DATABASE_URL: str = os.getenv("DATABASE_URL", "")
             self.GEMINI_API_KEY_1: str = os.getenv("GEMINI_API_KEY_1", "")
             self.GEMINI_API_KEY_2: str = os.getenv("GEMINI_API_KEY_2", "")
-            self.GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+            self.GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash") # Fixed here as well
             self.GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
             self.GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
             self.TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
