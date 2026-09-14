@@ -261,9 +261,9 @@ export function FarmerProfileView({
 
   const languageLabels: Record<string, string> = {
     en: "English",
-    hi: "English",
-    mr: "English",
-    bn: "English",
+    hi: "हिन्दी (Hindi)",
+    mr: "मराठी (Marathi)",
+    bn: "বাংলা (Bengali)",
   };
 
   const totalAnimals = profile.farms.reduce((acc, f) => acc + f.animalCount, 0);
@@ -273,15 +273,15 @@ export function FarmerProfileView({
     <div className="space-y-6">
       {/* SUCCESS / ERROR ALERTS */}
       {successMessage && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between shadow-xs animate-in fade-in duration-300">
+        <div className="p-4 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-200 text-xs flex items-center justify-between shadow-xs backdrop-blur-md animate-in fade-in duration-300">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="h-5 w-5 text-emerald-700 shrink-0" />
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span className="font-semibold">{successMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setSuccessMessage(null)}
-            className="text-emerald-700 hover:text-emerald-900 text-xs font-bold p-1 cursor-pointer"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 text-xs font-bold p-1 cursor-pointer"
           >
             ✕
           </button>
@@ -289,32 +289,35 @@ export function FarmerProfileView({
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center justify-between shadow-xs animate-in fade-in duration-300">
+        <div className="p-4 rounded-2xl bg-red-500/10 dark:bg-red-950/40 border border-red-500/20 dark:border-red-800/50 text-red-900 dark:text-red-200 text-xs flex items-center justify-between shadow-xs backdrop-blur-md animate-in fade-in duration-300">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-red-700 hover:text-red-900 text-xs font-bold p-1 cursor-pointer"
+            className="text-red-700 dark:text-red-400 hover:text-red-900 text-xs font-bold p-1 cursor-pointer"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* HEADER HERO CARD */}
-      <div className="p-6 md:p-8 rounded-3xl bg-white border border-[#E5E0D8] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4 sm:gap-5">
-          {/* Avatar */}
-          <div className="relative h-18 w-18 sm:h-20 sm:w-20 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-800 to-emerald-950 text-white flex items-center justify-center font-bold text-2xl shadow-sm shrink-0 border-2 border-emerald-600/30">
+      {/* APPLE LIQUID GLASS HERO STAGE */}
+      <div className="relative p-7 sm:p-9 rounded-[32px] bg-white/80 dark:bg-[#0A1A12]/80 backdrop-blur-[24px] border border-white/80 dark:border-white/12 shadow-[0_12px_36px_rgba(30,58,43,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="pointer-events-none absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#3F6B4A]/10 dark:bg-[#3F6B4A]/20 blur-3xl" />
+
+        <div className="flex items-center gap-5 sm:gap-6 relative z-10">
+          {/* Apple Circular Specular Avatar */}
+          <div className="relative h-20 w-20 sm:h-22 sm:w-22 rounded-full overflow-hidden bg-gradient-to-br from-[#1E3A2B] via-[#2A4E3B] to-[#3F6B4A] dark:from-[#2A4E3B] dark:to-[#153424] text-[#F4EEE1] flex items-center justify-center font-display font-bold text-3xl shadow-[0_8px_20px_rgba(30,58,43,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] border-2 border-white/90 dark:border-white/20 shrink-0">
             {profile.imageUrl ? (
               <Image
                 src={profile.imageUrl}
                 alt={profile.name}
-                width={80}
-                height={80}
+                width={88}
+                height={88}
                 className="h-full w-full object-cover"
                 unoptimized
               />
@@ -323,20 +326,20 @@ export function FarmerProfileView({
             )}
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-[#191F1C] tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#15271E] dark:text-[#F4EEE1] font-display tracking-tight">
                 {profile.name}
               </h2>
-              <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 text-[11px] font-semibold">
+              <span className="px-3 py-0.5 rounded-full text-[11px] font-semibold tracking-wide bg-[#EAF3EC] dark:bg-[#3F6B4A]/40 text-[#1E3A2B] dark:text-[#BDEEC5] border border-[#1E3A2B]/10 dark:border-white/15 shadow-2xs">
                 {t("profileTitle")}
-              </Badge>
-              <Badge className="bg-stone-100 text-stone-700 border-[#D9D3C7] text-[10px]">
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-black/5 dark:bg-white/10 text-stone-600 dark:text-stone-300 border border-black/5 dark:border-white/10">
                 {profile.status}
-              </Badge>
+              </span>
             </div>
-            <p className="text-xs text-stone-500 flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5 text-stone-400" />
+            <p className="text-xs text-stone-500 dark:text-[#8EAA97] flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-stone-400 dark:text-[#5C7A67]" />
               <span>Registered Member since {formattedDate}</span>
             </p>
           </div>
@@ -344,201 +347,265 @@ export function FarmerProfileView({
 
         {/* Edit Button */}
         {!isEditing && (
-          <Button
+          <button
             type="button"
             onClick={() => {
               setIsEditing(true);
               setSuccessMessage(null);
               setErrorMessage(null);
             }}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold gap-2 rounded-xl min-h-[42px] px-5 shadow-xs shrink-0 self-start md:self-auto hover-lift-sm"
+            className="px-5 py-2.5 rounded-full bg-[#1E3A2B] hover:bg-[#2A4E3B] dark:bg-white/15 dark:hover:bg-white/25 text-white text-xs font-semibold gap-2 shadow-[0_4px_16px_rgba(30,58,43,0.2),inset_0_1px_0_rgba(255,255,255,0.3)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] border border-white/20 inline-flex items-center cursor-pointer transition-all hover:scale-102 active:scale-98 shrink-0 self-start md:self-auto relative z-10"
           >
-            <Edit3 className="h-4 w-4" />
+            <Edit3 className="h-3.5 w-3.5" />
             <span>{t("editProfile")}</span>
-          </Button>
+          </button>
         )}
       </div>
 
       {/* VIEW MODE */}
       {!isEditing ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Quick Metrics */}
-          <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-4 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xs">
-              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
-                {t("registeredFarms")}
-              </span>
-              <span className="text-xl font-bold text-stone-900 mt-1 block">
+        <div className="space-y-6">
+          {/* INTEGRATED VITALS ROW (APPLE METRIC CAPSULES) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* 1. Registered Farms */}
+            <div className="p-5 sm:p-6 rounded-[24px] bg-white/75 dark:bg-[#0A1A12]/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_24px_rgba(30,58,43,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="flex items-center justify-between text-stone-500 dark:text-[#8EAA97]">
+                <span className="text-[11px] font-bold uppercase tracking-wider">
+                  {t("registeredFarms")}
+                </span>
+                <Building2 className="h-4 w-4 opacity-70" />
+              </div>
+              <div className="text-3xl sm:text-4xl font-bold font-display text-[#15271E] dark:text-[#F4EEE1] mt-2">
                 {profile.farms.length}
+              </div>
+              <span className="text-[11px] text-stone-400 dark:text-[#5C7A67] block mt-1">
+                Active landholdings
               </span>
             </div>
-            <div className="p-4 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xs">
-              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
-                {t("totalLivestock")}
-              </span>
-              <span className="text-xl font-bold text-stone-900 mt-1 block">
+
+            {/* 2. Total Livestock */}
+            <div className="p-5 sm:p-6 rounded-[24px] bg-white/75 dark:bg-[#0A1A12]/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_24px_rgba(30,58,43,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="flex items-center justify-between text-stone-500 dark:text-[#8EAA97]">
+                <span className="text-[11px] font-bold uppercase tracking-wider">
+                  {t("totalLivestock")}
+                </span>
+                <ShieldCheck className="h-4 w-4 text-[#2D5A3C] dark:text-[#8EE6A3]" />
+              </div>
+              <div className="text-3xl sm:text-4xl font-bold font-display text-[#1E3A2B] dark:text-[#8EE6A3] mt-2">
                 {totalAnimals}
+              </div>
+              <span className="text-[11px] text-stone-400 dark:text-[#5C7A67] block mt-1">
+                Monitored herd count
               </span>
             </div>
-            <div className="p-4 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xs">
-              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
-                {t("assignedTerritory")}
-              </span>
-              <span className="text-xs font-bold text-emerald-900 mt-1.5 block truncate">
+
+            {/* 3. Assigned Territory */}
+            <div className="p-5 sm:p-6 rounded-[24px] bg-white/75 dark:bg-[#0A1A12]/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_24px_rgba(30,58,43,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="flex items-center justify-between text-stone-500 dark:text-[#8EAA97]">
+                <span className="text-[11px] font-bold uppercase tracking-wider">
+                  {t("assignedTerritory")}
+                </span>
+                <MapPin className="h-4 w-4 opacity-70" />
+              </div>
+              <div className="text-lg sm:text-xl font-bold font-display text-[#15271E] dark:text-[#F4EEE1] mt-2 truncate">
                 {profile.districtName || "Unassigned"}
+              </div>
+              <span className="text-[11px] text-[#2D5A3C] dark:text-[#BDEEC5] font-medium block mt-1">
+                Veterinary jurisdiction
               </span>
             </div>
-            <div className="p-4 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xs">
-              <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
-                {t("language")}
-              </span>
-              <span className="text-xs font-bold text-stone-800 mt-1.5 block">
+
+            {/* 4. Language */}
+            <div className="p-5 sm:p-6 rounded-[24px] bg-white/75 dark:bg-[#0A1A12]/70 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_8px_24px_rgba(30,58,43,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.12)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="flex items-center justify-between text-stone-500 dark:text-[#8EAA97]">
+                <span className="text-[11px] font-bold uppercase tracking-wider">
+                  {t("language")}
+                </span>
+                <Globe className="h-4 w-4 opacity-70" />
+              </div>
+              <div className="text-lg sm:text-xl font-bold font-display text-[#15271E] dark:text-[#F4EEE1] mt-2">
                 {languageLabels[profile.preferredLanguage] || profile.preferredLanguage}
+              </div>
+              <span className="text-[11px] text-stone-400 dark:text-[#5C7A67] block mt-1">
+                Audio voice & UI
               </span>
             </div>
           </div>
 
-          {/* Card 1: Personal Details */}
-          <div className="p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-xs space-y-4">
-            <div className="flex items-center gap-2 border-b border-[#E5E0D8] pb-3">
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
-                <User className="h-4 w-4" />
-              </div>
-              <h3 className="text-sm font-bold text-[#191F1C]">{t("personalInformation")}</h3>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-stone-500 block text-[11px]">{t("fullNameLabel")}</span>
-                <span className="font-semibold text-stone-900 text-sm">{profile.name}</span>
-              </div>
-
-              <div>
-                <span className="text-stone-500 block text-[11px]">{t("phoneLabel")}</span>
-                <span className="font-mono font-medium text-stone-900 flex items-center gap-1.5 mt-0.5">
-                  <Phone className="h-3 w-3 text-emerald-700" />
-                  <span>{profile.phone}</span>
-                </span>
-              </div>
-
-              <div>
-                <span className="text-stone-500 block text-[11px]">{t("emailLabel")}</span>
-                <span className="font-medium text-stone-900 flex items-center gap-1.5 mt-0.5">
-                  <Mail className="h-3 w-3 text-stone-400" />
-                  <span>{profile.email || "No email linked (Phone-based login)"}</span>
-                </span>
-                <span className="text-[10px] text-stone-400 block mt-0.5">
-                  {t("managedAuthDesc")}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-stone-500 block text-[11px]">{t("preferredLangLabel")}</span>
-                <span className="font-medium text-stone-900 flex items-center gap-1.5 mt-0.5">
-                  <Globe className="h-3 w-3 text-emerald-700" />
-                  <span>{languageLabels[profile.preferredLanguage] || "English"}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Administrative Location */}
-          <div className="p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-xs space-y-4">
-            <div className="flex items-center gap-2 border-b border-[#E5E0D8] pb-3">
-              <div className="p-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-200">
-                <MapPin className="h-4 w-4" />
-              </div>
-              <h3 className="text-sm font-bold text-[#191F1C]">{t("adminLocation")}</h3>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-3 bg-[#FAF8F3] rounded-xl border border-[#E5E0D8] space-y-2">
-                <div className="flex justify-between items-center border-b border-[#E5E0D8] pb-1.5">
-                  <span className="text-stone-500 text-[11px]">{t("villageLabel")}</span>
-                  <strong className="text-stone-900">{profile.villageName || "Not Set"}</strong>
+          {/* DETAIL BENTO MODULES (2-COLUMN BALANCED SYSTEM) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* MODULE 1: Personal Contact & Security */}
+            <div className="p-6 sm:p-8 rounded-[28px] bg-white/75 dark:bg-[#0A1A12]/75 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_12px_36px_rgba(30,58,43,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 flex items-center justify-center text-[#1E3A2B] dark:text-[#8EE6A3] shadow-2xs">
+                  <User className="h-5 w-5" />
                 </div>
-                <div className="flex justify-between items-center border-b border-[#E5E0D8] pb-1.5">
-                  <span className="text-stone-500 text-[11px]">{t("blockLabel")}</span>
-                  <strong className="text-stone-900">{profile.blockName || "Not Set"}</strong>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-stone-500 text-[11px]">{t("districtLabel")}</span>
-                  <strong className="text-stone-900">{profile.districtName || "Not Set"}</strong>
+                <div>
+                  <h3 className="text-base font-bold text-[#15271E] dark:text-[#F4EEE1] font-display">
+                    {t("personalInformation")}
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-[#8EAA97]">
+                    Primary contact identity & authentication
+                  </p>
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200/80 text-[11px] text-emerald-950 space-y-1">
-                <span className="font-bold block flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
+              {/* Segmented Rows */}
+              <div className="divide-y divide-black/5 dark:divide-white/8 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/8 overflow-hidden">
+                <div className="p-4 flex items-center justify-between">
+                  <span className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("fullNameLabel")}</span>
+                  <span className="text-xs sm:text-sm font-semibold text-[#15271E] dark:text-[#F4EEE1]">{profile.name}</span>
+                </div>
+
+                <div className="p-4 flex items-center justify-between">
+                  <span className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("phoneLabel")}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs sm:text-sm font-medium text-[#15271E] dark:text-[#F4EEE1]">{profile.phone}</span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                      Verified
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <span className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("emailLabel")}</span>
+                  <div className="text-right">
+                    <span className="text-xs sm:text-sm font-medium text-[#15271E] dark:text-[#F4EEE1]">
+                      {profile.email || "Phone-authenticated profile"}
+                    </span>
+                    <span className="text-[10px] text-stone-400 dark:text-[#5C7A67] block">
+                      {t("managedAuthDesc")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 flex items-center justify-between">
+                  <span className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("preferredLangLabel")}</span>
+                  <div className="flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
+                    <span className="text-xs sm:text-sm font-semibold text-[#15271E] dark:text-[#F4EEE1]">
+                      {languageLabels[profile.preferredLanguage] || "English"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* MODULE 2: Administrative Jurisdiction & Farm Infrastructure */}
+            <div className="p-6 sm:p-8 rounded-[28px] bg-white/75 dark:bg-[#0A1A12]/75 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_12px_36px_rgba(30,58,43,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.12)] space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 flex items-center justify-center text-[#B87A1E] dark:text-[#E5A93C] shadow-2xs">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#15271E] dark:text-[#F4EEE1] font-display">
+                    {t("adminLocation")}
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-[#8EAA97]">
+                    State governance hierarchy & farm infrastructure
+                  </p>
+                </div>
+              </div>
+
+              {/* Cascading Geographic Breadcrumb Path */}
+              <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/8 space-y-3">
+                <span className="text-[10px] font-bold text-stone-500 dark:text-[#8EAA97] uppercase tracking-wider block">
+                  Jurisdiction Hierarchy
+                </span>
+                <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#15271E] dark:text-[#F4EEE1]">
+                  <span className="px-3 py-1 rounded-xl bg-white/80 dark:bg-white/10 border border-black/5 dark:border-white/10 shadow-2xs">
+                    {profile.districtName || "District"}
+                  </span>
+                  <span className="text-stone-400">→</span>
+                  <span className="px-3 py-1 rounded-xl bg-white/80 dark:bg-white/10 border border-black/5 dark:border-white/10 shadow-2xs">
+                    {profile.blockName || "Block"}
+                  </span>
+                  <span className="text-stone-400">→</span>
+                  <span className="px-3 py-1 rounded-xl bg-[#EAF3EC] dark:bg-[#3F6B4A]/30 text-[#1E3A2B] dark:text-[#BDEEC5] border border-[#1E3A2B]/10 dark:border-white/15 font-semibold shadow-2xs">
+                    {profile.villageName || "Village"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Surveillance Guarantee Banner */}
+              <div className="p-4 rounded-2xl bg-[#EAF3EC]/60 dark:bg-[#072417]/60 border border-[#1E3A2B]/10 dark:border-white/10 text-xs text-[#15271E] dark:text-[#BDEEC5] space-y-1">
+                <span className="font-bold flex items-center gap-1.5 text-[#1E3A2B] dark:text-[#8EE6A3]">
+                  <ShieldCheck className="h-4 w-4 shrink-0" />
                   <span>{t("surveillanceArea")}</span>
                 </span>
-                <p className="text-stone-600">
+                <p className="text-stone-600 dark:text-[#8EAA97] text-[11px]">
                   {t("serviceAreaDesc")}
                 </p>
               </div>
-            </div>
-          </div>
 
-          {/* Card 3: Farm Infrastructure */}
-          <div className="p-6 rounded-3xl bg-white border border-[#E5E0D8] shadow-xs space-y-4">
-            <div className="flex items-center gap-2 border-b border-[#E5E0D8] pb-3">
-              <div className="p-2 rounded-xl bg-blue-50 text-blue-800 border border-blue-200">
-                <Building2 className="h-4 w-4" />
-              </div>
-              <h3 className="text-sm font-bold text-[#191F1C]">{t("farmInfrastructure")}</h3>
-            </div>
+              {/* Farm Infrastructure Sub-List */}
+              <div className="space-y-2 pt-1">
+                <span className="text-xs font-bold text-[#15271E] dark:text-[#F4EEE1] flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
+                  <span>{t("farmInfrastructure")}</span>
+                </span>
 
-            <div className="space-y-3 text-xs">
-              {profile.farms.length > 0 ? (
-                profile.farms.map((farm) => (
-                  <div key={farm.id} className="p-3 bg-[#FAF8F3] rounded-xl border border-[#E5E0D8] space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-stone-900 text-xs">{farm.name}</span>
-                      <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 text-[10px]">
-                        {t("animalsBadge", { count: farm.animalCount })}
-                      </Badge>
+                {profile.farms.length > 0 ? (
+                  profile.farms.map((farm) => (
+                    <div
+                      key={farm.id}
+                      className="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/8 space-y-1"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-[#15271E] dark:text-[#F4EEE1] text-xs">
+                          {farm.name}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#EAF3EC] dark:bg-[#3F6B4A]/40 text-[#1E3A2B] dark:text-[#BDEEC5] border border-[#1E3A2B]/10 dark:border-white/15 text-[10px] font-bold">
+                          {t("animalsBadge", { count: farm.animalCount })}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-stone-500 dark:text-[#8EAA97] block">
+                        {farm.villageName}, {farm.blockName}, {farm.districtName}
+                      </span>
+                      <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 block">
+                        GPS: {farm.latitude.toFixed(4)}, {farm.longitude.toFixed(4)}
+                      </span>
                     </div>
-                    <span className="text-[11px] text-stone-600 block">
-                      Location: {farm.villageName}, {farm.blockName}, {farm.districtName}
-                    </span>
-                    <span className="text-[10px] text-stone-400 font-mono block">
-                      GPS: {farm.latitude.toFixed(4)}, {farm.longitude.toFixed(4)}
-                    </span>
+                  ))
+                ) : (
+                  <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/8 text-center text-stone-500 dark:text-stone-400 text-xs">
+                    {t("noFarmRecorded")}
                   </div>
-                ))
-              ) : (
-                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 text-center text-stone-500">
-                  {t("noFarmRecorded")}
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        /* EDIT MODE FORM */
-        <form onSubmit={handleSaveProfile} className="p-6 md:p-8 rounded-3xl bg-white border border-emerald-200 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
+        /* APPLE LIQUID GLASS EDIT FORM */
+        <form
+          onSubmit={handleSaveProfile}
+          className="p-7 sm:p-9 rounded-[32px] bg-white/85 dark:bg-[#0A1A12]/85 backdrop-blur-2xl border border-white/90 dark:border-white/14 shadow-[0_16px_48px_rgba(30,58,43,0.08),inset_0_1px_0_rgba(255,255,255,0.95)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] space-y-7"
+        >
+          <div className="flex items-center justify-between border-b border-black/8 dark:border-white/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 flex items-center justify-center text-[#1E3A2B] dark:text-[#8EE6A3]">
                 <Edit3 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#191F1C]">{t("editProfile")}</h3>
-                <p className="text-xs text-stone-500">
+                <h3 className="text-base font-bold text-[#15271E] dark:text-[#F4EEE1] font-display">
+                  {t("editProfile")}
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-[#8EAA97]">
                   {t("editProfileDesc")}
                 </p>
               </div>
             </div>
-            <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 text-xs font-semibold">
+            <span className="px-3 py-1 rounded-full bg-[#EAF3EC] dark:bg-[#3F6B4A]/40 text-[#1E3A2B] dark:text-[#BDEEC5] border border-[#1E3A2B]/10 dark:border-white/15 text-xs font-semibold">
               {t("editing")}
-            </Badge>
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Full Name */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 text-emerald-700" />
+              <Label className="text-xs font-bold text-stone-800 dark:text-[#F4EEE1] flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                 <span>Full Name *</span>
               </Label>
               <Input
@@ -546,14 +613,14 @@ export function FarmerProfileView({
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder={t("placeholderRamesh")}
-                className="bg-white border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl min-h-[44px]"
+                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl min-h-[44px] focus:ring-2 focus:ring-[#2D5A3C]/20"
               />
             </div>
 
             {/* Phone Number */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5 text-emerald-700" />
+              <Label className="text-xs font-bold text-stone-800 dark:text-[#F4EEE1] flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                 <span>Phone Number *</span>
               </Label>
               <Input
@@ -561,20 +628,20 @@ export function FarmerProfileView({
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 placeholder={t("placeholderPhone")}
-                className="bg-white border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl min-h-[44px]"
+                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl min-h-[44px] focus:ring-2 focus:ring-[#2D5A3C]/20"
               />
             </div>
 
             {/* Preferred Language */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                <Globe className="h-3.5 w-3.5 text-emerald-700" />
+              <Label className="text-xs font-bold text-stone-800 dark:text-[#F4EEE1] flex items-center gap-1.5">
+                <Globe className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                 <span>{t("language")}</span>
               </Label>
               <select
                 value={preferredLanguage}
                 onChange={(e) => setPreferredLanguage(e.target.value as "en" | "hi" | "mr" | "bn")}
-                className="w-full bg-white border border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl p-3 focus:border-emerald-600 focus:outline-none min-h-[44px]"
+                className="w-full bg-black/5 dark:bg-[#0A1A12] border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl p-3 focus:border-[#2D5A3C] dark:focus:border-[#8EE6A3] focus:outline-none min-h-[44px]"
               >
                 <option value="en">English</option>
                 <option value="mr">मराठी (Marathi)</option>
@@ -583,31 +650,31 @@ export function FarmerProfileView({
               </select>
             </div>
 
-            {/* Primary Farm Name (if farm exists) */}
+            {/* Primary Farm Name */}
             {primaryFarm && (
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 text-emerald-700" />
+                <Label className="text-xs font-bold text-stone-800 dark:text-[#F4EEE1] flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                   <span>{t("primaryFarmName")}</span>
                 </Label>
                 <Input
                   value={primaryFarmName}
                   onChange={(e) => setPrimaryFarmName(e.target.value)}
                   placeholder={t("placeholderPatilFarm")}
-                  className="bg-white border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl min-h-[44px]"
+                  className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl min-h-[44px] focus:ring-2 focus:ring-[#2D5A3C]/20"
                 />
               </div>
             )}
           </div>
 
           {/* Location Hierarchy Selectors */}
-          <div className="p-5 rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-2.5">
-              <span className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-emerald-700" />
+          <div className="p-5 sm:p-6 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/8 space-y-4">
+            <div className="flex items-center justify-between border-b border-black/5 dark:border-white/8 pb-2.5">
+              <span className="text-xs font-bold text-[#15271E] dark:text-[#F4EEE1] flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                 <span>{t("adminHierarchy")}</span>
               </span>
-              <span className="text-[10px] text-stone-500">
+              <span className="text-[10px] text-stone-500 dark:text-[#8EAA97]">
                 {t("routingDesc")}
               </span>
             </div>
@@ -615,12 +682,12 @@ export function FarmerProfileView({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* 1. District */}
               <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-stone-700">District *</Label>
+                <Label className="text-[11px] font-bold text-stone-700 dark:text-[#F4EEE1]">District *</Label>
                 <select
                   value={selectedDistrictId}
                   onChange={(e) => handleDistrictChange(e.target.value)}
                   required
-                  className="w-full bg-white border border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl p-2.5 focus:border-emerald-600 focus:outline-none min-h-[40px]"
+                  className="w-full bg-black/5 dark:bg-[#0A1A12] border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl p-2.5 focus:border-[#2D5A3C] dark:focus:border-[#8EE6A3] focus:outline-none min-h-[40px]"
                 >
                   <option value="">{t("selectDistrict")}</option>
                   {districts.map((d) => (
@@ -633,15 +700,15 @@ export function FarmerProfileView({
 
               {/* 2. Block */}
               <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-stone-700 flex items-center gap-1">
+                <Label className="text-[11px] font-bold text-stone-700 dark:text-[#F4EEE1] flex items-center gap-1">
                   <span>{t("blockLabel")}</span>
-                  {loadingBlocks && <Loader2 className="h-3 w-3 animate-spin text-emerald-700" />}
+                  {loadingBlocks && <Loader2 className="h-3 w-3 animate-spin text-[#2D5A3C] dark:text-[#8EE6A3]" />}
                 </Label>
                 <select
                   value={selectedBlockId}
                   onChange={(e) => handleBlockChange(e.target.value)}
                   disabled={loadingBlocks || blocks.length === 0}
-                  className="w-full bg-white border border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl p-2.5 focus:border-emerald-600 focus:outline-none min-h-[40px] disabled:bg-stone-100 disabled:text-stone-400"
+                  className="w-full bg-black/5 dark:bg-[#0A1A12] border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl p-2.5 focus:border-[#2D5A3C] dark:focus:border-[#8EE6A3] focus:outline-none min-h-[40px] disabled:opacity-50"
                 >
                   <option value="">{blocks.length === 0 ? "No blocks found" : t("selectBlock")}</option>
                   {blocks.map((b) => (
@@ -654,15 +721,15 @@ export function FarmerProfileView({
 
               {/* 3. Village */}
               <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-stone-700 flex items-center gap-1">
+                <Label className="text-[11px] font-bold text-stone-700 dark:text-[#F4EEE1] flex items-center gap-1">
                   <span>{t("villageLabel")}</span>
-                  {loadingVillages && <Loader2 className="h-3 w-3 animate-spin text-emerald-700" />}
+                  {loadingVillages && <Loader2 className="h-3 w-3 animate-spin text-[#2D5A3C] dark:text-[#8EE6A3]" />}
                 </Label>
                 <select
                   value={selectedVillageId}
                   onChange={(e) => setSelectedVillageId(e.target.value)}
                   disabled={loadingVillages || villages.length === 0}
-                  className="w-full bg-white border border-[#D9D3C7] text-xs text-[#191F1C] rounded-xl p-2.5 focus:border-emerald-600 focus:outline-none min-h-[40px] disabled:bg-stone-100 disabled:text-stone-400"
+                  className="w-full bg-black/5 dark:bg-[#0A1A12] border border-black/10 dark:border-white/15 text-xs sm:text-sm text-[#15271E] dark:text-[#F4EEE1] rounded-xl p-2.5 focus:border-[#2D5A3C] dark:focus:border-[#8EE6A3] focus:outline-none min-h-[40px] disabled:opacity-50"
                 >
                   <option value="">{villages.length === 0 ? "No villages found" : t("selectVillage")}</option>
                   {villages.map((v) => (
@@ -675,42 +742,39 @@ export function FarmerProfileView({
             </div>
           </div>
 
-          <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-[11px] text-amber-950 flex items-start gap-2">
-            <Info className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-            <p>
-              {t("modifyLocationNotice")}
-            </p>
+          <div className="p-3.5 bg-amber-500/10 dark:bg-amber-950/30 rounded-2xl border border-amber-500/20 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-2">
+            <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <p>{t("modifyLocationNotice")}</p>
           </div>
 
           {/* Form Actions */}
           <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
-            <Button
+            <button
               type="button"
-              variant="outline"
               onClick={handleCancelEdit}
               disabled={submitting}
-              className="text-xs border-[#D9D3C7] text-stone-700 hover:bg-stone-50 rounded-xl min-h-[42px] gap-1.5"
+              className="h-10 px-5 text-xs font-semibold rounded-full border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-stone-700 dark:text-[#AECEB9] inline-flex items-center justify-center gap-1.5 cursor-pointer transition-all"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
               <span>{t("cancel")}</span>
-            </Button>
-            <Button
+            </button>
+            <button
               type="submit"
               disabled={submitting}
-              className="text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold gap-2 rounded-xl min-h-[42px] px-6 shadow-sm hover-lift-sm"
+              className="h-10 px-6 text-xs font-semibold rounded-full bg-[#1E3A2B] hover:bg-[#2A4E3B] dark:bg-[#3F6B4A] dark:hover:bg-[#4E7E5A] text-white shadow-[0_4px_16px_rgba(30,58,43,0.25),inset_0_1px_0_rgba(255,255,255,0.35)] inline-flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-102 active:scale-98"
             >
               {submitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   <span>{t("savingChanges")}</span>
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4" />
+                  <Save className="h-3.5 w-3.5" />
                   <span>{t("saveChanges")}</span>
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </form>
       )}
