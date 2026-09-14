@@ -53,6 +53,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     species: "COW",
     breed: "Gir",
     ageMonths: 36,
+    farmId: "farm-1",
     farmName: "Green Valley Farm",
     villageName: "Shirwal",
     districtName: "Satara",

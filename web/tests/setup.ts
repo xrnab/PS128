@@ -6,17 +6,34 @@ import enMessages from "@/messages/en.json";
 
 vi.mock("server-only", () => ({}));
 
+type MessageValue = string | { [key: string]: MessageValue };
+type Messages = Record<string, MessageValue>;
+
+function resolveTranslation(namespace?: string, key?: string): string {
+  if (!namespace || !key) return key || "";
+  const messages = enMessages as unknown as Messages;
+  const ns = messages[namespace];
+  if (!ns) return key;
+  if (typeof ns === "string") return ns;
+
+  const parts = key.split(".");
+  let current: MessageValue | undefined = ns;
+  for (const part of parts) {
+    if (current && typeof current === "object" && part in current) {
+      current = current[part];
+    } else {
+      return key;
+    }
+  }
+  return typeof current === "string" ? current : key;
+}
+
 vi.mock("next-intl", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>().catch(() => ({}));
   return {
     ...actual,
     useTranslations: (namespace?: string) => {
-      return (key: string) => {
-        if (!namespace) return key;
-        const ns = (enMessages as Record<string, Record<string, string>>)[namespace];
-        if (ns && ns[key]) return ns[key];
-        return key;
-      };
+      return (key: string) => resolveTranslation(namespace, key);
     },
     useLocale: () => ({
       locale: "en",
@@ -26,12 +43,7 @@ vi.mock("next-intl", async (importOriginal) => {
 
 vi.mock("next-intl/server", () => ({
   getTranslations: async (namespace?: string) => {
-    return (key: string) => {
-      if (!namespace) return key;
-      const ns = (enMessages as Record<string, Record<string, string>>)[namespace];
-      if (ns && ns[key]) return ns[key];
-      return key;
-    };
+    return (key: string) => resolveTranslation(namespace, key);
   },
 }));
 

@@ -1362,6 +1362,10 @@
     "selectPresetTitle": "Select Simulation Preset Scenario"
   },
   "errors": {
+    "title": "কিছু ভুল হয়েছে",
+    "description": "পৃষ্ঠাটি লোড করার সময় একটি ত্রুটি ঘটেছে।",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "goHome": "হোম",
     "generic": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
     "notFound": "রেকর্ডটি পাওয়া যায়নি।",
     "empty": "এখনও দেখানোর মতো কিছু নেই।",

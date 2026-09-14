@@ -1362,6 +1362,10 @@
     "selectPresetTitle": "Select Simulation Preset Scenario"
   },
   "errors": {
+    "title": "कुछ गलत हो गया",
+    "description": "यह पृष्ठ लोड करते समय एक त्रुटि हुई।",
+    "tryAgain": "पुनः प्रयास करें",
+    "goHome": "मुख्य पृष्ठ",
     "generic": "कुछ गलत हुआ। कृपया फिर कोशिश करें।",
     "notFound": "रिकॉर्ड नहीं मिला।",
     "empty": "अभी दिखाने के लिए कुछ नहीं है।",
