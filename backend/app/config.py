@@ -13,8 +13,11 @@ try:
         VERSION: str = "1.0.0"
         ENVIRONMENT: str = "development"
         DEBUG: bool = True
-        API_V1_STR: str = "/api"
-        ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+        ALLOWED_ORIGINS: str = (
+            "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,"
+            "http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000,"
+            "https://ps128-livestock-api.onrender.com,https://ps-128-mea4.vercel.app"
+        )
         HOST: str = "0.0.0.0"
         PORT: int = 8000
         DATABASE_URL: str = ""
@@ -51,7 +54,14 @@ except ImportError:
             self.ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
             self.DEBUG: bool = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
             self.API_V1_STR: str = os.getenv("API_V1_STR", "/api")
-            self.ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173")
+            self.ALLOWED_ORIGINS: str = os.getenv(
+                "ALLOWED_ORIGINS",
+                (
+                    "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,"
+                    "http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000,"
+                    "https://ps128-livestock-api.onrender.com,https://ps-128-mea4.vercel.app"
+                ),
+            )
             self.HOST: str = os.getenv("HOST", "0.0.0.0")
             self.PORT: int = int(os.getenv("PORT", "8000"))
             self.DATABASE_URL: str = os.getenv("DATABASE_URL", "")

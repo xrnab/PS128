@@ -76,12 +76,23 @@ const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds timeout for Render cold starts a
  * Never exposes secrets.
  */
 export function getBackendBaseUrl(): string {
-  const defaultUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:8000"
-      : "https://ps128-livestock-api.onrender.com";
+  const isBrowser = typeof window !== "undefined";
+  const isBrowserLocalhost =
+    isBrowser &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.startsWith("192.168."));
 
-  const raw =
+  const isProduction =
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL === "1" ||
+    (isBrowser && !isBrowserLocalhost);
+
+  const defaultUrl = isProduction
+    ? "https://ps128-livestock-api.onrender.com"
+    : "http://localhost:8000";
+
+  let raw =
     process.env.AI_ENGINE_URL ||
     process.env.FASTAPI_URL ||
     process.env.BACKEND_URL ||
@@ -89,6 +100,11 @@ export function getBackendBaseUrl(): string {
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     defaultUrl;
+
+  // On deployed domains or production builds, never try to call localhost over HTTPS
+  if (isProduction && (raw.includes("localhost") || raw.includes("127.0.0.1"))) {
+    raw = "https://ps128-livestock-api.onrender.com";
+  }
 
   let url = raw.trim().replace(/\/+$/, "");
   if (url.endsWith("/api")) {

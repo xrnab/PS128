@@ -19,24 +19,35 @@ export class LivestockApiError extends Error {
   }
 }
 
-function getApiBaseUrl() {
+export function getApiBaseUrl(): string {
+  const isBrowser = typeof window !== "undefined";
   const isBrowserLocalhost =
-    typeof window !== "undefined" &&
+    isBrowser &&
     (window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1" ||
       window.location.hostname.startsWith("192.168."));
 
-  const defaultUrl = isBrowserLocalhost
-    ? "http://localhost:8000"
-    : DEFAULT_API_URL;
+  const isProduction =
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL === "1" ||
+    (isBrowser && !isBrowserLocalhost);
 
-  const raw =
+  let raw =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     process.env.AI_ENGINE_URL ||
-    process.env.BACKEND_URL ||
-    defaultUrl;
-  let url = raw.replace(/\/$/, "");
+    process.env.BACKEND_URL;
+
+  // On deployed domains or production builds, never try to call localhost over HTTPS
+  if (isProduction && (!raw || raw.includes("localhost") || raw.includes("127.0.0.1"))) {
+    raw = DEFAULT_API_URL;
+  }
+
+  if (!raw) {
+    raw = isBrowserLocalhost ? "http://localhost:8000" : DEFAULT_API_URL;
+  }
+
+  let url = raw.trim().replace(/\/+$/, "");
   if (url.endsWith("/api")) {
     url = url.slice(0, -4);
   }
@@ -68,7 +79,7 @@ function getErrorMessage(status: number, body: unknown, operation: string) {
 
 async function request(url: string, init: RequestInit, operation: string) {
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
     const response = await fetch(url, {
@@ -98,7 +109,7 @@ async function request(url: string, init: RequestInit, operation: string) {
       error,
     );
   } finally {
-    window.clearTimeout(timeoutId);
+    clearTimeout(timeoutId);
   }
 }
 

@@ -177,7 +177,7 @@
     "lethargyPreset": "Lethargy / Heat Distress"
   },
   "common": {
-    "loading": "Loading...",
+    "loading": "Loading farmer portal data",
     "search": "Search",
     "filter": "Filter",
     "clear": "Clear",
@@ -981,7 +981,6 @@
     "endDate": "End date",
     "retryQuery": "Retry Query",
     "unableToLoad": "Unable to load district data.",
-    "initGis": "Initializing GIS Disease Heatmap...",
     "registeredFarmers": "Registered Farmers",
     "clinicalReviewsDue": "Clinical Reviews Due",
     "closedHarmless": "Closed / Harmless",
@@ -1372,9 +1371,6 @@
     "empty": "Nothing to show yet.",
     "location": "We could not determine your location.",
     "offline": "You are offline. Your report will be queued securely."
-  },
-  "common": {
-    "loading": "Loading farmer portal data"
   },
   "admin": {
     "cockpit": "System Administration Cockpit",
