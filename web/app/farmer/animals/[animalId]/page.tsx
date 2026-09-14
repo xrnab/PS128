@@ -56,49 +56,61 @@ export default async function AnimalDetailPage({
     : "STABLE";
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8 max-w-5xl mx-auto w-full gap-6 text-[#191F1C]">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
       {/* Top Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div className="flex items-center gap-3">
           <Link href="/farmer">
-            <Button variant="outline" size="sm" className="h-8 text-xs border-[#D9D3C7] text-stone-700 hover:bg-stone-50 rounded-xl gap-1.5 min-h-[36px]">
+            <button
+              type="button"
+              className="h-9 px-4 text-xs font-semibold border border-white/80 bg-white/80 hover:bg-white text-[#1E3A2B] gap-1.5 rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all"
+            >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>{t("backToRegister")}</span>
-            </Button>
+            </button>
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#191F1C]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A2B] tracking-tight font-display">
                 {animal.species} • Ear Tag: {animal.tag}
               </h1>
-              <Badge className={activeCase ? "bg-amber-100 text-amber-950 border-amber-300" : "bg-emerald-100 text-emerald-950 border-emerald-300"}>
+              <Badge className={activeCase ? "bg-[#C1622D]/15 text-[#C1622D] border border-[#C1622D]/30 font-semibold" : "bg-[#3F6B4A]/12 text-[#3F6B4A] border border-white/60 font-semibold"}>
                 {activeCase ? `Under Care (${activeCase.status})` : "Healthy / Stable"}
               </Badge>
             </div>
-            <p className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs text-[#4A3324]/75 mt-0.5">
               {t("passportTitle")}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Link href={`/farmer/iot?animalId=${animal.id}`}>
-            <Button variant="outline" size="sm" className="text-xs gap-1.5 border-emerald-300 text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-xl min-h-[36px] font-semibold">
-              <Cpu className="h-4 w-4 text-emerald-700" />
+            <button
+              type="button"
+              className="h-8 px-3.5 text-xs gap-1.5 border border-white/80 text-[#3F6B4A] bg-white/80 hover:bg-white rounded-full font-semibold shadow-xs inline-flex items-center cursor-pointer transition-all"
+            >
+              <Cpu className="h-4 w-4 text-[#3F6B4A]" />
               <span>{t("iotVitals")}</span>
-            </Button>
+            </button>
           </Link>
           <Link href={`/farmer/request-help?animalId=${animal.id}`}>
-            <Button variant="outline" size="sm" className="text-xs gap-1.5 border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100 rounded-xl min-h-[36px]">
-              <UserCheck className="h-4 w-4 text-amber-700" />
+            <button
+              type="button"
+              className="h-8 px-3.5 text-xs gap-1.5 border border-white/80 text-[#8F6612] bg-white/80 hover:bg-white rounded-full font-semibold shadow-xs inline-flex items-center cursor-pointer transition-all"
+            >
+              <UserCheck className="h-4 w-4 text-[#D9A441]" />
               <span>{t("requestAgent")}</span>
-            </Button>
+            </button>
           </Link>
           <Link href={`/farmer/report?animalId=${animal.id}`}>
-            <Button size="sm" className="text-xs gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl min-h-[36px] shadow-sm">
+            <button
+              type="button"
+              className="h-8 px-3.5 text-xs gap-1.5 liquid-button-primary text-white font-bold rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all hover:scale-[1.02]"
+            >
               <PlusCircle className="h-4 w-4" />
               <span>{t("reportHealthConcern")}</span>
-            </Button>
+            </button>
           </Link>
         </div>
       </div>
@@ -106,7 +118,7 @@ export default async function AnimalDetailPage({
       {/* Grid: Animal Profile & Current Health Status */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column: Animal Profile Card */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl overflow-hidden shadow-xs">
+        <Card className="liquid-glass-card rounded-3xl overflow-hidden p-0 shadow-xs">
           <div className="relative h-44 w-full bg-stone-100">
             <Image
               src={getAnimalImage(animal.species)}

@@ -14,7 +14,7 @@ export default async function AuthorityDashboardPage() {
   ]);
 
   return (
-    <div className="text-[#191F1C]">
+    <div className="text-[#191F1C] dark:text-[#F4EEE1]">
       <DistrictCommandCenter
         initialData={initialData}
         pendingApprovalsCount={pendingApprovals.length}

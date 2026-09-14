@@ -4,6 +4,9 @@ import prisma from "@/lib/db/prisma";
 import { requireDistrictAuthority } from "@/lib/auth/permissions";
 import { syncClerkApplicationState } from "@/lib/auth/metadata";
 import { getAuthorityDashboardMetrics, getDistrictAuthorityCommandData } from "@/lib/authority/metrics";
+import { logAuditEvent } from "@/lib/audit/log";
+import { createInAppNotification } from "@/lib/actions/notifications";
+import { findEligibleFieldAgents } from "@/lib/geo/routing";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -289,4 +292,113 @@ export async function getAuthorityCaseListAction() {
   });
 
   return cases;
+}
+
+/**
+ * Broadcasts a vaccination drive recommendation to field agents covering a village
+ * with an identified vaccination coverage gap and high epidemic risk.
+ * Strictly protected by requireDistrictAuthority RBAC and audited via logAuditEvent.
+ */
+export async function recommendVaccinationDriveAction(input: {
+  villageId: string;
+  reason?: string | null;
+}) {
+  const authority = await requireDistrictAuthority();
+
+  const village = await prisma.village.findUnique({
+    where: { id: input.villageId },
+    include: {
+      block: {
+        include: {
+          district: true,
+        },
+      },
+    },
+  });
+
+  if (!village) {
+    return { success: false, error: "Village record not found." };
+  }
+
+  // Geographic jurisdiction validation
+  if (authority.districtId && village.block.districtId !== authority.districtId) {
+    return {
+      success: false,
+      error: "Unauthorized: Target village belongs to another district jurisdiction.",
+    };
+  }
+
+  // 1. Locate eligible field agents covering this village / block / district
+  const agentsResult = await findEligibleFieldAgents(
+    village.id,
+    village.blockId,
+    village.block.districtId
+  );
+
+  const targetAgents = agentsResult?.eligibleAgents || [];
+
+  // Fallback: If no tiered agents found via routing, find active field agents in the district
+  let notifiedUsers = targetAgents;
+  if (notifiedUsers.length === 0) {
+    const districtAgents = await prisma.user.findMany({
+      where: {
+        role: "FIELD_AGENT",
+        status: "ACTIVE",
+        OR: [
+          { districtId: village.block.districtId },
+          { districtId: null },
+        ],
+      },
+      select: { id: true, name: true, phone: true },
+    });
+    notifiedUsers = districtAgents.map((a) => ({ ...a, activeLoad: 0 }));
+  }
+
+  const notificationTitle = "Vaccination Drive Recommendation";
+  const notificationMessage = `District Authority (${authority.name}) has recommended an urgent targeted vaccination drive in ${village.name} (${village.block.name}, ${village.block.district.name}) due to high disease risk and critical vaccination gap.`;
+
+  let sentCount = 0;
+  for (const agent of notifiedUsers) {
+    const notif = await createInAppNotification({
+      userId: agent.id,
+      title: notificationTitle,
+      message: notificationMessage,
+      link: "/agent",
+      type: "VACCINATION_RECOMMENDATION",
+    });
+    if (notif) sentCount++;
+  }
+
+  // 2. Immutable AuditLog entry
+  await logAuditEvent(
+    authority.id,
+    "RECOMMEND_VACCINATION_DRIVE",
+    null,
+    null,
+    {
+      villageId: village.id,
+      villageName: village.name,
+      blockId: village.blockId,
+      blockName: village.block.name,
+      districtId: village.block.districtId,
+      districtName: village.block.district.name,
+      notifiedCount: sentCount,
+      notifiedAgentIds: notifiedUsers.map((a) => a.id),
+      reason: input.reason || "Under-vaccinated high-risk cluster overlay action",
+    },
+    input.reason || `Recommended vaccination drive for ${village.name}`
+  );
+
+  try {
+    revalidatePath("/authority");
+  } catch {
+    // Safe fallback in test or non-request context
+  }
+
+  return {
+    success: true,
+    notifiedCount: sentCount,
+    villageName: village.name,
+    message: `Vaccination drive recommendation successfully broadcasted to ${sentCount} field agent(s).`,
+  };
 }

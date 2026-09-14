@@ -72,7 +72,7 @@ export function HelplineModal({ children }: { children: ReactNode }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#191F1C]/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setOpen(false)}
         >
           <div
@@ -80,15 +80,15 @@ export function HelplineModal({ children }: { children: ReactNode }) {
             aria-modal="true"
             aria-labelledby={titleId}
             aria-describedby={descriptionId}
-            className="w-full max-w-md overflow-hidden rounded-none border border-[#C9BFA0] bg-[#F7F3E6] p-0 shadow-2xl"
+            className="w-full max-w-md overflow-hidden rounded-3xl border border-white/80 dark:border-white/16 bg-[#FAF6EE]/95 dark:bg-[#0F1E16]/95 backdrop-blur-2xl p-0 shadow-2xl dark:shadow-[0_24px_54px_rgba(0,0,0,0.7)] text-[#1D1C14] dark:text-[#F4EEE1]"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-[#C9BFA0] bg-[#EDE7D3] px-6 py-4">
+            <div className="flex items-start justify-between gap-4 border-b border-[#1E3A2B]/10 dark:border-white/10 bg-white/60 dark:bg-black/30 px-6 py-5">
               <div className="min-w-0">
-                <h2 id={titleId} className="font-serif text-2xl font-normal text-[#22291F]">
+                <h2 id={titleId} className="text-xl font-bold tracking-tight text-[#1E3A2B] dark:text-[#F5EFE6] font-display">
                   {t("helplineModalTitle")}
                 </h2>
-                <p id={descriptionId} className="mt-1 text-sm text-[#5C5645]">
+                <p id={descriptionId} className="mt-1 text-xs text-[#4A3324]/75 dark:text-[#C8BBAA]">
                   {t("helplineModalSub")}
                 </p>
               </div>
@@ -96,26 +96,26 @@ export function HelplineModal({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label={tCommon("close")}
                 onClick={() => setOpen(false)}
-                className="shrink-0 border border-[#C9BFA0] p-2 text-[#5C5645] transition-colors hover:bg-[#F7F3E6] hover:text-[#22291F]"
+                className="shrink-0 rounded-full border border-white/80 dark:border-white/15 p-2 text-[#4A3324]/80 dark:text-stone-300 hover:bg-white dark:hover:bg-white/10 hover:text-[#1E3A2B] dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="space-y-4 px-6 py-5 text-sm text-[#3A3D30]">
+            <div className="space-y-4 px-6 py-5 text-xs sm:text-sm text-[#1E3A2B] dark:text-[#F4EEE1]">
               <div className="flex items-start gap-3">
-                <PhoneCall className="mt-0.5 h-4 w-4 shrink-0 text-[#2F5233]" />
-                <p>
+                <PhoneCall className="mt-0.5 h-4 w-4 shrink-0 text-[#3F6B4A] dark:text-[#50C878]" />
+                <p className="leading-relaxed">
                   {t("helplineAvail")}
                 </p>
               </div>
-              <ol className="list-decimal space-y-2.5 pl-5 marker:text-xs marker:text-[#8A8265]">
+              <ol className="list-decimal space-y-2.5 pl-5 marker:text-xs marker:text-[#3F6B4A] dark:marker:text-[#50C878]">
                 <li>{t("helplineStep1")}</li>
                 <li>{t("helplineStep2")}</li>
                 <li>{t("helplineStep3")}</li>
                 <li>{t("helplineStep4")}</li>
               </ol>
-              <p className="border-t border-[#C9BFA0]/70 pt-1 text-xs text-[#8A8265]">
+              <p className="border-t border-[#1E3A2B]/10 dark:border-white/10 pt-2 text-xs text-[#4A3324]/70 dark:text-stone-400">
                 {t("helplineUrgent")}
               </p>
             </div>

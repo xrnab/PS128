@@ -276,6 +276,9 @@
       "resolving": "Resolving location hierarchy...",
       "typePlaceholder": "Type village, town, or area name"
     },
+    "reporting": {
+      "location": "অবস্থান"
+    },
     "photo": {
       "noPhoto": "No Clinical Photograph Attached",
       "noPhotoDesc": "No field lesion or inspection photo was uploaded with this case intake.",
@@ -1005,6 +1008,14 @@
     "villageName": "Village Name",
     "riskLevel": "Risk Level",
     "farms": "Farms",
+    "vaccinationCoverage": "টিকা কভারেজ %",
+    "priorityAction": "অগ্রাধিকার পদক্ষেপ",
+    "vaccinationGapBadge": "⚠ টিকাদানের ঘাটতি",
+    "showPriorityOnly": "শুধুমাত্র অগ্রাধিকার গ্রাম দেখান",
+    "recommendDrive": "টিকাদান অভিযানের সুপারিশ করুন",
+    "driveRecommended": "অভিযান সুপারিশকৃত",
+    "noPriorityVillages": "কোনো অগ্রাধিকার টিকাদানের ঘাটতি পাওয়া যায়নি।",
+    "driveSuccess": "ফিল্ড এজেন্টদের কাছে টিকাদান অভিযানের সুপারিশ পাঠানো হয়েছে।",
     "noAlertsFound": "No matching outbreak alerts found.",
     "viewOnMap": "View on Map",
     "geoHierarchyTitle": "District Geographic Hierarchy & Disease Surveillance",

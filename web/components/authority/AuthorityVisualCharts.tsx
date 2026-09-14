@@ -34,9 +34,9 @@ function ChartEmptyState({ message }: { message?: string }) {
   const t = useTranslations("authority");
   const msg = message || t("noActivityPeriod");
   return (
-    <div className="h-48 w-full flex flex-col items-center justify-center text-center p-4 bg-[#FAF8F3]/50 rounded-2xl border border-dashed border-[#E5E0D8] space-y-1">
-      <p className="text-xs font-semibold text-stone-600">{msg}</p>
-      <p className="text-[11px] text-stone-400">{t("recordsWillAppear")}</p>
+    <div className="h-44 w-full flex flex-col items-center justify-center text-center p-4 bg-white/40 backdrop-blur-sm rounded-2xl border border-dashed border-[#1E3A2B]/15 space-y-1">
+      <p className="text-xs font-semibold text-[#1E3A2B]">{msg}</p>
+      <p className="text-[11px] text-[#4A3324]/60">{t("recordsWillAppear")}</p>
     </div>
   );
 }
@@ -49,15 +49,15 @@ function DonutVisualizer({ data }: { data: ChartDataPoint[] }) {
   return (
     <div className="space-y-3">
       {/* Top stacked progress bar */}
-      <div className="h-3 w-full bg-stone-100 rounded-full overflow-hidden flex">
+      <div className="h-3 w-full bg-white/70 rounded-full overflow-hidden flex border border-white/80 shadow-inner p-0.5">
         {data.map((item, idx) => {
           if (item.value === 0) return null;
           const pct = (item.value / total) * 100;
           return (
             <div
               key={idx}
-              style={{ width: `${pct}%`, backgroundColor: item.color || "#059669" }}
-              className="h-full transition-all duration-300"
+              style={{ width: `${pct}%`, backgroundColor: item.color || "#3F6B4A" }}
+              className="h-full rounded-full transition-all duration-300"
               title={`${item.label}: ${item.value} (${pct.toFixed(0)}%)`}
             />
           );
@@ -67,12 +67,12 @@ function DonutVisualizer({ data }: { data: ChartDataPoint[] }) {
       {/* Item legend grid */}
       <div className="grid grid-cols-2 gap-2 text-xs">
         {data.map((item, idx) => (
-          <div key={idx} className="p-2 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8] flex items-center justify-between">
+          <div key={idx} className="p-2.5 rounded-xl bg-white/60 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] flex items-center justify-between">
             <div className="flex items-center gap-1.5 truncate mr-2">
-              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color || "#059669" }} />
-              <span className="text-stone-700 font-medium truncate">{item.label}</span>
+              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color || "#3F6B4A" }} />
+              <span className="text-[#1E3A2B] font-medium truncate">{item.label}</span>
             </div>
-            <span className="font-mono font-bold text-stone-900">{item.value}</span>
+            <span className="font-mono font-bold text-[#1E3A2B]">{item.value}</span>
           </div>
         ))}
       </div>
@@ -92,12 +92,12 @@ function HorizontalRankedBarVisualizer({ data, emptyMsg = "No activity recorded 
         return (
           <div key={idx} className="space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-stone-700 font-medium truncate max-w-[70%]">{item.label}</span>
-              <span className="font-mono font-bold text-stone-900">{item.value}</span>
+              <span className="text-[#1E3A2B] font-medium truncate max-w-[70%]">{item.label}</span>
+              <span className="font-mono font-bold text-[#1E3A2B]">{item.value}</span>
             </div>
-            <div className="h-2 w-full bg-stone-100 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-white/70 rounded-full overflow-hidden border border-white/80 p-0.5">
               <div
-                style={{ width: `${pct}%`, backgroundColor: item.color || "#059669" }}
+                style={{ width: `${pct}%`, backgroundColor: item.color || "#3F6B4A" }}
                 className="h-full rounded-full transition-all duration-300"
               />
             </div>
@@ -120,15 +120,15 @@ function TemporalLineVisualizer({ data }: { data: ChartDataPoint[] }) {
   if (data.length === 1) {
     const singlePoint = data[0];
     return (
-      <div className="h-36 w-full flex flex-col items-center justify-center bg-[#FAF8F3]/60 rounded-2xl border border-[#E5E0D8] p-4 space-y-2">
+      <div className="h-36 w-full flex flex-col items-center justify-center bg-white/55 backdrop-blur-md rounded-2xl border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] p-4 space-y-2">
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-emerald-600 animate-pulse" />
-          <span className="text-xs font-bold text-stone-700">{singlePoint.label}</span>
+          <span className="h-2.5 w-2.5 rounded-full bg-[#3F6B4A] animate-pulse" />
+          <span className="text-xs font-bold text-[#1E3A2B]">{singlePoint.label}</span>
         </div>
-        <div className="text-3xl font-extrabold text-emerald-800 font-mono">
+        <div className="text-3xl font-extrabold text-[#1E3A2B] font-mono">
           {singlePoint.value} {singlePoint.value === 1 ? t("caseSingular") : t("casesPlural")}
         </div>
-        <span className="text-[11px] text-stone-500 font-mono">
+        <span className="text-[11px] text-[#4A3324]/65 font-mono">
           {t("actualToday")}
         </span>
       </div>
@@ -154,13 +154,13 @@ function TemporalLineVisualizer({ data }: { data: ChartDataPoint[] }) {
       <div className="w-full h-36 relative">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
           {/* Subtle grid lines */}
-          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="#E5E0D8" strokeDasharray="3 3" />
+          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="rgba(30,58,43,0.08)" strokeDasharray="3 3" />
           <line
             x1={padding}
             y1={height / 2}
             x2={width - padding}
             y2={height / 2}
-            stroke="#E5E0D8"
+            stroke="rgba(30,58,43,0.08)"
             strokeDasharray="3 3"
           />
           <line
@@ -168,31 +168,41 @@ function TemporalLineVisualizer({ data }: { data: ChartDataPoint[] }) {
             y1={height - padding}
             x2={width - padding}
             y2={height - padding}
-            stroke="#E5E0D8"
+            stroke="rgba(30,58,43,0.15)"
           />
 
-          {/* Gradient area */}
+          {/* Area Fill Gradient */}
           <defs>
-            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#059669" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#059669" stopOpacity="0.0" />
+            <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3F6B4A" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#3F6B4A" stopOpacity="0.0" />
             </linearGradient>
           </defs>
-          <path d={areaD} fill="url(#areaGrad)" />
-          <path d={pathD} fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" />
+          <path d={areaD} fill="url(#areaGradient)" />
 
-          {/* Dots */}
+          {/* Main Trend Line */}
+          <path d={pathD} fill="none" stroke="#1E3A2B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* Data Points */}
           {points.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="3.5" fill="#059669" stroke="#FFFFFF" strokeWidth="1.5" />
+            <circle
+              key={i}
+              cx={p.x}
+              cy={p.y}
+              r="3.5"
+              className="fill-white stroke-[#1E3A2B] stroke-2 hover:r-5 transition-all cursor-pointer"
+            >
+              <title>{`${p.label}: ${p.value} cases`}</title>
+            </circle>
           ))}
         </svg>
       </div>
 
-      {/* Axis date markers */}
-      <div className="flex justify-between text-[10px] text-stone-400 font-mono px-2">
-        <span>{data[0]?.label}</span>
-        {data.length > 2 && <span>{data[Math.floor(data.length / 2)]?.label}</span>}
-        <span>{data[data.length - 1]?.label}</span>
+      {/* Axis Labels */}
+      <div className="flex justify-between items-center text-[10px] text-[#4A3324]/60 font-mono px-1">
+        <span>{points[0]?.label || ""}</span>
+        <span>{points[Math.floor(points.length / 2)]?.label || ""}</span>
+        <span>{points[points.length - 1]?.label || ""}</span>
       </div>
     </div>
   );
@@ -206,21 +216,21 @@ function WorkloadComparisonVisualizer({ data, emptyMsg }: { data: ChartDataPoint
   return (
     <div className="space-y-3">
       {data.map((item, idx) => (
-        <div key={idx} className="p-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8] space-y-1">
+        <div key={idx} className="p-3 rounded-xl bg-white/60 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-stone-800">{item.label}</span>
+            <span className="font-bold text-[#1E3A2B]">{item.label}</span>
             <div className="flex items-center gap-3 text-[11px]">
-              <span className="text-amber-800 font-semibold font-mono">{t("activeLabel")} {item.value}</span>
+              <span className="text-[#C1622D] font-semibold font-mono">{t("activeLabel")} {item.value}</span>
               {item.secondaryValue !== undefined && (
-                <span className="text-stone-500 font-mono">{t("totalLabel")} {item.secondaryValue}</span>
+                <span className="text-[#4A3324]/60 font-mono">{t("totalLabel")} {item.secondaryValue}</span>
               )}
             </div>
           </div>
-          <div className="h-1.5 w-full bg-stone-200 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-white/80 rounded-full overflow-hidden border border-white/80 p-0.5">
             <div
               style={{
                 width: `${Math.min(100, Math.max(5, item.value * 12))}%`,
-                backgroundColor: item.color || "#8B5CF6",
+                backgroundColor: item.color || "#3F6B4A",
               }}
               className="h-full rounded-full"
             />
@@ -235,10 +245,10 @@ export function AuthorityVisualCharts({ charts }: AuthorityVisualChartsProps) {
   const t = useTranslations("authority");
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
+      <div className="flex items-center justify-between border-b border-[#1E3A2B]/8 pb-3">
         <div>
-          <h2 className="text-lg font-bold text-[#191F1C] tracking-tight">{t("surveillanceAnalytics")}</h2>
-          <p className="text-xs text-stone-500">
+          <h2 className="text-xl font-bold text-[#1E3A2B] tracking-tight font-display">{t("surveillanceAnalytics")}</h2>
+          <p className="text-xs text-[#4A3324]/70">
             {t("surveillanceAnalyticsDesc")}
           </p>
         </div>
@@ -247,141 +257,159 @@ export function AuthorityVisualCharts({ charts }: AuthorityVisualChartsProps) {
       {/* Grid: 9 Graphical Surveillance Views */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* CHART 1: Cases by Status */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <PieChartIcon className="h-4 w-4 text-emerald-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#3F6B4A]/12 text-[#3F6B4A]">
+                <PieChartIcon className="h-4 w-4" />
+              </div>
               <span>{t("casesByClinicalStatus")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("casesByClinicalStatusDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("casesByClinicalStatusDesc")}</p>
+          </div>
+          <div>
             <DonutVisualizer data={charts.casesByStatus} />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 2: Cases by Severity / Risk */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#C1622D]/15 text-[#C1622D]">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
               <span>{t("casesBySeverityRisk")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("casesBySeverityRiskDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("casesBySeverityRiskDesc")}</p>
+          </div>
+          <div>
             <DonutVisualizer data={charts.casesByRisk} />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 3: Cases Over Time (Temporal Trend) */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#3F6B4A]/12 text-[#3F6B4A]">
+                <TrendingUp className="h-4 w-4" />
+              </div>
               <span>{t("casesOverTime")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("casesOverTimeDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("casesOverTimeDesc")}</p>
+          </div>
+          <div>
             <TemporalLineVisualizer data={charts.casesOverTime} />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 4: Cases by Village / Locality */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-emerald-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#3F6B4A]/12 text-[#3F6B4A]">
+                <MapPin className="h-4 w-4" />
+              </div>
               <span>{t("topVillageHotspots")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("topVillageHotspotsDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("topVillageHotspotsDesc")}</p>
+          </div>
+          <div>
             <HorizontalRankedBarVisualizer
               data={charts.casesByVillage}
               emptyMsg={t("noHotspotsPeriod")}
             />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 5: Veterinarian Workload */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <Stethoscope className="h-4 w-4 text-purple-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#1E3A2B]/10 text-[#1E3A2B]">
+                <Stethoscope className="h-4 w-4" />
+              </div>
               <span>{t("vetCaseloadWorkload")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("vetCaseloadWorkloadDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("vetCaseloadWorkloadDesc")}</p>
+          </div>
+          <div>
             <WorkloadComparisonVisualizer
               data={charts.vetWorkload}
               emptyMsg={t("noVetsAssigned")}
             />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 6: Field-Agent Workload */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-blue-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#3F6B4A]/12 text-[#3F6B4A]">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
               <span>{t("fieldAgentRequestVolume")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("fieldAgentRequestVolumeDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("fieldAgentRequestVolumeDesc")}</p>
+          </div>
+          <div>
             <WorkloadComparisonVisualizer
               data={charts.agentWorkload}
               emptyMsg={t("noAgentsAssigned")}
             />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 7: Species Distribution */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <PawPrint className="h-4 w-4 text-amber-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#D9A441]/20 text-[#8F6612]">
+                <PawPrint className="h-4 w-4" />
+              </div>
               <span>{t("animalSpeciesDistribution")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("animalSpeciesDistributionDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("animalSpeciesDistributionDesc")}</p>
+          </div>
+          <div>
             <DonutVisualizer data={charts.speciesDistribution} />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 8: Alerts by Severity */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-rose-600" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#C1622D]/15 text-[#C1622D]">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
               <span>{t("outbreakAlertsByDisease")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("outbreakAlertsByDiseaseDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("outbreakAlertsByDiseaseDesc")}</p>
+          </div>
+          <div>
             <HorizontalRankedBarVisualizer
               data={charts.alertsBySeverity}
               emptyMsg={t("noAlertsHistorical")}
             />
-          </CardContent>
+          </div>
         </Card>
 
         {/* CHART 9: Assistance Request Status */}
-        <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-[#191F1C] flex items-center gap-2">
-              <ClipboardList className="h-4 w-4 text-teal-700" />
+        <Card className="liquid-glass-card rounded-3xl p-5 space-y-3">
+          <div className="border-b border-[#1E3A2B]/6 pb-2.5">
+            <div className="text-sm font-bold text-[#1E3A2B] flex items-center gap-2">
+              <div className="p-1 rounded-lg bg-[#3F6B4A]/12 text-[#3F6B4A]">
+                <ClipboardList className="h-4 w-4" />
+              </div>
               <span>{t("assistanceRequestStatus")}</span>
-            </CardTitle>
-            <CardDescription className="text-[11px] text-stone-500">{t("assistanceRequestStatusDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-2">
+            </div>
+            <p className="text-[11px] text-[#4A3324]/65 mt-0.5">{t("assistanceRequestStatusDesc")}</p>
+          </div>
+          <div>
             <DonutVisualizer data={charts.assistanceRequestStatus} />
-          </CardContent>
+          </div>
         </Card>
       </div>
     </div>

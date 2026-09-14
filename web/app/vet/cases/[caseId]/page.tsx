@@ -65,36 +65,36 @@ export default async function VetCaseDetailPage({
   }
 
   return (
-    <div className="space-y-6 text-[#191F1C]">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
       {/* Navigation & Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div className="flex items-center gap-3">
           <Link href="/vet">
-            <Button type="button" variant="outline" size="sm" className="h-8 text-xs border-[#D9D3C7] bg-white text-stone-800 hover:bg-stone-50 gap-1.5 min-h-[36px] rounded-xl">
+            <button type="button" className="h-9 px-4 text-xs font-semibold border border-white/80 bg-white/80 hover:bg-white text-[#1E3A2B] gap-1.5 rounded-full shadow-xs inline-flex items-center cursor-pointer transition-all">
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>{t("backToQueue")}</span>
-            </Button>
+            </button>
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#191F1C]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A2B] tracking-tight font-display">
                 Case #{healthCase.caseNumber}
               </h1>
-              <Badge className="text-[10px] border-emerald-200 text-emerald-800 bg-emerald-50">
+              <Badge className="text-[10px] bg-[#3F6B4A]/12 text-[#3F6B4A] border-white/60 font-semibold px-2.5 py-0.5 rounded-full">
                 {healthCase.status}
               </Badge>
             </div>
-            <p className="text-xs text-stone-500 mt-0.5">
-              {t("tagIdLabel")}: <strong className="text-stone-900 font-mono">{healthCase.animal.tag}</strong> ({healthCase.animal.species}) • Farm: <strong className="text-stone-900">{farm.name}</strong> ({village.name}, {district.name})
+            <p className="text-xs text-[#4A3324]/75 mt-0.5">
+              {t("tagIdLabel")}: <strong className="text-[#1E3A2B] font-mono">{healthCase.animal.tag}</strong> ({healthCase.animal.species}) • Farm: <strong className="text-[#1E3A2B]">{farm.name}</strong> ({village.name}, {district.name})
             </p>
           </div>
         </div>
 
-        <div className="text-right text-xs text-stone-500 space-y-0.5">
-          <div>Reported: <span className="text-stone-800 font-medium">{formatDateTime(healthCase.reportedAt)}</span></div>
+        <div className="text-right text-xs text-[#4A3324]/65 space-y-0.5">
+          <div>Reported: <span className="text-[#1E3A2B] font-semibold">{formatDateTime(healthCase.reportedAt)}</span></div>
           {healthCase.reviewedAt && (
-            <div className="flex items-center gap-1 text-[11px] text-emerald-800 font-medium justify-end">
-              <UserCheck className="h-3.5 w-3.5 text-emerald-700" />
+            <div className="flex items-center gap-1 text-[11px] text-[#3F6B4A] font-medium justify-end">
+              <UserCheck className="h-3.5 w-3.5 text-[#3F6B4A]" />
               <span>Reviewed: {formatDateTime(healthCase.reviewedAt)}</span>
             </div>
           )}
@@ -106,15 +106,15 @@ export default async function VetCaseDetailPage({
         {/* Left Column: Dossier Information (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
           {/* SECTION 1: Animal & Farm Dossier */}
-          <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs">
-            <CardHeader className="border-b border-[#E5E0D8] pb-3">
-              <CardTitle className="text-sm font-bold text-[#191F1C] uppercase tracking-wider flex items-center gap-2">
-                <Stethoscope className="h-4 w-4 text-emerald-700" />
+          <Card className="liquid-glass-card rounded-3xl overflow-hidden p-6 space-y-5">
+            <div className="border-b border-[#1E3A2B]/8 pb-3">
+              <div className="text-sm font-bold text-[#1E3A2B] uppercase tracking-wider flex items-center gap-2 font-display">
+                <Stethoscope className="h-4 w-4 text-[#3F6B4A]" />
                 <span>{t("primaryIntakeTitle")}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E5E0D8]">
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
                 <div>
                   <span className="text-[10px] text-stone-500 font-medium block">{t("speciesLabel")}</span>
                   <span className="font-bold text-[#191F1C]">{healthCase.animal.species}</span>
@@ -168,7 +168,7 @@ export default async function VetCaseDetailPage({
                   <CasePhotoViewer caseId={healthCase.id} photoUrl={healthCase.photoUrl} alt={`Case ${healthCase.caseNumber} photo`} />
                 </div>
               )}
-            </CardContent>
+            </div>
           </Card>
 
           {/* SECTION 2: AI Decision Support Output */}

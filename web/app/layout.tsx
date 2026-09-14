@@ -8,7 +8,9 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { SyncStatusBadge } from "@/components/offline/SyncStatusBadge";
 import { LocaleProvider } from "@/components/layout/LocaleProvider";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { FirstLoadExperience } from "@/components/motion/FirstLoadExperience";
+import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import { Locale } from "@/lib/i18n";
 import "./globals.css";
 
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F3EFE5",
+  themeColor: "#FBF8F3",
   width: "device-width",
   initialScale: 1,
 };
@@ -57,17 +59,31 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#F3EFE5] text-[#20271F] selection:bg-[#B9C69E] selection:text-[#20271F] pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] xl:pb-0">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('maitri-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light';}}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-[#FBF8F3] dark:bg-[#080F0C] text-[#1D1C14] dark:text-[#F4EEE1] selection:bg-[#3F6B4A]/20 selection:text-[#1E3A2B] pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] xl:pb-0 relative transition-colors duration-300">
+        {/* Ambient Depth Mesh Gradient (Cached GPU Layer, 0ms Scroll Overhead) */}
+        <div className="ambient-mesh-bg" />
+
         <meta name="language" content={locale} />
         <ClerkProvider>
           <NextIntlClientProvider messages={messages} locale={locale}>
             <LocaleProvider initialLocale={locale as Locale}>
-              <FirstLoadExperience />
-              <PwaRegister />
-              <Navbar />
-              <main className="flex-1 flex flex-col">{children}</main>
-              <SyncStatusBadge />
-              <MobileNav />
+              <ThemeProvider>
+                <SmoothScrollProvider>
+                  <FirstLoadExperience />
+                  <PwaRegister />
+                  <Navbar />
+                  <main className="flex-1 flex flex-col relative z-10">{children}</main>
+                  <SyncStatusBadge />
+                  <MobileNav />
+                </SmoothScrollProvider>
+              </ThemeProvider>
             </LocaleProvider>
           </NextIntlClientProvider>
         </ClerkProvider>

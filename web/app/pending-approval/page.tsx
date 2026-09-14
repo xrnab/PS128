@@ -1,8 +1,7 @@
 import { getCurrentAppUser } from "@/lib/auth/session";
 import { SignOutButton } from "@clerk/nextjs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Clock, ShieldAlert, LogOut, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -21,71 +20,75 @@ export default async function PendingApprovalPage() {
   const submittedText = copy.submitted.replace("{role}", roleName);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-[#FAF8F3] text-[#191F1C] min-h-screen">
-      <Card className="max-w-md w-full border-[#E5E0D8] bg-white text-center shadow-xs rounded-3xl overflow-hidden">
-        <CardHeader className="flex flex-col items-center gap-3 bg-[#FAF8F3] border-b border-[#E5E0D8] pb-6">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 shadow-2xs">
-            <Clock className="h-7 w-7 animate-pulse" />
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 md:p-8 bg-[#FBF8F3] text-[#1D1C14] overflow-hidden">
+      {/* Ambient background light blobs */}
+      <div className="ambient-blob -top-24 -left-20 h-96 w-96 bg-[#D9A441]/15 blur-3xl pointer-events-none" />
+      <div className="ambient-blob top-1/2 -right-28 h-96 w-96 bg-[#3F6B4A]/12 blur-3xl pointer-events-none [animation-delay:-5s]" />
+
+      <div className="liquid-glass-card max-w-md w-full relative z-10 text-center rounded-3xl overflow-hidden p-6 sm:p-8 space-y-6 shadow-2xl">
+        {/* Header Icon & Status */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D9A441]/15 border border-[#D9A441]/30 text-[#D9A441] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+            <Clock className="h-8 w-8 animate-pulse" />
           </div>
 
-          <Badge variant="secondary" className="bg-amber-100 text-amber-900 border-amber-200 text-xs px-3 py-1">
+          <Badge className="bg-[#D9A441]/20 text-[#1E3A2B] border-[#D9A441]/40 text-xs font-semibold px-3 py-1 rounded-full">
             {copy.badge}
           </Badge>
 
-          <CardTitle className="text-xl font-bold text-[#191F1C]">{copy.title}</CardTitle>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1E3A2B]">{copy.title}</h1>
+          <p className="text-xs text-[#1D1C14]/70 leading-relaxed max-w-xs">{submittedText}</p>
+        </div>
 
-          <CardDescription className="text-xs text-stone-600">
-            {submittedText}
-          </CardDescription>
-        </CardHeader>
-
+        {/* User Details Bento */}
         {appUser && (
-          <CardContent className="space-y-3 text-left pt-5">
-            <div className="bg-[#FAF8F3] p-4 rounded-2xl border border-[#E5E0D8] text-xs space-y-2">
-              <div className="flex justify-between border-b border-[#E5E0D8] pb-2">
-                <span className="text-stone-500">{copy.applicant}:</span>
-                <span className="font-semibold text-[#191F1C]">{appUser.name}</span>
+          <div className="space-y-3 text-left">
+            <div className="bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white/80 text-xs space-y-2.5 shadow-xs">
+              <div className="flex justify-between items-center border-b border-[#1E3A2B]/10 pb-2">
+                <span className="text-[#1D1C14]/60 font-medium">{copy.applicant}:</span>
+                <span className="font-semibold text-[#1E3A2B]">{appUser.name}</span>
               </div>
-              <div className="flex justify-between border-b border-[#E5E0D8] pb-2">
-                <span className="text-stone-500">{copy.phone}:</span>
-                <span className="font-medium text-stone-700">{appUser.phone}</span>
+              <div className="flex justify-between items-center border-b border-[#1E3A2B]/10 pb-2">
+                <span className="text-[#1D1C14]/60 font-medium">{copy.phone}:</span>
+                <span className="font-medium text-[#1D1C14]">{appUser.phone}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-stone-500">{copy.scope}:</span>
-                <span className="font-medium text-emerald-800">
+              <div className="flex justify-between items-center">
+                <span className="text-[#1D1C14]/60 font-medium">{copy.scope}:</span>
+                <span className="font-semibold text-[#3F6B4A]">
                   {appUser.district?.name || appUser.block?.name || appUser.village?.name || copy.assignedDistrict}
                 </span>
               </div>
             </div>
 
-            <div className="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 text-xs text-amber-900 space-y-1">
-              <div className="flex items-center gap-2 font-semibold text-amber-900">
-                <ShieldAlert className="h-4 w-4 text-amber-700" />
+            <div className="bg-[#D9A441]/10 backdrop-blur-md p-3.5 rounded-2xl border border-[#D9A441]/25 text-xs text-[#1E3A2B] space-y-1">
+              <div className="flex items-center gap-2 font-semibold text-[#1E3A2B]">
+                <ShieldAlert className="h-4 w-4 text-[#D9A441]" />
                 <span>{copy.whyTitle}</span>
               </div>
-              <p className="text-[11px] leading-relaxed text-amber-800">
+              <p className="text-[11px] leading-relaxed text-[#1D1C14]/75">
                 {copy.whyText}
               </p>
             </div>
-          </CardContent>
+          </div>
         )}
 
-        <CardFooter className="flex flex-col sm:flex-row gap-2 justify-center pt-4 pb-4 border-t border-[#E5E0D8]">
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Link href="/dashboard" className="w-full sm:w-auto flex-1">
-            <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs border-[#D9D3C7] text-stone-700 hover:bg-[#FAF8F3] min-h-[40px]">
+            <Button className="w-full gap-2 text-xs font-semibold rounded-full bg-[#1E3A2B] text-[#FBF8F3] hover:bg-[#3F6B4A] shadow-md hover:shadow-lg transition-all min-h-[42px]">
               <RefreshCw className="h-3.5 w-3.5" />
               <span>{copy.checkStatus}</span>
             </Button>
           </Link>
 
           <SignOutButton>
-            <Button variant="secondary" size="sm" className="w-full sm:w-auto flex-1 gap-1.5 text-xs bg-[#FAF8F3] hover:bg-stone-200 border border-[#E5E0D8] text-stone-700 min-h-[40px]">
+            <Button variant="outline" className="w-full sm:w-auto flex-1 gap-2 text-xs font-semibold rounded-full border-white/80 bg-white/60 hover:bg-white/90 text-[#1E3A2B] shadow-xs min-h-[42px]">
               <LogOut className="h-3.5 w-3.5" />
               <span>{copy.signOut}</span>
             </Button>
           </SignOutButton>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

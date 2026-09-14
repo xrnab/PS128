@@ -31,57 +31,55 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
   };
 
   return (
-    <Card className="border-[#E5E0D8] bg-white rounded-3xl shadow-xs overflow-hidden">
-      <CardHeader className="pb-3 border-b border-[#E5E0D8]">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-base font-bold text-[#191F1C] flex items-center gap-2">
-              <Activity className="h-5 w-5 text-emerald-700" />
-              <span>{t("recentActivityStream")}</span>
-            </CardTitle>
-            <CardDescription className="text-xs text-stone-500">
-              {t("activityStreamDesc")}
-            </CardDescription>
+    <Card className="liquid-glass-card rounded-3xl overflow-hidden p-6 space-y-6">
+      <div className="flex items-center justify-between border-b border-[#1E3A2B]/8 pb-4">
+        <div>
+          <div className="text-base font-bold text-[#1E3A2B] flex items-center gap-2 font-display">
+            <Activity className="h-5 w-5 text-[#3F6B4A]" />
+            <span>{t("recentActivityStream")}</span>
           </div>
-          <Badge className="bg-stone-100 text-stone-700 border-stone-200 text-xs">
-            {t("liveStreamCount", { count: activities.length })}
-          </Badge>
+          <p className="text-xs text-[#4A3324]/70 mt-0.5">
+            {t("activityStreamDesc")}
+          </p>
         </div>
-      </CardHeader>
+        <Badge className="bg-[#1E3A2B]/10 text-[#1E3A2B] border border-white/60 text-xs font-medium">
+          {t("liveStreamCount", { count: activities.length })}
+        </Badge>
+      </div>
 
-      <CardContent className="p-4 sm:p-5">
+      <div>
         {activities.length === 0 ? (
-          <div className="p-8 text-center text-xs text-stone-500 bg-[#FAF8F3] rounded-2xl border border-[#E5E0D8]">
+          <div className="p-8 text-center text-xs text-[#4A3324]/60 bg-white/40 rounded-2xl border border-dashed border-[#1E3A2B]/15">
             {t("noActivityLogged")}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {activities.map((act) => (
               <div
                 key={act.id}
-                className="p-3.5 rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex items-start justify-between gap-3 shadow-2xs hover:border-emerald-600/40 transition-colors"
+                className="p-4 rounded-2xl bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_4px_16px_rgba(30,58,43,0.04)] flex items-start justify-between gap-3 hover:bg-white/85 transition-all hover:scale-[1.01]"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-xl bg-white border border-[#E5E0D8] shadow-2xs shrink-0 mt-0.5">
+                  <div className="p-2 rounded-xl bg-white/80 border border-white/90 shadow-xs shrink-0 mt-0.5">
                     {getActivityIcon(act.type)}
                   </div>
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-xs text-[#191F1C]">{act.title}</span>
+                      <span className="font-bold text-xs text-[#1E3A2B]">{act.title}</span>
                       <Badge
                         className={`text-[10px] ${
                           act.statusVariant === "destructive"
-                            ? "bg-red-100 text-red-900 border-red-200"
+                            ? "bg-[#C1622D]/15 text-[#C1622D] border-[#C1622D]/30"
                             : act.statusVariant === "secondary"
-                            ? "bg-blue-100 text-blue-900 border-blue-200"
-                            : "bg-stone-100 text-stone-700 border-stone-200"
+                            ? "bg-[#3F6B4A]/12 text-[#3F6B4A] border-[#3F6B4A]/30"
+                            : "bg-[#1E3A2B]/8 text-[#1E3A2B] border-white/60"
                         }`}
                       >
                         {act.statusBadge}
                       </Badge>
                     </div>
-                    <p className="text-[11px] text-stone-500">{act.subtitle}</p>
-                    <p className="text-[10px] text-stone-400 font-mono">
+                    <p className="text-[11px] text-[#4A3324]/75">{act.subtitle}</p>
+                    <p className="text-[10px] text-[#4A3324]/50 font-mono">
                       {formatDateTime(act.timestamp, true)}
                     </p>
                   </div>
@@ -89,7 +87,7 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
 
                 {act.linkUrl && (
                   <Link href={act.linkUrl} className="shrink-0">
-                    <button className="p-1 rounded-lg hover:bg-stone-200 text-stone-400 hover:text-stone-700 transition-colors">
+                    <button className="p-1.5 rounded-full hover:bg-white/80 text-[#4A3324]/60 hover:text-[#1E3A2B] transition-colors cursor-pointer">
                       <ChevronRight className="h-4 w-4" />
                     </button>
                   </Link>
@@ -98,7 +96,7 @@ export function RecentActivityFeed({ activities }: RecentActivityFeedProps) {
             ))}
           </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

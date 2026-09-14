@@ -46,9 +46,9 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
 
   if (districts.length === 0) {
     return (
-      <Card className="p-6 bg-[#FAF8F3] border-[#E5E0D8] text-center text-xs text-stone-500 rounded-2xl">
+      <div className="liquid-glass-card p-8 text-center text-xs text-[#1D1C14]/60 rounded-3xl">
         {t("noGeoSurveillanceData")}
-      </Card>
+      </div>
     );
   }
 
@@ -57,46 +57,46 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
   const selectedVillage = selectedBlock?.villages.find((v) => v.id === selectedVillageId) || selectedBlock?.villages[0];
 
   return (
-    <Card className="border-[#E5E0D8] bg-white text-[#191F1C] rounded-3xl shadow-xs overflow-hidden">
-      <CardHeader className="pb-3 bg-[#FAF8F3] border-b border-[#E5E0D8]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div className="liquid-glass-card rounded-3xl overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_12px_32px_rgba(30,58,43,0.08)]">
+      <div className="p-5 sm:p-6 border-b border-[#1E3A2B]/8 bg-white/30 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-base text-[#191F1C] flex items-center gap-2 font-bold">
-              <MapPin className="h-4 w-4 text-emerald-700" />
+            <h2 className="text-lg font-bold text-[#1E3A2B] flex items-center gap-2 font-display">
+              <MapPin className="h-4 w-4 text-[#3F6B4A]" />
               <span>{t("geoHierarchyTitle")}</span>
-            </CardTitle>
-            <CardDescription className="text-xs text-stone-500">
+            </h2>
+            <p className="text-xs text-[#1D1C14]/70 mt-0.5">
               {t("geoHierarchySub")}
-            </CardDescription>
+            </p>
           </div>
 
-          <Badge variant="outline" className="text-xs text-emerald-800 border-emerald-300 bg-emerald-50 w-fit">
+          <Badge className="text-xs font-semibold text-[#1E3A2B] border-white/80 bg-white/70 shadow-xs px-3 py-1 rounded-full w-fit">
             {t("districtBadge", { name: district.name })}
           </Badge>
         </div>
 
         {/* Breadcrumb Navigation Bar */}
-        <div className="flex items-center gap-1 text-xs text-stone-600 mt-2 bg-white p-2 rounded-xl border border-[#E5E0D8] overflow-x-auto shadow-2xs">
+        <div className="flex items-center gap-1.5 text-xs text-[#1D1C14]/70 mt-4 bg-white/60 p-2 rounded-2xl border border-white/80 overflow-x-auto shadow-xs">
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 px-2 text-xs text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 cursor-pointer"
+            className="h-7 px-2.5 text-xs rounded-full font-semibold text-[#1E3A2B] hover:text-[#1E3A2B] hover:bg-white/80 cursor-pointer"
             onClick={() => {
               setSelectedBlockId(null);
               setSelectedVillageId(null);
             }}
           >
-            <Home className="h-3 w-3 mr-1" />
+            <Home className="h-3 w-3 mr-1 text-[#3F6B4A]" />
             {district.name}
           </Button>
 
           {selectedBlock && (
             <>
-              <ChevronRight className="h-3 w-3 text-stone-400 shrink-0" />
+              <ChevronRight className="h-3 w-3 text-[#1E3A2B]/40 shrink-0" />
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-xs text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 cursor-pointer"
+                className="h-7 px-2.5 text-xs rounded-full font-semibold text-[#1E3A2B] hover:text-[#1E3A2B] hover:bg-white/80 cursor-pointer"
                 onClick={() => setSelectedVillageId(null)}
               >
                 {t("blockPrefix", { name: selectedBlock.name })}
@@ -106,27 +106,27 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
 
           {selectedVillage && (
             <>
-              <ChevronRight className="h-3 w-3 text-stone-400 shrink-0" />
-              <span className="font-semibold text-[#191F1C] px-2">{t("villagePrefix", { name: selectedVillage.name })}</span>
+              <ChevronRight className="h-3 w-3 text-[#1E3A2B]/40 shrink-0" />
+              <span className="font-bold text-[#1E3A2B] px-2 bg-white/80 py-1 rounded-full border border-white/70 shadow-2xs">
+                {t("villagePrefix", { name: selectedVillage.name })}
+              </span>
             </>
           )}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-4 pt-4">
+      <div className="p-5 sm:p-6 space-y-6">
         {/* Block Selection Grid */}
         <div className="space-y-2">
-          <label className="text-xs text-stone-600 font-medium">{t("selectBlockSubDistrict")}</label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          <label className="text-xs font-semibold text-[#1E3A2B] uppercase tracking-wider">{t("selectBlockSubDistrict")}</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
             {district.blocks.map((block) => (
-              <Button
+              <button
                 key={block.id}
-                variant={selectedBlock?.id === block.id ? "default" : "outline"}
-                size="sm"
-                className={`justify-between text-xs h-auto py-2 px-3 cursor-pointer ${
+                className={`flex items-center justify-between text-xs py-2 px-3.5 rounded-full font-semibold transition-all cursor-pointer border ${
                   selectedBlock?.id === block.id
-                    ? "bg-[#047857] text-white hover:bg-[#065f46]"
-                    : "bg-white text-stone-700 border-[#E5E0D8] hover:bg-[#FAF8F3]"
+                    ? "bg-[#1E3A2B] text-white border-[#1E3A2B] shadow-sm"
+                    : "bg-white/60 text-[#1D1C14] border-white/80 hover:bg-white/90 shadow-2xs"
                 }`}
                 onClick={() => {
                   setSelectedBlockId(block.id);
@@ -134,42 +134,42 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
                 }}
               >
                 <span>{block.name}</span>
-                <Badge variant="secondary" className="text-[10px] bg-[#FAF8F3] text-stone-600 border border-[#E5E0D8]">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedBlock?.id === block.id ? "bg-white/20 text-white" : "bg-[#1E3A2B]/10 text-[#1E3A2B]"}`}>
                   {t("villagesCount", { count: block.villages.length })}
-                </Badge>
-              </Button>
+                </span>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Village Selection Grid */}
         {selectedBlock && (
-          <div className="space-y-2 pt-2 border-t border-[#E5E0D8]">
-            <label className="text-xs text-stone-600 font-medium">{t("villagesIn", { name: selectedBlock.name })}</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="space-y-3 pt-4 border-t border-[#1E3A2B]/10">
+            <label className="text-xs font-semibold text-[#1E3A2B] uppercase tracking-wider">{t("villagesIn", { name: selectedBlock.name })}</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {selectedBlock.villages.map((village) => (
                 <div
                   key={village.id}
                   onClick={() => setSelectedVillageId(village.id)}
-                  className={`p-3 rounded-2xl border cursor-pointer transition-all shadow-2xs ${
+                  className={`p-4 rounded-2xl border cursor-pointer transition-all shadow-xs backdrop-blur-md ${
                     selectedVillage?.id === village.id
-                      ? "bg-emerald-50/70 border-emerald-500 text-[#191F1C] shadow-xs"
-                      : "bg-white border-[#E5E0D8] hover:border-stone-400 text-stone-700"
+                      ? "bg-[#3F6B4A]/12 border-[#3F6B4A]/50 text-[#1E3A2B] shadow-md ring-1 ring-[#3F6B4A]/30"
+                      : "bg-white/60 border-white/80 hover:bg-white/90 text-[#1D1C14]"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <h5 className="font-semibold text-sm text-[#191F1C]">{village.name}</h5>
+                    <h5 className="font-bold text-sm text-[#1E3A2B]">{village.name}</h5>
                     {village.alerts.length > 0 && (
-                      <Badge variant="destructive" className="text-[10px] gap-1 bg-red-100 text-red-800 border-red-200">
+                      <Badge className="text-[10px] gap-1 bg-[#C1622D]/15 text-[#C1622D] border-[#C1622D]/30 font-bold px-2 py-0.5 rounded-full">
                         <ShieldAlert className="h-3 w-3" />
                         {t("activeAlertBadge")}
                       </Badge>
                     )}
                   </div>
 
-                  <div className="text-xs text-stone-500 mt-2 flex justify-between">
+                  <div className="text-xs text-[#1D1C14]/70 mt-3 flex justify-between font-medium">
                     <span>{t("farmsCount", { count: village.farms.length })}</span>
-                    <span>
+                    <span className="font-bold text-[#1E3A2B]">
                       {t("totalAnimals")}:{" "}
                       {village.farms.reduce(
                         (sum, f) => sum + f.herds.reduce((hSum, h) => hSum + h.animals.length, 0),
@@ -185,34 +185,34 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
 
         {/* Farm & Herd Inspection for Selected Village */}
         {selectedVillage && (
-          <div className="space-y-3 pt-3 border-t border-[#E5E0D8]">
-            <h4 className="text-xs font-semibold text-stone-700">
+          <div className="space-y-3 pt-4 border-t border-[#1E3A2B]/10">
+            <h4 className="text-xs font-bold text-[#1E3A2B] uppercase tracking-wider">
               {t("farmsAndAnimalsIn", { name: selectedVillage.name })}
             </h4>
 
             {selectedVillage.farms.length === 0 ? (
-              <div className="p-4 rounded-xl bg-[#FAF8F3] border border-[#E5E0D8] text-xs text-stone-500">
+              <div className="p-4 rounded-2xl bg-white/50 border border-white/70 text-xs text-[#1D1C14]/60">
                 {t("noFarmsInVillage")}
               </div>
             ) : (
               <div className="space-y-3">
                 {selectedVillage.farms.map((farm) => (
-                  <div key={farm.id} className="p-3 rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] space-y-2">
+                  <div key={farm.id} className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 space-y-3 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-[#191F1C]">{farm.name}</span>
-                      <Badge variant="outline" className="text-[10px] text-stone-600 border-[#D9D3C7] bg-white">
+                      <span className="font-bold text-sm text-[#1E3A2B]">{farm.name}</span>
+                      <Badge variant="outline" className="text-[10px] font-semibold text-[#1E3A2B] border-white/80 bg-white/70 rounded-full px-2.5 py-0.5">
                         {t("herdsCount", { count: farm.herds.length })}
                       </Badge>
                     </div>
 
                     <div className="space-y-2 pl-2">
                       {farm.herds.map((herd) => (
-                        <div key={herd.id} className="p-2 rounded-xl bg-white border border-[#E5E0D8] text-xs flex items-center justify-between">
+                        <div key={herd.id} className="p-3 rounded-xl bg-white/80 border border-white/90 text-xs flex items-center justify-between shadow-2xs">
                           <div>
-                            <span className="text-[#191F1C] font-medium">{herd.name || herd.species}</span>
-                            <span className="text-stone-500 ml-2 font-mono">({herd.species})</span>
+                            <span className="text-[#1E3A2B] font-semibold">{herd.name || herd.species}</span>
+                            <span className="text-[#1D1C14]/60 ml-2 font-mono">({herd.species})</span>
                           </div>
-                          <span className="text-emerald-800 font-semibold font-mono">{t("animalsCount", { count: herd.animals.length })}</span>
+                          <span className="text-[#3F6B4A] font-bold font-mono">{t("animalsCount", { count: herd.animals.length })}</span>
                         </div>
                       ))}
                     </div>
@@ -222,7 +222,7 @@ export function GeographicDrilldown({ districts }: GeographicDrilldownProps) {
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -92,52 +92,51 @@ export function DistrictCommandCenter({
   const activeAlertsCount = data.snapshot.currentActiveAlerts;
 
   return (
-    <div className="space-y-8 text-[#191F1C]">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14] dark:text-[#F4EEE1]">
       {/* 1. TOP HEADER & COMMAND CENTER BANNER */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E5E0D8] pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#1E3A2B]/8 pb-5">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#191F1C] tracking-tight">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display">
               {data.districtName} • District Command Center
             </h1>
-            <Badge className="bg-purple-100 text-purple-950 border-purple-300 text-xs font-semibold px-2.5 py-0.5">
+            <span className="bg-[#3F6B4A]/15 text-[#3F6B4A] text-xs font-bold px-3 py-1 rounded-full border border-white/60">
               {t("epidemiologicalCockpit")}
-            </Badge>
+            </span>
           </div>
-          <p className="text-stone-600 text-xs sm:text-sm mt-1">
+          <p className="text-[#4A3324]/75 text-xs sm:text-sm mt-1">
             {t("epidemiologicalCockpitDesc")}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link href="/authority/alerts">
-            <Button
-              size="sm"
-              className="gap-1.5 text-xs bg-red-700 hover:bg-red-800 text-white min-h-[36px] rounded-xl shadow-xs"
+            <button
+              className="px-4 py-2 text-xs rounded-full bg-[#C1622D] text-white font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_14px_rgba(193,98,45,0.3)] hover:bg-[#A84F20] transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <BellRing className={`h-4 w-4 ${activeAlertsCount > 0 ? "animate-pulse text-amber-300" : ""}`} />
+              <BellRing className={`h-4 w-4 ${activeAlertsCount > 0 ? "animate-pulse text-[#FDF6E2]" : ""}`} />
               <span>Active Alerts ({activeAlertsCount})</span>
-            </Button>
+            </button>
           </Link>
           <Link href="/authority/approvals">
-            <Badge className="text-xs bg-amber-50 text-amber-900 border-amber-300 px-3 py-2 gap-1.5 cursor-pointer rounded-xl hover:bg-amber-100 transition-all font-medium">
-              <ShieldCheck className="h-3.5 w-3.5 text-amber-700" />
+            <span className="text-xs bg-[#D9A441]/15 text-[#8F6612] border border-white/60 px-3.5 py-2 gap-1.5 cursor-pointer rounded-full hover:bg-[#D9A441]/25 transition-all font-bold inline-flex items-center shadow-xs">
+              <ShieldCheck className="h-4 w-4 text-[#D9A441]" />
               <span>Pending Approvals: {pendingApprovalsCount}</span>
-            </Badge>
+            </span>
           </Link>
         </div>
       </div>
 
-      {/* 2. ERROR STATE BANNER (If query fails, never fallback to fake numbers) */}
+      {/* 2. ERROR STATE BANNER */}
       {error && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-red-50 border border-red-200 text-red-900 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="p-5 rounded-3xl bg-[#C1622D]/10 border border-[#C1622D]/25 text-[#C1622D] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-red-100 border border-red-300 flex items-center justify-center shrink-0">
-              <AlertTriangle className="h-5 w-5 text-red-700" />
+            <div className="h-10 w-10 rounded-2xl bg-[#C1622D]/20 text-[#C1622D] flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-red-950">{t("unableToLoad")}</h3>
-              <p className="text-xs text-red-800 mt-0.5">
+              <h3 className="font-bold text-sm text-[#1E3A2B]">{t("unableToLoad")}</h3>
+              <p className="text-xs text-[#4A3324]/80 mt-0.5">
                 {t("databaseQueryFailed")}
               </p>
             </div>
@@ -145,7 +144,7 @@ export function DistrictCommandCenter({
           <Button
             size="sm"
             onClick={() => handleApplyFilters(timeRange, blockId, villageId, customStart, customEnd)}
-            className="bg-red-700 hover:bg-red-800 text-white rounded-xl text-xs gap-1.5 shrink-0"
+            className="liquid-button-primary text-xs shrink-0"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>{t("retryQuery")}</span>
@@ -153,14 +152,14 @@ export function DistrictCommandCenter({
         </div>
       )}
 
-      {/* 3. LIVE QUERY FILTER CONTROLS (Server-Side Database Filtering) */}
-      <div className="p-4 rounded-3xl bg-white border border-[#E5E0D8] shadow-xs space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E0D8] pb-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
-            <Filter className="h-4 w-4 text-emerald-700" />
+      {/* 3. LIVE QUERY FILTER CONTROLS */}
+      <div className="p-5 rounded-3xl bg-[#F4EEE1]/85 backdrop-blur-[24px] border border-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_12px_32px_rgba(30,58,43,0.08)] space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1E3A2B]/8 pb-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#1E3A2B]">
+            <Filter className="h-4 w-4 text-[#3F6B4A]" />
             <span>Database Query Filters (Server-Side Filtered)</span>
             {isPending && (
-              <span className="flex items-center gap-1.5 text-[11px] font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full animate-pulse border border-emerald-200">
+              <span className="flex items-center gap-1.5 text-[11px] font-semibold text-[#3F6B4A] bg-[#3F6B4A]/12 px-2.5 py-0.5 rounded-full animate-pulse border border-[#3F6B4A]/20">
                 <RotateCcw className="h-3 w-3 animate-spin" />
                 {t("queryingDatabase")}
               </span>
@@ -172,21 +171,21 @@ export function DistrictCommandCenter({
             variant="ghost"
             onClick={handleResetFilters}
             disabled={isPending}
-            className="h-7 px-2.5 text-xs text-stone-600 hover:text-stone-900 rounded-xl gap-1"
+            className="h-8 px-3 text-xs text-[#1E3A2B] hover:bg-[#1E3A2B]/8 rounded-full gap-1 cursor-pointer"
           >
-            <RotateCcw className="h-3 w-3" />
+            <RotateCcw className="h-3.5 w-3.5" />
             <span>{t("resetFilters")}</span>
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Time Range Filter Buttons */}
-          <div className="space-y-1 sm:col-span-2 lg:col-span-2">
-            <label className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+          <div className="space-y-1.5 sm:col-span-2 lg:col-span-2">
+            <label className="text-xs font-semibold text-[#4A3324]/70 flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
               <span>Time Window:</span>
             </label>
-            <div className="flex flex-wrap items-center gap-1.5 bg-[#FAF8F3] p-1 rounded-2xl border border-[#E5E0D8]">
+            <div className="flex flex-wrap items-center gap-1 bg-white/65 p-1 rounded-full border border-white/70 shadow-inner">
               {(
                 [
                   { id: "today", label: "Today" },
@@ -205,10 +204,10 @@ export function DistrictCommandCenter({
                       handleApplyFilters(t.id, blockId, villageId);
                     }
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     timeRange === t.id
-                      ? "bg-emerald-700 text-white shadow-xs"
-                      : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/50"
+                      ? "bg-[#1E3A2B] text-[#F4EEE1] shadow-sm"
+                      : "text-[#4A3324]/70 hover:text-[#1E3A2B] hover:bg-white/60"
                   }`}
                 >
                   {t.label}
@@ -218,9 +217,9 @@ export function DistrictCommandCenter({
           </div>
 
           {/* Block / Taluka Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[#4A3324]/70 flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
               <span>Block / Taluka:</span>
             </label>
             <select
@@ -228,10 +227,10 @@ export function DistrictCommandCenter({
               onChange={(e) => {
                 const newBlock = e.target.value;
                 setBlockId(newBlock);
-                setVillageId(""); // Reset village when block changes
+                setVillageId("");
                 handleApplyFilters(timeRange, newBlock, "");
               }}
-              className="w-full h-9 px-3 text-xs bg-[#FAF8F3] border border-[#D9D3C7] rounded-xl focus:border-emerald-700 focus:outline-none"
+              className="w-full h-9 px-3 text-xs bg-white/80 border border-white/80 rounded-full focus:ring-2 focus:ring-[#1E3A2B]/25 focus:outline-none shadow-xs text-[#1E3A2B]"
             >
               <option value="">All Blocks ({data.filterOptions.blocks.length})</option>
               {data.filterOptions.blocks.map((b) => (
@@ -243,9 +242,9 @@ export function DistrictCommandCenter({
           </div>
 
           {/* Village Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
-              <Building2 className="h-3 w-3" />
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[#4A3324]/70 flex items-center gap-1">
+              <Building2 className="h-3.5 w-3.5" />
               <span>Village:</span>
             </label>
             <select
@@ -255,7 +254,7 @@ export function DistrictCommandCenter({
                 setVillageId(newVillage);
                 handleApplyFilters(timeRange, blockId, newVillage);
               }}
-              className="w-full h-9 px-3 text-xs bg-[#FAF8F3] border border-[#D9D3C7] rounded-xl focus:border-emerald-700 focus:outline-none"
+              className="w-full h-9 px-3 text-xs bg-white/80 border border-white/80 rounded-full focus:ring-2 focus:ring-[#1E3A2B]/25 focus:outline-none shadow-xs text-[#1E3A2B]"
             >
               <option value="">All Villages ({availableVillages.length})</option>
               {availableVillages.map((v) => (

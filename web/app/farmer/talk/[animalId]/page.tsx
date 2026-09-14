@@ -127,33 +127,35 @@ export default function FarmerTalkPage({ params }: PageProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-6 max-w-4xl mx-auto w-full gap-4 bg-[#FAF8F3] text-[#191F1C]">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-6 text-[#1D1C14]">
       {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-3">
-        <div className="flex items-center gap-2">
-          <Link href="/farmer">
-            <Button variant="outline" size="sm" className="h-9 w-9 p-0 border-[#D9D3C7]">
+      <div className="flex items-center justify-between border-b border-[#1E3A2B]/10 pb-4">
+        <div className="flex items-center gap-3">
+          <Link href="/farmer/talk">
+            <Button variant="outline" size="sm" className="h-9 w-9 p-0 rounded-full border-white/80 bg-white/60 hover:bg-white text-[#1E3A2B] shadow-xs cursor-pointer">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-lg font-bold text-[#191F1C]">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1E3A2B] tracking-tight font-display">
               Maitri AI Assistant — {animalId}
             </h1>
-            <p className="text-[11px] text-stone-500">
+            <p className="text-xs text-[#1D1C14]/70 mt-0.5">
               {t("informationalSupport")}
             </p>
           </div>
         </div>
 
         {/* Language Selector */}
-        <div className="flex items-center gap-1 bg-white border border-[#D9D3C7] rounded-xl p-1 text-xs">
+        <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md border border-white/80 rounded-full p-1 text-xs shadow-xs">
           {(["en", "hi", "bn", "mr"] as const).map((lang) => (
             <button
               key={lang}
               onClick={() => setLanguage(lang)}
-              className={`px-2 py-1 rounded-lg uppercase text-[10px] font-bold transition-colors ${
-                language === lang ? "bg-emerald-700 text-white" : "text-stone-600 hover:bg-stone-100"
+              className={`px-3 py-1 rounded-full uppercase text-[10px] font-bold transition-all cursor-pointer ${
+                language === lang
+                  ? "bg-[#1E3A2B] text-white shadow-xs"
+                  : "text-[#1D1C14]/70 hover:bg-white/80"
               }`}
             >
               {lang}
@@ -163,24 +165,26 @@ export default function FarmerTalkPage({ params }: PageProps) {
       </div>
 
       {/* Main Chat Area */}
-      <Card className="flex-1 flex flex-col border-[#E5E0D8] bg-white rounded-3xl overflow-hidden shadow-xs min-h-[500px]">
-        <CardHeader className="bg-[#FAF8F3] border-b border-[#E5E0D8] py-3 px-4 flex flex-row items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-semibold text-stone-700">
-            <ShieldCheck className="h-4 w-4 text-emerald-700" />
+      <div className="liquid-glass-card flex flex-col rounded-3xl overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_12px_32px_rgba(30,58,43,0.08)] min-h-[520px]">
+        <div className="bg-white/40 backdrop-blur-md border-b border-[#1E3A2B]/8 py-3.5 px-5 flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#1E3A2B]">
+            <ShieldCheck className="h-4 w-4 text-[#3F6B4A]" />
             <span>{t("clinicalGuardrailsActive")}</span>
           </div>
-          <CardDescription className="text-[11px] text-stone-500">
+          <span className="text-[11px] font-medium text-[#1D1C14]/60 bg-white/60 px-3 py-1 rounded-full border border-white/70">
             {animalContextPacket.recentCases.length} Health Record(s) Linked
-          </CardDescription>
-        </CardHeader>
+          </span>
+        </div>
 
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 min-h-[380px]">
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3 text-stone-500">
-              <Bot className="h-10 w-10 text-emerald-700" />
-              <p className="text-xs max-w-sm">
+            <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-3 text-[#1D1C14]/60">
+              <div className="w-14 h-14 rounded-2xl bg-[#3F6B4A]/12 flex items-center justify-center text-[#3F6B4A] shadow-xs">
+                <Bot className="h-7 w-7" />
+              </div>
+              <p className="text-xs max-w-sm leading-relaxed text-[#1D1C14]/70">
                 Ask any question regarding health records, recent vaccinations, or general care for ear tag{" "}
-                <strong className="text-stone-800">{animalId}</strong>.
+                <strong className="text-[#1E3A2B]">{animalId}</strong>.
               </p>
             </div>
           ) : (
@@ -192,8 +196,8 @@ export default function FarmerTalkPage({ params }: PageProps) {
                 }`}
               >
                 <div
-                  className={`h-8 w-8 rounded-full flex items-center justify-center text-xs shrink-0 ${
-                    m.role === "user" ? "bg-emerald-700 text-white" : "bg-stone-200 text-stone-800"
+                  className={`h-8 w-8 rounded-full flex items-center justify-center text-xs shrink-0 shadow-2xs ${
+                    m.role === "user" ? "bg-[#1E3A2B] text-white" : "bg-white/80 text-[#3F6B4A] border border-white/90"
                   }`}
                 >
                   {m.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -201,25 +205,25 @@ export default function FarmerTalkPage({ params }: PageProps) {
 
                 <div className="space-y-2">
                   <div
-                    className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
+                    className={`p-4 rounded-2xl text-xs leading-relaxed ${
                       m.role === "user"
-                        ? "bg-emerald-700 text-white"
-                        : "bg-[#FAF8F3] border border-[#E5E0D8] text-stone-900"
+                        ? "bg-[#1E3A2B] text-white shadow-md rounded-tr-xs"
+                        : "bg-white/70 backdrop-blur-md border border-white/80 text-[#1D1C14] shadow-xs rounded-tl-xs"
                     }`}
                   >
                     {m.content}
                   </div>
 
                   {m.riskNotice && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900 flex items-start gap-1.5">
-                      <AlertTriangle className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div className="bg-[#C1622D]/12 border border-[#C1622D]/30 rounded-xl p-2.5 text-[11px] text-[#C1622D] flex items-start gap-1.5 font-medium">
+                      <AlertTriangle className="h-4 w-4 text-[#C1622D] shrink-0 mt-0.5" />
                       <span>{m.riskNotice}</span>
                     </div>
                   )}
 
                   {m.suggestedNextStep && (
-                    <div className="text-[10px] text-stone-500 font-semibold pl-1">
-                      Suggested Action: <span className="text-emerald-800">{m.suggestedNextStep}</span>
+                    <div className="text-[10px] text-[#1D1C14]/60 font-semibold pl-1">
+                      Suggested Action: <span className="text-[#3F6B4A] font-bold">{m.suggestedNextStep}</span>
                     </div>
                   )}
                 </div>
@@ -228,31 +232,31 @@ export default function FarmerTalkPage({ params }: PageProps) {
           )}
 
           {isLoading && (
-            <div className="flex items-center gap-2 text-xs text-stone-500 bg-[#FAF8F3] p-3 rounded-2xl w-fit border border-[#E5E0D8]">
-              <Loader2 className="h-4 w-4 animate-spin text-emerald-700" />
+            <div className="flex items-center gap-2 text-xs text-[#1E3A2B] bg-white/70 backdrop-blur-md p-3 rounded-full w-fit border border-white/80 shadow-xs">
+              <Loader2 className="h-4 w-4 animate-spin text-[#3F6B4A]" />
               <span>{t("checkingHealthContext")}</span>
             </div>
           )}
-        </CardContent>
+        </div>
 
         {/* Chat Input Bar */}
-        <div className="p-3 bg-[#FAF8F3] border-t border-[#E5E0D8] flex gap-2">
+        <div className="p-3.5 bg-white/40 backdrop-blur-md border-t border-[#1E3A2B]/8 flex gap-2">
           <Input
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder={`Ask about ${animalId}'s health or symptoms...`}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            className="bg-white border-[#D9D3C7] text-xs min-h-[44px] rounded-xl focus:outline-none"
+            className="bg-white/80 border-white/80 text-xs min-h-[44px] rounded-full px-4 focus-visible:ring-[#3F6B4A] shadow-xs"
           />
           <Button
             onClick={handleSendMessage}
             disabled={isLoading || !inputMessage.trim()}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white min-h-[44px] px-4 rounded-xl shadow-xs"
+            className="liquid-button-primary min-h-[44px] px-5 rounded-full shadow-md cursor-pointer"
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

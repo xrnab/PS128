@@ -276,6 +276,9 @@
       "resolving": "Resolving location hierarchy...",
       "typePlaceholder": "Type village, town, or area name"
     },
+    "reporting": {
+      "location": "Location"
+    },
     "photo": {
       "noPhoto": "No Clinical Photograph Attached",
       "noPhotoDesc": "No field lesion or inspection photo was uploaded with this case intake.",
@@ -1007,6 +1010,14 @@
     "villageName": "Village Name",
     "riskLevel": "Risk Level",
     "farms": "Farms",
+    "vaccinationCoverage": "Vaccination Coverage %",
+    "priorityAction": "Priority Action",
+    "vaccinationGapBadge": "⚠ Vaccination Gap",
+    "showPriorityOnly": "Show priority villages only",
+    "recommendDrive": "Recommend Vaccination Drive",
+    "driveRecommended": "Drive Recommended",
+    "noPriorityVillages": "No priority vaccination gaps detected.",
+    "driveSuccess": "Vaccination drive recommendation broadcasted to field agents.",
     "noAlertsFound": "No matching outbreak alerts found.",
     "viewOnMap": "View on Map",
     "geoHierarchyTitle": "District Geographic Hierarchy & Disease Surveillance",

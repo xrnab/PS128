@@ -83,9 +83,9 @@ export function AiAssessmentCard({
   const farmerAdvisory = analysisResult?.farmer_advisory as { advisory?: string } | null;
 
   return (
-    <Card className="border-[#D0E2FF] bg-[#F4F8FF] rounded-3xl shadow-xs overflow-hidden text-[#191F1C]">
+    <Card className="border-[#D0E2FF] dark:border-white/14 bg-[#F4F8FF] dark:bg-[#101E17]/85 rounded-3xl shadow-xs dark:shadow-[inset_0_1.5px_0.5px_rgba(255,255,255,0.18),0_16px_40px_rgba(0,0,0,0.5)] overflow-hidden text-[#191F1C] dark:text-[#F4EEE1]">
       {/* Header with Clinical Decision Support Tag */}
-      <CardHeader className="border-b border-[#D0E2FF] pb-3 bg-white/90">
+      <CardHeader className="border-b border-[#D0E2FF] dark:border-white/10 pb-3 bg-white/90 dark:bg-black/30">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-blue-600 text-white shadow-xs">

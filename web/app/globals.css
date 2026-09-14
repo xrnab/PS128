@@ -1,51 +1,87 @@
+@import "lenis/dist/lenis.css";
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #f3efe5;
-  --foreground: #20271f;
-  --ink-muted: #5e6256;
-  --paper: #fbf9f3;
-  --forest: #274c36;
-  --moss: #60724c;
-  --clay: #a44d33;
-  
-  --primary: #047857;
-  --primary-hover: #065F46;
-  --primary-light: #064E3B;
-  --primary-tint: #ECFDF5;
-  
-  --secondary: #92400E;
-  --secondary-hover: #78350F;
-  --accent: #D97706;
-  --accent-light: #FEF3C7;
-  
+  --background: #FBF8F3;
+  --foreground: #1D1C14;
+  --espresso: #4A3324;
+  --deep-pine: #1E3A2B;
+  --moss: #3F6B4A;
+  --parchment: #F4EEE1;
+  --wheat-gold: #D9A441;
+  --terracotta: #C1622D;
+
+  --primary: #1E3A2B;
+  --primary-hover: #162E22;
+  --primary-light: #2A4E3B;
+  --primary-tint: #EAF4EE;
+
+  --secondary: #3F6B4A;
+  --secondary-hover: #33593D;
+  --accent: #D9A441;
+  --accent-light: #FDF6E2;
+
   --surface: #FFFFFF;
-  --surface-hover: #F9F8F5;
-  --surface-subtle: #F3F0E7;
-  --surface-border: #E5E0D8;
-  --surface-border-light: #ECE8E1;
-  
-  --status-safe: #059669;
-  --status-warning: #D97706;
-  --status-serious: #EA580C;
-  --status-critical: #DC2626;
-  --status-info: #0284C7;
+  --surface-hover: #F9F7F1;
+  --surface-subtle: #F4EEE1;
+  --surface-border: rgba(30, 58, 43, 0.08);
+
+  --status-safe: #3F6B4A;
+  --status-warning: #D9A441;
+  --status-serious: #C1622D;
+  --status-critical: #BA1A1A;
+  --status-info: #2A5A78;
+}
+
+.dark {
+  --background: #080F0C;
+  --foreground: #F4EEE1;
+  --espresso: #D6C8B8;
+  --deep-pine: #28543D;
+  --moss: #508D61;
+  --parchment: #121F18;
+  --wheat-gold: #E5B458;
+  --terracotta: #E27945;
+
+  --primary: #28543D;
+  --primary-hover: #376E51;
+  --primary-light: #4A8C67;
+  --primary-tint: #13241B;
+
+  --secondary: #508D61;
+  --secondary-hover: #60A573;
+  --accent: #E5B458;
+  --accent-light: #262010;
+
+  --surface: #101E17;
+  --surface-hover: #162820;
+  --surface-subtle: #13241C;
+  --surface-border: rgba(255, 255, 255, 0.12);
+
+  --status-safe: #508D61;
+  --status-warning: #E5B458;
+  --status-serious: #E27945;
+  --status-critical: #E84C4C;
+  --status-info: #4A8EB8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans), "Noto Sans Devanagari", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-geist-sans), "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 }
 
 html {
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
 }
 
 body {
-  background-color: var(--background);
+  background-color: #FBF8F3;
   color: var(--foreground);
   font-family: var(--font-sans);
   margin: 0;
@@ -57,57 +93,608 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Maitri's visual language: field notebook paper, crop-line rules, and
-   confident editorial type. These are deliberately quiet so data stays easy
-   to scan in sheds, clinics, and district offices. */
-body::before {
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-sans);
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+::selection {
+  background: rgba(63, 107, 74, 0.22);
+  color: #1E3A2B;
+}
+
+/* =========================================================================
+   Apple Liquid Glass Material System ("Liquid Ledger")
+   Optimized for 60-120 FPS GPU-accelerated scrolling
+   ========================================================================= */
+
+/* Primary translucent light glass card */
+.liquid-glass-card,
+.liquid-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.46) 100%);
+  backdrop-filter: blur(28px) saturate(190%) contrast(102%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 16px -2px rgba(30, 58, 43, 0.04),
+    0 16px 36px -4px rgba(30, 58, 43, 0.08);
+  border-radius: 1.5rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.45),
+    0 6px 20px -2px rgba(30, 58, 43, 0.07),
+    0 22px 48px -4px rgba(30, 58, 43, 0.12);
+}
+
+/* Deep Pine dark glass panel (Clinician directive, featured callouts) */
+.liquid-glass-dark {
+  background: linear-gradient(135deg, rgba(30, 58, 43, 0.94) 0%, rgba(22, 46, 34, 0.92) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.40),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(30, 58, 43, 0.12),
+    0 24px 48px rgba(30, 58, 43, 0.25);
+  color: #F4EEE1;
+  border-radius: 1.5rem;
+}
+
+/* Priority Alert Warm Amber Glass */
+.liquid-glass-amber {
+  background: linear-gradient(135deg, rgba(254, 245, 235, 0.92) 0%, rgba(252, 236, 218, 0.78) 100%);
+  backdrop-filter: blur(28px) saturate(190%) contrast(102%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%);
+  border: 1px solid rgba(193, 98, 45, 0.35);
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
+    0 4px 16px -2px rgba(193, 98, 45, 0.08),
+    0 16px 36px -4px rgba(193, 98, 45, 0.12);
+  border-radius: 1.5rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.liquid-glass-amber:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
+    0 6px 22px -2px rgba(193, 98, 45, 0.14),
+    0 22px 46px -4px rgba(193, 98, 45, 0.18);
+}
+
+/* Urgent terracotta ambient glow (priority anomalies, critical cards) */
+.liquid-glow-urgent {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 2px rgba(30, 58, 43, 0.06),
+    0 12px 32px rgba(30, 58, 43, 0.10),
+    0 0 28px rgba(193, 98, 45, 0.24) !important;
+}
+
+/* Specular light sheen highlight */
+.liquid-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.liquid-sheen::after {
   content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.45) 0%, transparent 40%, transparent 70%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+/* Apple CTA Pill Button Gradient */
+.liquid-button-primary {
+  background: linear-gradient(180deg, #1E3A2B 0%, #3F6B4A 100%);
+  color: #F4EEE1;
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 14px rgba(30, 58, 43, 0.22),
+    0 1px 3px rgba(30, 58, 43, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.liquid-button-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 8px 20px rgba(30, 58, 43, 0.28),
+    0 2px 5px rgba(30, 58, 43, 0.15);
+}
+.liquid-button-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Apple Secondary Pill */
+.liquid-button-glass {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #1E3A2B;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 8px rgba(30, 58, 43, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.liquid-button-glass:hover {
+  background: rgba(255, 255, 255, 0.90);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 4px 12px rgba(30, 58, 43, 0.08);
+}
+.liquid-button-glass:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* =========================================================================
+   Apple Dark Mode Liquid Glass Material & Surface System
+   ========================================================= */
+
+.dark .liquid-glass-card,
+.dark .liquid-panel {
+  background: linear-gradient(135deg, rgba(20, 36, 28, 0.78) 0%, rgba(11, 20, 16, 0.70) 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) contrast(108%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(108%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 8px 24px -2px rgba(0, 0, 0, 0.40),
+    0 20px 48px -4px rgba(0, 0, 0, 0.50) !important;
+  color: #F4EEE1;
+}
+
+.dark .liquid-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.32),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 12px 28px -2px rgba(0, 0, 0, 0.45),
+    0 28px 56px -4px rgba(0, 0, 0, 0.60) !important;
+}
+
+.dark .liquid-glass-dark {
+  background: linear-gradient(135deg, rgba(16, 30, 23, 0.94) 0%, rgba(10, 20, 15, 0.92) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 12px 36px rgba(0, 0, 0, 0.55) !important;
+}
+
+.dark .liquid-glass-amber {
+  background: linear-gradient(135deg, rgba(46, 28, 14, 0.85) 0%, rgba(30, 18, 9, 0.75) 100%) !important;
+  border: 1px solid rgba(229, 180, 88, 0.25) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(229, 180, 88, 0.35),
+    0 12px 32px rgba(0, 0, 0, 0.45) !important;
+}
+
+.dark .liquid-button-glass {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #F4EEE1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .liquid-button-glass:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+}
+
+.dark .liquid-button-primary {
+  background: linear-gradient(180deg, #2D5842 0%, #3F6B4A 100%) !important;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Highly Optimized GPU-Cached Ambient Mesh Background - True Apple Liquid Depth */
+.ambient-mesh-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
-  opacity: .32;
-  background-image: radial-gradient(rgba(55, 66, 44, .12) .55px, transparent .55px);
-  background-size: 7px 7px;
+  z-index: 0;
+  background:
+    /* Smooth, wide atmospheric canopy - gentle and seamless, no dark glitch at top */
+    radial-gradient(ellipse 140% 50% at 50% 0%, rgba(30, 58, 43, 0.08) 0%, transparent 70%),
+    /* Top-Left Radiant Jade & Sage Wash */
+    radial-gradient(circle 950px at 8% 18%, rgba(63, 130, 90, 0.16) 0%, transparent 65%),
+    /* Top-Right Luminous Honey Amber Wash */
+    radial-gradient(circle 950px at 92% 18%, rgba(226, 160, 48, 0.18) 0%, transparent 65%),
+    /* Center Subtle Champagne Illumination */
+    radial-gradient(circle 850px at 50% 50%, rgba(245, 222, 178, 0.22) 0%, transparent 70%),
+    /* Bottom-Left Warm Terracotta Amber */
+    radial-gradient(circle 1000px at 12% 85%, rgba(193, 98, 45, 0.13) 0%, transparent 65%),
+    /* Bottom-Right Deep Pine Glow */
+    radial-gradient(circle 1000px at 88% 85%, rgba(63, 107, 74, 0.15) 0%, transparent 65%),
+    /* Base Organic Warm Silk Tone */
+    #F6F2E9;
+  transform: translateZ(0);
 }
 
-h1, h2, h3, .font-editorial {
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -.025em;
+/* Dark Mode Ambient Mesh Background */
+.dark .ambient-mesh-bg {
+  background:
+    /* Atmospheric deep canopy */
+    radial-gradient(ellipse 140% 50% at 50% 0%, rgba(40, 84, 61, 0.40) 0%, transparent 70%),
+    /* Top-Left Radiant Jade & Sage Wash */
+    radial-gradient(circle 950px at 8% 18%, rgba(63, 130, 90, 0.25) 0%, transparent 65%),
+    /* Top-Right Warm Honey Gold Ambient */
+    radial-gradient(circle 950px at 92% 18%, rgba(217, 164, 65, 0.18) 0%, transparent 65%),
+    /* Center Midnight Pine Depth */
+    radial-gradient(circle 850px at 50% 50%, rgba(20, 42, 31, 0.45) 0%, transparent 70%),
+    /* Bottom-Left Warm Terracotta Ember */
+    radial-gradient(circle 1000px at 12% 85%, rgba(193, 98, 45, 0.16) 0%, transparent 65%),
+    /* Bottom-Right Deep Forest Luminescence */
+    radial-gradient(circle 1000px at 88% 85%, rgba(40, 84, 61, 0.30) 0%, transparent 65%),
+    /* Base Obsidian Pitch Tone */
+    #080F0C;
 }
 
-::selection { background: #b9c69e; color: #20271f; }
+/* =========================================================================
+   Apple Dark Mode Liquid Glass Material & Surface System
+   True visionOS / iOS 18+ Obsidian Liquid Glass ("Liquid Ledger")
+   ========================================================================= */
 
-.workspace-page {
-  position: relative;
-  max-width: 76rem;
-  margin-inline: auto;
-  padding: clamp(0.875rem, 3.5vw, 2.5rem);
+/* Dark Mode Headings & Display Typography */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark .font-display {
+  color: #F5EFE6 !important;
 }
 
-.workspace-heading {
-  border-bottom: 1px solid #cfc6af;
-  padding-bottom: 1rem;
+/* Dark Mode Universal Text Contrast Engine */
+/* Primary Brand Dark Text (matches text-[#1E3A2B] and all opacity variants) */
+.dark [class*="text-[#1E3A2B]"],
+.dark [class*="text-[#1D1C14]"],
+.dark [class*="text-[#191F1C]"],
+.dark [class*="text-[#162E22]"],
+.dark [class*="text-[#20271F]"],
+.dark [class*="text-[#2D312E]"],
+.dark [class*="text-[#2C3E50]"] {
+  color: #F5EFE6 !important;
 }
 
-.workspace-eyebrow {
-  color: #496342;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+.dark [class*="text-[#1E3A2B]/80"],
+.dark [class*="text-[#1E3A2B]/85"],
+.dark [class*="text-[#1E3A2B]/90"] {
+  color: #F5EFE6 !important;
 }
 
-.metric-register > * {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border-color: #d7cfbb !important;
-  background: rgba(251, 249, 243, .78) !important;
+.dark [class*="text-[#1E3A2B]/75"],
+.dark [class*="text-[#1E3A2B]/70"] {
+  color: #DDD3C5 !important;
 }
+
+.dark [class*="text-[#1E3A2B]/60"],
+.dark [class*="text-[#1E3A2B]/55"],
+.dark [class*="text-[#1E3A2B]/50"] {
+  color: #C5BBAA !important;
+}
+
+.dark [class*="text-[#1E3A2B]/40"],
+.dark [class*="text-[#1E3A2B]/30"] {
+  color: #9E9486 !important;
+}
+
+/* Secondary Warm Charcoal / Espresso Text */
+.dark [class*="text-[#4A3324]"] {
+  color: #D8CCC0 !important;
+}
+
+.dark [class*="text-[#4A3324]/90"],
+.dark [class*="text-[#4A3324]/85"] {
+  color: #D8CCC0 !important;
+}
+
+.dark [class*="text-[#4A3324]/80"] {
+  color: #D0C3B5 !important;
+}
+
+.dark [class*="text-[#4A3324]/75"],
+.dark [class*="text-[#4A3324]/70"] {
+  color: #C8BBAA !important;
+}
+
+.dark [class*="text-[#4A3324]/60"],
+.dark [class*="text-[#4A3324]/50"] {
+  color: #B5A796 !important;
+}
+
+/* Neutral Tone Typography (Stone, Slate, Gray, Zinc) */
+.dark [class*="text-stone-950"],
+.dark [class*="text-stone-900"],
+.dark [class*="text-stone-800"],
+.dark [class*="text-slate-950"],
+.dark [class*="text-slate-900"],
+.dark [class*="text-slate-800"],
+.dark [class*="text-gray-900"],
+.dark [class*="text-zinc-900"] {
+  color: #F5EFE6 !important;
+}
+
+.dark [class*="text-stone-700"],
+.dark [class*="text-slate-700"],
+.dark [class*="text-gray-700"] {
+  color: #D5CDC1 !important;
+}
+
+.dark [class*="text-stone-600"],
+.dark [class*="text-slate-600"],
+.dark [class*="text-gray-600"] {
+  color: #C2B8AA !important;
+}
+
+.dark [class*="text-stone-500"],
+.dark [class*="text-slate-500"],
+.dark [class*="text-gray-500"] {
+  color: #9E9486 !important;
+}
+
+.dark [class*="text-stone-400"],
+.dark [class*="text-stone-300"] {
+  color: #8C8274 !important;
+}
+
+/* Luminous OLED Brand Accent Colors */
+.dark [class*="text-[#3F6B4A]"] {
+  color: #50C878 !important;
+}
+
+.dark [class*="text-[#8F6612]"],
+.dark [class*="text-[#D9A441]"],
+.dark [class*="text-[#E5B458]"] {
+  color: #FBBF24 !important;
+}
+
+.dark [class*="text-[#C1622D]"],
+.dark [class*="text-[#E27945]"] {
+  color: #FB923C !important;
+}
+
+.dark [class*="text-emerald-950"],
+.dark [class*="text-emerald-900"],
+.dark [class*="text-emerald-800"] {
+  color: #C8F5CF !important;
+}
+
+.dark [class*="text-emerald-700"],
+.dark [class*="text-emerald-600"] {
+  color: #6EE7B7 !important;
+}
+
+.dark [class*="text-amber-950"],
+.dark [class*="text-amber-900"],
+.dark [class*="text-amber-800"],
+.dark [class*="text-amber-700"] {
+  color: #FDE047 !important;
+}
+
+.dark [class*="text-red-950"],
+.dark [class*="text-red-900"],
+.dark [class*="text-red-800"],
+.dark [class*="text-red-700"] {
+  color: #FCA5A5 !important;
+}
+
+/* =========================================================================
+   Apple Dark Mode Liquid Glass Surfaces & Material Panels
+   ========================================================================= */
+
+/* All Parchment & Light Ivory Panels -> Obsidian Liquid Glass */
+.dark [class*="bg-[#F4EEE1]"],
+.dark [class*="bg-[#FAF8F3]"],
+.dark [class*="bg-[#FAF6EE]"],
+.dark [class*="bg-[#FBF8F3]"],
+.dark [class*="bg-[#F6F2E9]"],
+.dark [class*="bg-[#F8F6F0]"],
+.dark [class*="bg-[#F4F8FF]"] {
+  background: linear-gradient(135deg, rgba(20, 36, 28, 0.78) 0%, rgba(11, 20, 16, 0.70) 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(105%) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 8px 24px -2px rgba(0, 0, 0, 0.40),
+    0 20px 48px -4px rgba(0, 0, 0, 0.55) !important;
+  color: #F4EEE1 !important;
+}
+
+/* Translucent White Glass Tiles -> Frosted Obsidian */
+.dark [class*="bg-white/"],
+.dark .bg-white {
+  background-color: rgba(18, 33, 26, 0.75) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  color: #F4EEE1 !important;
+}
+
+/* Control Pills & Interactive Glass Elements */
+.dark button[class*="bg-white/"],
+.dark a[class*="bg-white/"],
+.dark [role="button"][class*="bg-white/"] {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #F5EFE6 !important;
+  box-shadow: inset 0 1px 0.5px rgba(255, 255, 255, 0.20), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark button[class*="bg-white/"]:hover,
+.dark a[class*="bg-white/"]:hover,
+.dark [role="button"][class*="bg-white/"]:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+}
+
+/* Translucent Status Alerts & Chips */
+.dark .bg-emerald-50,
+.dark .bg-emerald-100,
+.dark [class*="bg-emerald-50/"] {
+  background-color: rgba(16, 185, 129, 0.16) !important;
+  border-color: rgba(16, 185, 129, 0.30) !important;
+  color: #A7F3D0 !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark [class*="bg-amber-50/"],
+.dark [class*="bg-amber-100/"] {
+  background-color: rgba(245, 158, 11, 0.16) !important;
+  border-color: rgba(245, 158, 11, 0.30) !important;
+  color: #FDE68A !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-red-100,
+.dark [class*="bg-red-50/"],
+.dark [class*="bg-red-100/"] {
+  background-color: rgba(239, 68, 68, 0.18) !important;
+  border-color: rgba(239, 68, 68, 0.32) !important;
+  color: #FECACA !important;
+}
+
+.dark .bg-stone-50,
+.dark .bg-stone-100,
+.dark [class*="bg-stone-50/"],
+.dark [class*="bg-stone-100/"] {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #E7E0D6 !important;
+}
+
+/* Specular Lines, Dividers & Borders */
+.dark [class*="border-[#1E3A2B]"],
+.dark [class*="border-[#E5E0D8]"],
+.dark [class*="border-[#D9D3C7]"],
+.dark [class*="border-stone-"],
+.dark [class*="border-slate-"],
+.dark [class*="border-gray-"],
+.dark [class*="divide-[#E5E0D8]"] > * + *,
+.dark [class*="divide-stone-"] > * + * {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+.dark [class*="border-white/"],
+.dark .border-white {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Buttons & Primary Interactive Elements */
+.dark .bg-\[\#1E3A2B\] {
+  background-color: #2D5842 !important;
+  color: #F4EEE1 !important;
+}
+
+.dark .bg-\[\#1E3A2B\]:hover,
+.dark .hover\:bg-\[\#3F6B4A\]:hover {
+  background-color: #3C7256 !important;
+}
+
+/* Tables in Dark Mode */
+.dark thead,
+.dark thead tr {
+  background-color: rgba(9, 18, 13, 0.92) !important;
+  color: #D5CDC1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark tbody tr:hover,
+.dark tr[class*="hover:bg-"]:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark td,
+.dark th {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Form Controls & Inputs */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: rgba(13, 24, 18, 0.85) !important;
+  color: #F4EEE1 !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #8C8274 !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #50C878 !important;
+  box-shadow: 0 0 0 2px rgba(80, 200, 120, 0.25) !important;
+}
+
+/* Dark Mode Leaflet Map System */
+.dark .leaflet-container {
+  background: #0D1612 !important;
+}
+
+.dark .leaflet-tile-pane {
+  filter: brightness(0.82) contrast(1.15) saturate(0.85);
+}
+
+.dark .maitri-map-tooltip,
+.dark .maitri-custom-popup .leaflet-popup-content-wrapper {
+  background: #14241B !important;
+  color: #F4EEE1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45) !important;
+}
+
+.dark .maitri-custom-popup .leaflet-popup-tip {
+  background: #14241B !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #080F0C;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
 
 /* Devanagari line height and rendering adjustments for Marathi & Hindi readability */
-[lang="hi"], [lang="mr"], .lang-devanagari {
+.lang-devanagari {
   line-height: 1.6;
   letter-spacing: 0.01em;
 }
@@ -147,20 +734,15 @@ h1, h2, h3, .font-editorial {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F3F0E7;
+  background: #F4EEE1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D1C9BE;
+  background: rgba(30, 58, 43, 0.2);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #047857;
+  background: rgba(30, 58, 43, 0.4);
 }
-
-/* Leaflet Custom Styling & Animations */
-.leaflet-pane img,
-.leaflet-tile-pane img,
-.leaflet-container img,
 .leaflet-tile {
   max-width: none !important;
   max-height: none !important;
@@ -319,8 +901,8 @@ h1, h2, h3, .font-editorial {
 }
 
 .hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px -8px rgba(25, 31, 28, 0.08), 0 4px 6px -2px rgba(25, 31, 28, 0.03);
+  transform: translateY(-4px) scale(1.006);
+  box-shadow: 0 20px 38px -14px rgba(46, 95, 149, .25), 0 5px 12px -5px rgba(46, 95, 149, .14);
 }
 
 .hover-lift-sm {

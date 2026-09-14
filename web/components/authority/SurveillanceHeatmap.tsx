@@ -49,6 +49,7 @@ interface SurveillanceHeatmapProps {
   mapLayers?: DistrictMapLayersData;
   markers?: MapMarkerData[];
   districtName?: string;
+  mapHeight?: string;
   onRefreshMap?: () => void;
 }
 
@@ -56,6 +57,7 @@ export function SurveillanceHeatmap({
   mapLayers,
   markers,
   districtName = "District Authority Scope",
+  mapHeight,
   onRefreshMap,
 }: SurveillanceHeatmapProps) {
   const t = useTranslations("authority");
@@ -178,40 +180,40 @@ export function SurveillanceHeatmap({
   };
 
   return (
-    <Card className="border-[#E5E0D8] bg-white overflow-hidden shadow-xs rounded-3xl">
+    <Card className="liquid-glass-card rounded-3xl overflow-hidden p-0">
       {/* Top Header & Geospatial Toolbar */}
-      <CardHeader className="pb-3 border-b border-[#E5E0D8] space-y-3">
+      <div className="p-6 border-b border-[#1E3A2B]/8 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base flex items-center gap-2 text-[#191F1C] font-bold">
-                <MapPin className="h-4 w-4 text-emerald-700" />
+              <div className="text-base flex items-center gap-2 text-[#1E3A2B] font-bold font-display">
+                <MapPin className="h-4 w-4 text-[#3F6B4A]" />
                 <span>{t("gisMapTitle")}</span>
-              </CardTitle>
-              <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px]">
+              </div>
+              <Badge className="bg-[#3F6B4A]/12 text-[#1E3A2B] border border-white/60 text-[10px] font-semibold">
                 {districtName}
               </Badge>
             </div>
-            <CardDescription className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs text-[#4A3324]/70 mt-0.5">
               {t("gisSubTitle", { count: totalPoints })}
-            </CardDescription>
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 flex-nowrap">
             {/* User-Initiated GPS Button */}
             <Button
               size="sm"
               variant="outline"
               onClick={handleRequestUserLocation}
               disabled={isLocating}
-              className={`h-8 px-3 text-xs rounded-xl border-[#D9D3C7] gap-1.5 transition-all ${
+              className={`h-8 px-3 text-xs rounded-full border border-white/80 gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 userGps
-                  ? "bg-blue-50 border-blue-300 text-blue-800 font-semibold"
-                  : "bg-white text-stone-700 hover:text-stone-900"
+                  ? "bg-[#3F6B4A] border-[#3F6B4A] text-white font-semibold"
+                  : "bg-white/80 text-[#1E3A2B] hover:bg-white"
               }`}
               title={t("gpsTitle")}
             >
-              <Crosshair className={`h-3.5 w-3.5 ${isLocating ? "animate-spin text-blue-600" : "text-stone-600"}`} />
+              <Crosshair className={`h-3.5 w-3.5 ${isLocating ? "animate-spin text-[#3F6B4A]" : "text-[#1E3A2B]"}`} />
               <span>{isLocating ? t("locatingGps") : userGps ? t("gpsPinned") : t("useMyLocation")}</span>
             </Button>
 
@@ -226,33 +228,32 @@ export function SurveillanceHeatmap({
                 setResetCount((c) => c + 1);
                 if (onRefreshMap) onRefreshMap();
               }}
-              className="h-8 px-3 text-xs rounded-xl border-[#D9D3C7] text-stone-700 hover:text-stone-900 bg-white gap-1.5"
+              className="h-8 px-3 text-xs rounded-full border border-white/80 text-[#1E3A2B] hover:bg-white bg-white/80 gap-1.5 shadow-xs cursor-pointer whitespace-nowrap shrink-0"
             >
-              <RotateCcw className="h-3.5 w-3.5 text-stone-500" />
+              <RotateCcw className="h-3.5 w-3.5 text-[#4A3324]/60" />
               <span>{t("resetMap")}</span>
             </Button>
           </div>
         </div>
 
         {gpsError && (
-          <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+          <div className="p-3 rounded-2xl bg-[#C1622D]/10 border border-[#C1622D]/20 text-[#C1622D] text-xs flex items-center gap-2">
+            <AlertTriangle className="h-3.5 w-3.5 text-[#C1622D] shrink-0" />
             <span>{gpsError}</span>
           </div>
         )}
 
         {/* Search & Layer Toggles Bar */}
-        {/* Search & Layer Toggles Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pt-1">
           {/* Search Input */}
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-stone-400" />
+          <div className="relative w-full sm:w-56 md:w-64 shrink-0">
+            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#4A3324]/40" />
             <Input
               type="text"
-              placeholder={t("searchGisPlaceholder")}
+              placeholder="Search locations or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 pl-8 text-xs bg-[#FAF8F3] border-[#D9D3C7] rounded-xl focus:border-emerald-700 w-full"
+              className="h-8 pl-8.5 pr-8 text-xs bg-white/80 border-white/80 rounded-full shadow-inner text-[#1E3A2B] placeholder:text-[#4A3324]/40 w-full"
             />
             {searchQuery && (
               <button
@@ -264,99 +265,99 @@ export function SurveillanceHeatmap({
             )}
           </div>
 
-          {/* Layer Filter Toggles (horizontally swipeable on mobile/tablet) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 w-full sm:w-auto -mx-1 px-1 shrink-0">
-            <span className="text-[11px] font-semibold text-stone-500 flex items-center gap-1 mr-1 shrink-0">
+          {/* Layer Filter Toggles (Unified Liquid Glass & Deep Pine) */}
+          <div className="flex items-center gap-1.5 flex-wrap py-1">
+            <span className="text-[11px] font-semibold text-[#4A3324]/60 flex items-center gap-1 mr-0.5 shrink-0">
               <Layers className="h-3.5 w-3.5" />
-              <span className="hidden xs:inline">{t("layers")}</span>
+              <span>{t("layers")}</span>
             </span>
 
             <button
               onClick={() => toggleLayer("heatmap")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.heatmap
-                  ? "bg-amber-100 text-amber-900 border-amber-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <span className="h-2 w-2 rounded-full bg-amber-500" />
+              <span className={`h-1.5 w-1.5 rounded-full ${layers.heatmap ? "bg-[#D9A441]" : "bg-stone-400"}`} />
               <span>{t("layerHeatmap")} ({resolvedMapLayers.heatmapPoints.length})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("farms")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.farms
-                  ? "bg-emerald-100 text-emerald-900 border-emerald-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <Home className="h-3 w-3 text-emerald-700" />
+              <Home className={`h-3 w-3 ${layers.farms ? "text-[#BDEEC5]" : "text-stone-400"}`} />
               <span>{t("layerFarms")} ({totalFarms})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("cases")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.cases
-                  ? "bg-red-100 text-red-900 border-red-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <ClipboardList className="h-3 w-3 text-red-700" />
+              <ClipboardList className={`h-3 w-3 ${layers.cases ? "text-[#FCA578]" : "text-stone-400"}`} />
               <span>{t("layerCases")} ({totalCases})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("vets")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.vets
-                  ? "bg-purple-100 text-purple-900 border-purple-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <Stethoscope className="h-3 w-3 text-purple-700" />
+              <Stethoscope className={`h-3 w-3 ${layers.vets ? "text-[#BDEEC5]" : "text-stone-400"}`} />
               <span>{t("layerVets")} ({totalVets})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("agents")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.agents
-                  ? "bg-blue-100 text-blue-900 border-blue-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <ShieldAlert className="h-3 w-3 text-blue-700" />
+              <ShieldAlert className={`h-3 w-3 ${layers.agents ? "text-[#BDEEC5]" : "text-stone-400"}`} />
               <span>{t("layerAgents")} ({totalAgents})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("visits")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.visits
-                  ? "bg-teal-100 text-teal-900 border-teal-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <Footprints className="h-3 w-3 text-teal-700" />
+              <Footprints className={`h-3 w-3 ${layers.visits ? "text-[#BDEEC5]" : "text-stone-400"}`} />
               <span>{t("layerVisits")} ({totalVisits})</span>
             </button>
 
             <button
               onClick={() => toggleLayer("alerts")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap ${
+              className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.alerts
-                  ? "bg-rose-100 text-rose-900 border-rose-300 font-semibold"
-                  : "bg-white text-stone-500 border-[#E5E0D8] hover:bg-stone-50"
+                  ? "bg-[#1E3A2B] text-[#F4EEE1] border-[#1E3A2B] font-semibold shadow-xs"
+                  : "bg-white/70 text-[#4A3324]/80 border-white/80 hover:bg-white hover:text-[#1E3A2B]"
               }`}
             >
-              <span className="h-2 w-2 rounded-full bg-rose-600" />
+              <span className={`h-1.5 w-1.5 rounded-full ${layers.alerts ? "bg-[#C1622D] animate-pulse" : "bg-stone-400"}`} />
               <span>{t("layerAlerts")} ({totalAlerts})</span>
             </button>
           </div>
         </div>
-      </CardHeader>
+      </div>
 
       <CardContent className="p-0 relative">
         {totalPoints === 0 ? (
@@ -372,7 +373,7 @@ export function SurveillanceHeatmap({
             </div>
           </div>
         ) : (
-          <div className="relative h-[520px] sm:h-[620px] w-full">
+          <div className={`relative ${mapHeight || "h-[480px] sm:h-[580px]"} w-full`}>
             <DynamicHeatmap
               key={resetCount}
               mapLayers={resolvedMapLayers}

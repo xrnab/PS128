@@ -39,7 +39,7 @@ export function MotionHeroImage({ src, alt, activeCaseCount }: MotionHeroImagePr
       className="relative w-full h-[360px] sm:h-[420px] md:h-[480px] rounded-3xl overflow-visible group select-none"
     >
       {/* Framed Image Container with subtle hover zoom and pointer shift */}
-      <div className="relative w-full h-full rounded-3xl overflow-hidden border border-[#E5E0D8] shadow-md bg-stone-100 transition-all duration-500 ease-out group-hover:shadow-xl">
+      <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-white/80 shadow-[0_24px_54px_rgba(30,58,43,.18),inset_0_1px_white] bg-[#F4EEE1] transition-all duration-500 ease-out group-hover:shadow-[0_30px_64px_rgba(30,58,43,.26)]">
         <div
           className="relative w-full h-full transition-transform duration-300 ease-out"
           style={{
@@ -61,18 +61,18 @@ export function MotionHeroImage({ src, alt, activeCaseCount }: MotionHeroImagePr
 
       {/* Product Annotation 1: Animal Card (Top Left) - Gentle Float */}
       <div
-        className="absolute -top-4 -left-3 sm:-left-6 bg-white/95 backdrop-blur-md border border-[#E5E0D8] rounded-2xl p-3 shadow-md flex items-center gap-3 max-w-[210px] animate-float-gentle z-10 transition-transform duration-300 hover:scale-105"
+        className="absolute -top-4 -left-3 sm:-left-6 bg-white/75 backdrop-blur-2xl border border-white/95 rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 max-w-[210px] z-10 transition-transform duration-300 hover:scale-105"
         style={{
           transform: isHovered ? `translate3d(${-coords.x * 0.8}px, ${-coords.y * 0.8}px, 0)` : undefined,
         }}
       >
-        <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
-          <HeartPulse className="h-4 w-4 text-emerald-700 animate-subtle-pulse" />
+        <div className="h-9 w-9 rounded-xl bg-[#3F6B4A]/15 border border-white/80 flex items-center justify-center shrink-0 shadow-xs">
+          <HeartPulse className="h-4 w-4 text-[#3F6B4A]" />
         </div>
         <div className="text-left leading-tight">
-          <div className="text-xs font-bold text-[#191F1C]">{t("heroImageCowName")}</div>
-          <div className="text-[11px] text-emerald-700 font-semibold mt-0.5 flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" style={{ animationDuration: "3s" }} />
+          <div className="text-xs font-bold text-[#1E3A2B]">{t("heroImageCowName")}</div>
+          <div className="text-[11px] text-[#3F6B4A] font-semibold mt-0.5 flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#3F6B4A] animate-ping" style={{ animationDuration: "2.5s" }} />
             <span>{t("heroImageHealthy")}</span>
           </div>
         </div>
@@ -80,18 +80,18 @@ export function MotionHeroImage({ src, alt, activeCaseCount }: MotionHeroImagePr
 
       {/* Product Annotation 2: Village Status Card (Bottom Right) - Gentle Float */}
       <div
-        className="absolute -bottom-4 -right-3 sm:-right-4 bg-white/95 backdrop-blur-md border border-[#E5E0D8] rounded-2xl p-3 shadow-md flex items-center gap-3 z-10 transition-transform duration-300 hover:scale-105"
+        className="absolute -bottom-4 -right-3 sm:-right-4 bg-white/75 backdrop-blur-2xl border border-white/95 rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 z-10 transition-transform duration-300 hover:scale-105"
         style={{
           transform: isHovered ? `translate3d(${-coords.x * 0.5}px, ${-coords.y * 0.5}px, 0)` : undefined,
         }}
       >
-        <div className="h-9 w-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
-          <MapPin className="h-4 w-4 text-amber-700" />
+        <div className="h-9 w-9 rounded-xl bg-[#D9A441]/20 border border-white flex items-center justify-center shrink-0">
+          <MapPin className="h-4 w-4 text-[#D9A441]" />
         </div>
         <div className="text-left leading-tight">
-          <div className="text-xs font-bold text-[#191F1C]">{t("heroImageBlock")}</div>
-          <div className="text-[11px] text-stone-500 mt-0.5">
-            <strong className="text-stone-800">{activeCaseCount || 4}</strong> {t("heroImageReports")}
+          <div className="text-xs font-bold text-[#1E3A2B]">{t("heroImageBlock")}</div>
+          <div className="text-[11px] text-[#4A3324]/75 mt-0.5">
+            <strong className="text-[#1E3A2B]">{activeCaseCount || 4}</strong> {t("heroImageReports")}
           </div>
         </div>
       </div>

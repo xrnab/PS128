@@ -10,10 +10,10 @@ export default async function AuthorityAlertsPage() {
   const t = await getTranslations("authority");
 
   return (
-    <div className="space-y-6 text-[#191F1C]">
-      <div>
-        <h1 className="text-2xl font-bold text-[#191F1C] tracking-tight">{t("districtAlertsHeader")}</h1>
-        <p className="text-stone-500 text-xs mt-1">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14]">
+      <div className="border-b border-[#1E3A2B]/8 pb-4">
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#1E3A2B] tracking-tight font-display">{t("districtAlertsHeader")}</h1>
+        <p className="text-[#4A3324]/75 text-xs sm:text-sm mt-1">
           {t("surveillanceAnalytics")}
         </p>
       </div>
