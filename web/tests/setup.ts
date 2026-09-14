@@ -2,7 +2,38 @@ import "fake-indexeddb/auto";
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
+import enMessages from "@/messages/en.json";
+
 vi.mock("server-only", () => ({}));
+
+vi.mock("next-intl", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>().catch(() => ({}));
+  return {
+    ...actual,
+    useTranslations: (namespace?: string) => {
+      return (key: string) => {
+        if (!namespace) return key;
+        const ns = (enMessages as Record<string, Record<string, string>>)[namespace];
+        if (ns && ns[key]) return ns[key];
+        return key;
+      };
+    },
+    useLocale: () => ({
+      locale: "en",
+    }),
+  };
+});
+
+vi.mock("next-intl/server", () => ({
+  getTranslations: async (namespace?: string) => {
+    return (key: string) => {
+      if (!namespace) return key;
+      const ns = (enMessages as Record<string, Record<string, string>>)[namespace];
+      if (ns && ns[key]) return ns[key];
+      return key;
+    };
+  },
+}));
 
 // Polyfill BroadcastChannel if not available in jsdom
 if (typeof globalThis.BroadcastChannel === "undefined") {

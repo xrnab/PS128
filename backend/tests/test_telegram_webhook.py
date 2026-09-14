@@ -298,16 +298,15 @@ class TestTelegramWebhook(unittest.IsolatedAsyncioTestCase):
             text=MSG_WELCOME_PROMPT,
         )
 
-    @patch("urllib.request.urlopen")
-    async def test_13_telegram_client_handles_network_failure(self, mock_urlopen):
+    async def test_13_telegram_client_handles_network_failure(self):
         """13. Telegram API failure handled safely."""
-        mock_urlopen.side_effect = Exception("Telegram API network timeout")
+        with patch("app.services.telegram_client.HAS_HTTPX", True), \
+             patch("httpx.AsyncClient.post", side_effect=Exception("Telegram API network timeout")):
+            client = TelegramClient(bot_token="test_token_123")
+            res = await client.send_message(chat_id="12345", text="test")
 
-        client = TelegramClient(bot_token="test_token_123")
-        res = await client.send_message(chat_id="12345", text="test")
-
-        self.assertFalse(res["ok"])
-        self.assertIn("network timeout", res["description"].lower())
+            self.assertFalse(res["ok"])
+            self.assertIn("network timeout", res["description"].lower())
 
 
 if __name__ == "__main__":

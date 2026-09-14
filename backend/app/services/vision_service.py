@@ -154,30 +154,67 @@ class VisionService:
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
         # =======================================================
-        # TIER 1: STRICT REJECTION FILTER (Humans & Screenshots)
+        # TIER 1: STRICT REJECTION FILTER (Humans, Objects & Mismatched Animals)
         # =======================================================
         coco_results = self.coco_model(image, verbose=False)[0]
         detected_coco_classes = [
             coco_results.names[int(box.cls[0])] for box in coco_results.boxes
         ] if coco_results.boxes else []
 
-        # List of objects that prove this is NOT a valid livestock photo
-        forbidden_classes = {
-            "person", "tv", "laptop", "cell phone", "monitor", 
-            "keyboard", "mouse", "book", "car", "chair", "couch"
+        animal_lower = str(animal_type).strip().lower()
+        is_pet_request = animal_lower in ["pet", "dog", "cat"]
+        
+        coco_animal_classes = {
+            "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"
         }
+        livestock_allowed_classes = {"cow", "sheep", "horse"}
+        pet_allowed_classes = {"dog", "cat"}
 
-        found_forbidden = [cls for cls in detected_coco_classes if cls in forbidden_classes]
-
-        if found_forbidden:
-            reason = found_forbidden[0].replace("_", " ").title()
+        # 1. Any person detected -> Always reject immediately
+        if "person" in detected_coco_classes:
             return {
-                "success": True,  # CRITICAL: Forces the frontend badge to update!
-                "primary_prediction": f"Rejected: {reason}", # Updates the UI text directly
+                "success": True,
+                "primary_prediction": "Rejected: Person",
+                "confidence": 0.0,
+                "visual_anomaly_detected": False,
+                "message": "Invalid photo. Person detected."
+            }
+
+        # 2. Any non-animal object detected -> Reject immediately
+        detected_non_animals = [cls for cls in detected_coco_classes if cls not in coco_animal_classes]
+        if detected_non_animals:
+            reason = detected_non_animals[0].replace("_", " ").title()
+            return {
+                "success": True,
+                "primary_prediction": f"Rejected: {reason}",
                 "confidence": 0.0,
                 "visual_anomaly_detected": False,
                 "message": f"Invalid photo. {reason} detected."
             }
+
+        # 3. Mismatched animal category detected
+        if is_pet_request:
+            mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in pet_allowed_classes]
+            if mismatched_animals:
+                reason = mismatched_animals[0].replace("_", " ").title()
+                return {
+                    "success": True,
+                    "primary_prediction": f"Rejected: {reason}",
+                    "confidence": 0.0,
+                    "visual_anomaly_detected": False,
+                    "message": f"Invalid photo. {reason} detected (expected pet)."
+                }
+        else:
+            mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in livestock_allowed_classes]
+            if mismatched_animals:
+                reason = mismatched_animals[0].replace("_", " ").title()
+                return {
+                    "success": True,
+                    "primary_prediction": f"Rejected: {reason}",
+                    "confidence": 0.0,
+                    "visual_anomaly_detected": False,
+                    "message": f"Invalid photo. {reason} detected (expected livestock)."
+                }
 
         # =======================================================
         # TIER 2: CUSTOM DISEASE CLASSIFICATION

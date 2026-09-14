@@ -101,6 +101,7 @@ vi.mock("@/lib/db/prisma", () => {
     inAppNotification: {
       create: (...args: unknown[]) => mockCreateNotification(...args),
       findFirst: (...args: unknown[]) => mockFindFirstNotification(...args),
+      findUnique: (...args: unknown[]) => mockFindFirstNotification(...args),
     },
     $transaction: (arg: unknown) => {
       if (typeof arg === "function") {
@@ -319,6 +320,26 @@ describe("Comprehensive Report Routing & Visibility End-to-End Suite", () => {
       expect(res.assignmentLevel).toBe("VILLAGE");
       expect(res.location?.villageName).toBe("Shivaji Nagar");
       expect(mockCreateNotification).toHaveBeenCalled();
+    });
+
+    it("should reject report submission if yoloVisionResult indicates a rejected photo (e.g. person or object)", async () => {
+      const res = await createCaseReportAction({
+        submissionId: "sub_rejected_person",
+        animalId: "animal_101",
+        symptoms: ["High Fever"],
+        durationDays: 1,
+        affectedCount: 1,
+        herdSize: 10,
+        mortalityCount: 0,
+        yoloVisionResult: {
+          primary_prediction: "Rejected: Person",
+          message: "Invalid photo. Person detected.",
+        },
+      });
+
+      expect(res.success).toBe(false);
+      expect(res.error).toBe("Submission blocked: Invalid photo. Person detected.");
+      expect(mockCreateCase).not.toHaveBeenCalled();
     });
 
     it("should handle awaiting veterinarian state when no vet is found in territory", async () => {

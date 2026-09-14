@@ -106,6 +106,20 @@ export async function createCaseReportAction(input: CaseReportInput): Promise<Ca
       };
     }
 
+    // 4b. Reject submissions with rejected vision results (defense-in-depth)
+    if (
+      data.yoloVisionResult &&
+      typeof data.yoloVisionResult === "object" &&
+      typeof (data.yoloVisionResult as { primary_prediction?: string }).primary_prediction === "string" &&
+      (data.yoloVisionResult as { primary_prediction: string }).primary_prediction.startsWith("Rejected")
+    ) {
+      const reason = (data.yoloVisionResult as { message?: string }).message || (data.yoloVisionResult as { primary_prediction: string }).primary_prediction;
+      return {
+        success: false,
+        error: `Submission blocked: ${reason}`,
+      };
+    }
+
     // 5. Derive reportSource strictly from server-side appUser role (do NOT trust client)
     const reportSource = appUser.role === "FIELD_AGENT" ? "FIELD_AGENT" : "FARMER";
 

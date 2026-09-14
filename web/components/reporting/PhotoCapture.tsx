@@ -18,6 +18,7 @@ interface PhotoCaptureProps {
   onChangePhoto?: (url: string | null, blob: Blob | null) => void;
   onVisionResult?: (result: YoloVisionAnalysis | null) => void;
   onUploadStatusChange?: (status: PhotoUploadStatus) => void;
+  onAnalyzingChange?: (isAnalyzing: boolean) => void;
   submissionId: string;
   animalCategory?: string;
 }
@@ -28,6 +29,7 @@ export function PhotoCapture({
   onChangePhoto,
   onVisionResult,
   onUploadStatusChange,
+  onAnalyzingChange,
   submissionId,
   animalCategory = "cow"
 }: PhotoCaptureProps) {
@@ -80,6 +82,7 @@ export function PhotoCapture({
     const runVision = async () => {
       try {
         setAnalyzing(true);
+        onAnalyzingChange?.(true);
         const result = await predictYoloImage(file, animalCategory);
         if (result) {
           setVisionResult(result);
@@ -89,6 +92,7 @@ export function PhotoCapture({
         console.warn("[PhotoCapture AI Warning]:", visionErr);
       } finally {
         setAnalyzing(false);
+        onAnalyzingChange?.(false);
       }
     };
 
@@ -176,6 +180,8 @@ export function PhotoCapture({
     setVisionResult(null);
     setError(null);
     setStatus("idle");
+    setAnalyzing(false);
+    onAnalyzingChange?.(false);
     onVisionResult?.(null);
     onChangePhoto?.(null, null);
     onChangePhotoUrl?.(null);

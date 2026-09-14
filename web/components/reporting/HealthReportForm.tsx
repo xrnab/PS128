@@ -70,12 +70,14 @@ export function HealthReportForm({
   const [photoUploadStatus, setPhotoUploadStatus] = useState<"idle" | "uploading" | "uploaded" | "failed">("idle");
   const [yoloVisionResult, setYoloVisionResult] = useState<YoloVisionAnalysis | null>(null);
 
-  // Check if the backend explicitly rejected the image (e.g., "Rejected: Person" or "Rejected: Cell Phone")
-  const isImageRejected = yoloVisionResult?.primary_prediction?.startsWith("Rejected");
+  const [isAnalyzingPhoto, setIsAnalyzingPhoto] = useState(false);
 
-  // The Next button should be disabled if an upload is currently processing OR if the image was rejected
+  // Check if the backend explicitly rejected the image (e.g., "Rejected: Person" or "Rejected: Cell Phone")
+  const isImageRejected = Boolean(yoloVisionResult?.primary_prediction?.startsWith("Rejected"));
+
+  // The Next button should be disabled if an upload or AI analysis is currently processing OR if the image was rejected
   const isUploading = photoUploadStatus === "uploading";
-  const isNextButtonDisabled = step === 4 ? (isUploading || Boolean(isImageRejected)) : false;
+  const isNextButtonDisabled = step === 4 ? (isUploading || isAnalyzingPhoto || isImageRejected) : false;
   const [gpsLat, setGpsLat] = useState<number | null>(null);
   const [gpsLng, setGpsLng] = useState<number | null>(null);
 
@@ -133,6 +135,7 @@ export function HealthReportForm({
     setGpsLng(null);
     setTemperature(null);
     setActivity(null);
+    setIsAnalyzingPhoto(false);
     setIotSource(null);
     setIotReadingId(null);
     setSubmitResult(null);
@@ -160,8 +163,8 @@ export function HealthReportForm({
         return;
       }
     }
-    if (step === 4 && photoUploadStatus === "uploading") {
-      setFormError("Please wait for the photo upload to complete before proceeding.");
+    if (step === 4 && (photoUploadStatus === "uploading" || isAnalyzingPhoto)) {
+      setFormError("Please wait for the photo upload and analysis to complete before proceeding.");
       return;
     }
     if (step === 4 && isImageRejected) {
@@ -188,8 +191,15 @@ export function HealthReportForm({
       setFormError("At least one symptom is required.");
       return;
     }
-    if (photoUploadStatus === "uploading") {
-      setFormError("Please wait for the photo upload to complete before submitting.");
+    if (photoUploadStatus === "uploading" || isAnalyzingPhoto) {
+      setFormError("Please wait for the photo upload and analysis to complete before submitting.");
+      return;
+    }
+    if (isImageRejected) {
+      setFormError(
+        yoloVisionResult?.message ||
+          "Submission blocked: Invalid photo detected. You must remove or replace this photo to submit."
+      );
       return;
     }
 
@@ -741,6 +751,7 @@ export function HealthReportForm({
               }}
               onChangePhotoUrl={setPhotoUrl}
               onUploadStatusChange={setPhotoUploadStatus}
+              onAnalyzingChange={setIsAnalyzingPhoto}
               onVisionResult={setYoloVisionResult}
               submissionId={submissionId}
               animalCategory={
@@ -855,6 +866,22 @@ export function HealthReportForm({
                 <span>{gpsLat && gpsLng ? `${gpsLat.toFixed(4)}, ${gpsLng.toFixed(4)}` : t("villageDefaultLocation")}</span>
               </div>
             </div>
+
+            {/* Step 7 Hard Block banner if photo was rejected */}
+            {isImageRejected && (
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3 animate-in fade-in">
+                <ShieldAlert className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-red-900 uppercase tracking-wider">
+                    Submission Blocked
+                  </p>
+                  <p className="text-xs text-red-800 mt-1 font-medium leading-relaxed">
+                    {yoloVisionResult?.message ||
+                      "Invalid photo detected. You must go back to Step 4 and remove or replace the photo before submitting."}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
         </div>
@@ -896,14 +923,23 @@ export function HealthReportForm({
           <Button
             type="button"
             size="sm"
-            disabled={submitting}
+            disabled={submitting || isUploading || isAnalyzingPhoto || isImageRejected}
             onClick={handleSubmitReport}
-            className="gap-2 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm min-h-[44px] rounded-xl cursor-pointer"
+            className={`gap-2 text-xs font-semibold shadow-sm min-h-[44px] rounded-xl transition-colors ${
+              isImageRejected
+                ? "bg-stone-300 text-stone-500 cursor-not-allowed hover:bg-stone-300"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer"
+            }`}
           >
             {submitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>{t("submittingReport")}</span>
+              </>
+            ) : isImageRejected ? (
+              <>
+                <ShieldAlert className="h-4 w-4 text-red-600" />
+                <span>Submission Blocked</span>
               </>
             ) : (
               <>

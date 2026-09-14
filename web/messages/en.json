@@ -983,6 +983,7 @@
     "endDate": "End date",
     "retryQuery": "Retry Query",
     "unableToLoad": "Unable to load district data.",
+    "initGis": "Initializing GIS Disease Heatmap...",
     "registeredFarmers": "Registered Farmers",
     "clinicalReviewsDue": "Clinical Reviews Due",
     "closedHarmless": "Closed / Harmless",
@@ -1364,11 +1365,18 @@
     "selectPresetTitle": "Select Simulation Preset Scenario"
   },
   "errors": {
+    "title": "Something went wrong",
+    "description": "An error occurred while loading this page.",
+    "tryAgain": "Try again",
+    "goHome": "Home",
     "generic": "Something went wrong. Please try again.",
     "notFound": "The requested record was not found.",
     "empty": "Nothing to show yet.",
     "location": "We could not determine your location.",
     "offline": "You are offline. Your report will be queued securely."
+  },
+  "common": {
+    "loading": "Loading farmer portal data"
   },
   "admin": {
     "cockpit": "System Administration Cockpit",

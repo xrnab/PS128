@@ -11,8 +11,9 @@ import VetError from "@/app/vet/error";
 import AuthorityError from "@/app/authority/error";
 
 describe("Loading Skeletons (Batch 2)", () => {
-  it("renders Farmer portal loading skeleton correctly", () => {
-    const { container } = render(<FarmerLoading />);
+  it("renders Farmer portal loading skeleton correctly", async () => {
+    const ui = await FarmerLoading();
+    const { container } = render(ui);
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
     expect(screen.getByText(/Loading farmer portal data/i)).toBeInTheDocument();
   });
@@ -22,14 +23,16 @@ describe("Loading Skeletons (Batch 2)", () => {
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
   });
 
-  it("renders Veterinarian portal loading skeleton correctly", () => {
-    const { container } = render(<VetLoading />);
+  it("renders Veterinarian portal loading skeleton correctly", async () => {
+    const ui = await VetLoading();
+    const { container } = render(ui);
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
     expect(screen.getByText(/Loading clinical triage queue/i)).toBeInTheDocument();
   });
 
-  it("renders Authority portal loading skeleton correctly", () => {
-    const { container } = render(<AuthorityLoading />);
+  it("renders Authority portal loading skeleton correctly", async () => {
+    const ui = await AuthorityLoading();
+    const { container } = render(ui);
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
     expect(screen.getByText(/Initializing GIS Disease Heatmap/i)).toBeInTheDocument();
   });
