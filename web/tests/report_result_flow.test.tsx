@@ -20,7 +20,7 @@ describe("ReportResultFlow - Liquid Ledger Assessment Flow", () => {
       phone: "+919876543210",
       jurisdiction: "North 24 Parganas",
     },
-    assignmentLevel: "District",
+    assignmentLevel: "DISTRICT" as const,
     location: {
       villageName: "Bidhannagar",
       blockName: "Rajarhat",
@@ -31,6 +31,7 @@ describe("ReportResultFlow - Liquid Ledger Assessment Flow", () => {
   const selectedAnimal = {
     id: "animal-004",
     farmId: "farm-1",
+    farmName: "Green Acres Farm",
     tag: "COW-004",
     species: "Cow",
     breed: "Gir",
