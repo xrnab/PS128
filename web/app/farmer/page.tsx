@@ -28,6 +28,7 @@ export default async function FarmerPortalPage() {
   const t = await getTranslations("farmer");
   const tCommon = await getTranslations("common");
   const tReporting = await getTranslations("reporting");
+  const tIvr = await getTranslations("ivr");
 
   const {
     metrics,
@@ -81,6 +82,12 @@ export default async function FarmerPortalPage() {
             <Button variant="outline" size="sm" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
               <MessageSquare className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
               <span>{t("farmerTalkAi")}</span>
+            </Button>
+          </Link>
+          <Link href="/farmer/ivr">
+            <Button variant="outline" size="sm" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
+              <PhoneCall className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
+              <span>{tIvr("title")}</span>
             </Button>
           </Link>
           <Link href="/farmer/iot">
@@ -418,6 +425,34 @@ export default async function FarmerPortalPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Voice Line Demo (IVR) Showcase Card */}
+      <div className="p-6 sm:p-7 rounded-[28px] bg-white/75 dark:bg-[#0A1A12]/75 backdrop-blur-[24px] border border-white/80 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_8px_24px_rgba(30,58,43,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_16px_40px_rgba(0,0,0,0.4)]">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-800 text-emerald-100 flex items-center justify-center shrink-0 shadow-md">
+            <PhoneCall className="h-6 w-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="font-bold text-[#15271E] dark:text-[#F4EEE1] text-base font-display">
+                {tIvr("farmerDashboardCardTitle")}
+              </h4>
+              <Badge className="text-[10px] bg-emerald-700/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30 font-semibold px-2 py-0.5 rounded-full">
+                Interactive Demo
+              </Badge>
+            </div>
+            <p className="text-stone-600 dark:text-[#AECEB9] text-xs mt-0.5 max-w-2xl">
+              {tIvr("farmerDashboardCardDesc")}
+            </p>
+          </div>
+        </div>
+        <Link href="/farmer/ivr">
+          <Button size="sm" className="liquid-button-primary gap-1.5 text-xs h-9 px-4 rounded-full">
+            <PhoneCall className="h-3.5 w-3.5" />
+            <span>{tIvr("tryVoiceLine")}</span>
+          </Button>
+        </Link>
       </div>
 
       {/* Emergency Veterinary Guidance (Apple Liquid Card) */}
