@@ -61,7 +61,7 @@ export function MotionHeroImage({ src, alt, activeCaseCount }: MotionHeroImagePr
 
       {/* Product Annotation 1: Animal Card (Top Left) - Gentle Float */}
       <div
-        className="absolute -top-4 -left-3 sm:-left-6 bg-white/75 backdrop-blur-2xl border border-white/95 rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 max-w-[210px] z-10 transition-transform duration-300 hover:scale-105"
+        className="absolute -top-4 -left-3 sm:-left-6 liquid-glass-card rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 max-w-[210px] z-10 transition-transform duration-300 hover:scale-105"
         style={{
           transform: isHovered ? `translate3d(${-coords.x * 0.8}px, ${-coords.y * 0.8}px, 0)` : undefined,
         }}
@@ -80,7 +80,7 @@ export function MotionHeroImage({ src, alt, activeCaseCount }: MotionHeroImagePr
 
       {/* Product Annotation 2: Village Status Card (Bottom Right) - Gentle Float */}
       <div
-        className="absolute -bottom-4 -right-3 sm:-right-4 bg-white/75 backdrop-blur-2xl border border-white/95 rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 z-10 transition-transform duration-300 hover:scale-105"
+        className="absolute -bottom-4 -right-3 sm:-right-4 liquid-glass-card rounded-2xl p-3 shadow-[0_14px_32px_rgba(30,58,43,.14),inset_0_1.5px_0.5px_white] flex items-center gap-3 z-10 transition-transform duration-300 hover:scale-105"
         style={{
           transform: isHovered ? `translate3d(${-coords.x * 0.5}px, ${-coords.y * 0.5}px, 0)` : undefined,
         }}

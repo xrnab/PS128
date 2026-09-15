@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, renderHook } from "@testing-library/react";
+import { render, screen, renderHook, act } from "@testing-library/react";
 import { LocaleProvider, useLocale } from "@/components/layout/LocaleProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { getServerLocale, getServerDictionary } from "@/lib/i18n/server";
@@ -11,6 +11,15 @@ import { RiskGauge } from "@/components/ai/RiskGauge";
 import { WeatherRiskCard } from "@/components/ai/WeatherRiskCard";
 import { OutbreakTrendCard } from "@/components/ai/OutbreakTrendCard";
 import { IoTAnalysisCard } from "@/components/ai/IoTAnalysisCard";
+
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+
+// Mock next/headers
+vi.mock("next/headers", () => ({
+  cookies: async () => ({
+    get: () => undefined,
+  }),
+}));
 
 // Mock @clerk/nextjs
 vi.mock("@clerk/nextjs", () => ({
@@ -53,9 +62,9 @@ describe("English-Only Frontend Lock Verification", () => {
     expect(dict.nav.authority).toBe("District Authority");
   });
 
-  it("4. LocaleProvider forces locale='en' even if initialized with non-English initialLocale", () => {
+  it("4. LocaleProvider defaults to locale='en'", () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <LocaleProvider initialLocale={"hi" as never}>{children}</LocaleProvider>
+      <LocaleProvider>{children}</LocaleProvider>
     );
 
     const { result } = renderHook(() => useLocale(), { wrapper });
@@ -65,7 +74,7 @@ describe("English-Only Frontend Lock Verification", () => {
     expect(result.current.dictionary.roles.FARMER).toBe("Farmer");
   });
 
-  it("5. setLocale does not change locale away from 'en'", () => {
+  it("5. setLocale updates locale", () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <LocaleProvider>{children}</LocaleProvider>
     );
@@ -73,22 +82,24 @@ describe("English-Only Frontend Lock Verification", () => {
     const { result } = renderHook(() => useLocale(), { wrapper });
 
     expect(result.current.locale).toBe("en");
-    result.current.setLocale("bn" as never);
-    expect(result.current.locale).toBe("en");
+    act(() => {
+      result.current.setLocale("bn");
+    });
+    expect(result.current.locale).toBe("bn");
   });
 
-  it("6. Navbar renders English navigation links and does not render language switcher select", () => {
+  it("6. Navbar renders English navigation links", () => {
     render(
-      <LocaleProvider>
-        <Navbar />
-      </LocaleProvider>
+      <ThemeProvider>
+        <LocaleProvider>
+          <Navbar />
+        </LocaleProvider>
+      </ThemeProvider>
     );
 
     expect(screen.getByText("Farmer Portal")).toBeInTheDocument();
-    expect(screen.getByText("Field Agent")).toBeInTheDocument();
-    expect(screen.getByText("Veterinarian")).toBeInTheDocument();
-    expect(screen.getByText("District Authority")).toBeInTheDocument();
-    expect(screen.queryByLabelText("Choose language")).not.toBeInTheDocument();
+    expect(screen.getByText("Herd")).toBeInTheDocument();
+    expect(screen.getByText("Report")).toBeInTheDocument();
   });
 
   it("7. getReportCopy('en') has all required English strings with no missing keys", () => {

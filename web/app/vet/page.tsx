@@ -393,7 +393,7 @@ export default async function VetDashboardPage({
       {/* Urgent Inspection Floating Glass Dossier (Stitch Liquid Ledger Specification) */}
       {featuredCase && (
         <section className="w-full my-6" id="featured-dossier">
-          <div className="relative rounded-3xl bg-white/80 backdrop-blur-2xl p-6 sm:p-8 lg:p-9 shadow-[inset_0_1px_2px_0_rgba(255,255,255,0.9),0_28px_54px_rgba(30,58,43,0.14)] overflow-hidden border border-white/80">
+          <div className="relative rounded-3xl liquid-glass-card p-6 sm:p-8 lg:p-9 overflow-hidden">
             {/* Subtle top specular edge glow */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
             <div className="ambient-blob -bottom-28 -left-20 w-80 h-80 bg-[#C1622D]/10 blur-3xl pointer-events-none" />
@@ -401,7 +401,7 @@ export default async function VetDashboardPage({
             {/* Dossier Top Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-5 border-b border-[#1E3A2B]/10">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/75 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_2px_8px_rgba(193,98,45,0.10)]">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/90 dark:border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.95),0_2px_8px_rgba(193,98,45,0.08)]">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C1622D] opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C1622D]" />
@@ -419,7 +419,7 @@ export default async function VetDashboardPage({
                 <span className="text-xs text-[#4A3324]/75">Reported {formatDateTime(featuredCase.reportedAt)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/75 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_2px_8px_rgba(30,58,43,0.06)] text-[#1E3A2B]">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/90 dark:border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_2px_8px_rgba(30,58,43,0.06)] text-[#1E3A2B]">
                   <MapPin className="h-3.5 w-3.5 text-[#3F6B4A]" />
                   <span className="text-xs font-semibold tracking-tight">
                     {featuredCase.animal.herd.farm.village.name} Village Cluster
@@ -456,7 +456,7 @@ export default async function VetDashboardPage({
                 </div>
 
                 {/* Custodian Micro Card */}
-                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F4EEE1]/60 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] border border-white/60">
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/80 dark:border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#1E3A2B]/10 flex items-center justify-center text-[#1E3A2B] font-bold text-xs shadow-xs">
                       <User className="h-4 w-4 text-[#1E3A2B]" />
@@ -477,7 +477,7 @@ export default async function VetDashboardPage({
               {/* Column 2 (8 cols): Biometric Spline Curve, Clinical Synthesis, & Actions */}
               <div className="lg:col-span-8 flex flex-col justify-between gap-4">
                 {/* Thermal Excursion & Inline SVG Spline Curve */}
-                <div className="rounded-2xl bg-[#FAF6EE]/80 backdrop-blur-xl p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] border border-white/60 flex flex-col gap-2">
+                <div className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.85)] border border-white/80 dark:border-white/10 flex flex-col gap-2">
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
                     <div>
                       <span className="text-[11px] uppercase tracking-wider text-[#C1622D] font-bold flex items-center gap-1.5">
@@ -541,7 +541,7 @@ export default async function VetDashboardPage({
                 </div>
 
                 {/* Automated Diagnostic Synthesis */}
-                <div className="rounded-2xl bg-[#F4EEE1]/70 backdrop-blur-md p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] border border-white/60 flex flex-col gap-2">
+                <div className="rounded-2xl bg-white/55 dark:bg-white/5 backdrop-blur-xl p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.85)] border border-white/80 dark:border-white/10 flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Stethoscope className="h-4 w-4 text-[#1E3A2B]" />
@@ -638,7 +638,7 @@ export default async function VetDashboardPage({
               return (
                 <div
                   key={item.id}
-                  className="relative rounded-2xl bg-white/85 backdrop-blur-2xl p-4 sm:p-5 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_12px_24px_rgba(30,58,43,0.07)] hover:shadow-[0_20px_36px_rgba(30,58,43,0.12)] hover:-translate-y-0.5 border border-white/80 transition-all duration-300 flex flex-col lg:flex-row lg:items-center justify-between gap-4 group"
+                  className="relative rounded-2xl liquid-glass-card p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 group"
                 >
                   <div className="flex items-start sm:items-center gap-4">
                     {/* Animal Photo Thumbnail with resilient fallback */}

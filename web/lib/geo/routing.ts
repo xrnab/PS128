@@ -330,15 +330,28 @@ export async function findEligibleVeterinarians(loc: LocationCoordinates): Promi
     activeLoad: loadMap.get(vet.id) || 0,
   }));
 
-  // Sort by lowest active load ASC, then deterministic ID ASC
-  scoredVets.sort((a, b) => {
-    if (a.activeLoad !== b.activeLoad) {
-      return a.activeLoad - b.activeLoad;
-    }
-    return a.id.localeCompare(b.id);
-  });
+  // Sort by lowest activeLoad ASC, and fairly shuffle candidates tied at the same activeLoad
+  const loadGroups = new Map<number, typeof scoredVets>();
+  for (const vet of scoredVets) {
+    const list = loadGroups.get(vet.activeLoad) || [];
+    list.push(vet);
+    loadGroups.set(vet.activeLoad, list);
+  }
 
-  return { eligibleVets: scoredVets, level };
+  const sortedLoads = Array.from(loadGroups.keys()).sort((a, b) => a - b);
+  const resultVets: typeof scoredVets = [];
+
+  for (const load of sortedLoads) {
+    const group = loadGroups.get(load)!;
+    // Fisher-Yates random shuffle among tied candidates
+    for (let i = group.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [group[i], group[j]] = [group[j], group[i]];
+    }
+    resultVets.push(...group);
+  }
+
+  return { eligibleVets: resultVets, level };
 }
 
 /**

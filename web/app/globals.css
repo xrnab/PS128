@@ -139,26 +139,29 @@ h1, h2, h3, h4, .font-display {
 /* Primary translucent light glass card */
 .liquid-glass-card,
 .liquid-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.46) 100%);
-  backdrop-filter: blur(28px) saturate(190%) contrast(102%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.44) 100%);
+  backdrop-filter: blur(28px) saturate(195%) contrast(102%);
+  -webkit-backdrop-filter: blur(28px) saturate(195%) contrast(102%);
   border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow:
-    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
-    0 4px 16px -2px rgba(30, 58, 43, 0.04),
-    0 16px 36px -4px rgba(30, 58, 43, 0.08);
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.30),
+    0 1px 2px rgba(30, 58, 43, 0.04),
+    0 12px 32px -4px rgba(30, 58, 43, 0.08),
+    0 24px 54px -8px rgba(30, 58, 43, 0.04);
   border-radius: 1.5rem;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
 }
 
 .liquid-glass-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2.5px) scale(1.002);
+  border-color: rgba(255, 255, 255, 0.96);
   box-shadow:
-    inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
+    inset 0 1.5px 0.5px #ffffff,
     inset 0 -1px 0 rgba(255, 255, 255, 0.45),
-    0 6px 20px -2px rgba(30, 58, 43, 0.07),
-    0 22px 48px -4px rgba(30, 58, 43, 0.12);
+    0 2px 4px rgba(30, 58, 43, 0.05),
+    0 18px 40px -4px rgba(30, 58, 43, 0.12),
+    0 32px 64px -8px rgba(30, 58, 43, 0.06);
 }
 
 /* Deep Pine dark glass panel (Clinician directive, featured callouts) */
@@ -178,33 +181,34 @@ h1, h2, h3, h4, .font-display {
 
 /* Priority Alert Warm Amber Glass */
 .liquid-glass-amber {
-  background: linear-gradient(135deg, rgba(254, 245, 235, 0.92) 0%, rgba(252, 236, 218, 0.78) 100%);
-  backdrop-filter: blur(28px) saturate(190%) contrast(102%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%);
-  border: 1px solid rgba(193, 98, 45, 0.35);
-  box-shadow:
-    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
-    0 4px 16px -2px rgba(193, 98, 45, 0.08),
-    0 16px 36px -4px rgba(193, 98, 45, 0.12);
-  border-radius: 1.5rem;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.liquid-glass-amber:hover {
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(255, 248, 238, 0.80) 0%, rgba(254, 236, 218, 0.55) 100%);
+  backdrop-filter: blur(28px) saturate(195%) contrast(102%);
+  -webkit-backdrop-filter: blur(28px) saturate(195%) contrast(102%);
+  border: 1px solid rgba(255, 255, 255, 0.92);
   box-shadow:
     inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
-    0 6px 22px -2px rgba(193, 98, 45, 0.14),
-    0 22px 46px -4px rgba(193, 98, 45, 0.18);
+    inset 0 -1px 0 rgba(193, 98, 45, 0.15),
+    0 1px 2px rgba(193, 98, 45, 0.05),
+    0 14px 34px -4px rgba(193, 98, 45, 0.11),
+    0 26px 52px -8px rgba(193, 98, 45, 0.05);
+  border-radius: 1.5rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.liquid-glass-amber:hover {
+  transform: translateY(-2.5px) scale(1.002);
+  box-shadow:
+    inset 0 1.5px 0.5px #ffffff,
+    0 6px 20px -2px rgba(193, 98, 45, 0.14),
+    0 24px 48px -4px rgba(193, 98, 45, 0.16);
 }
 
 /* Urgent terracotta ambient glow (priority anomalies, critical cards) */
 .liquid-glow-urgent {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
     0 1px 2px rgba(30, 58, 43, 0.06),
     0 12px 32px rgba(30, 58, 43, 0.10),
-    0 0 28px rgba(193, 98, 45, 0.24) !important;
+    0 0 32px rgba(193, 98, 45, 0.25) !important;
 }
 
 /* Specular light sheen highlight */
@@ -217,26 +221,28 @@ h1, h2, h3, h4, .font-display {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.45) 0%, transparent 40%, transparent 70%, rgba(255, 255, 255, 0.2) 100%);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.50) 0%, transparent 40%, transparent 70%, rgba(255, 255, 255, 0.25) 100%);
 }
 
 /* Apple CTA Pill Button Gradient */
 .liquid-button-primary {
-  background: linear-gradient(180deg, #1E3A2B 0%, #3F6B4A 100%);
-  color: #F4EEE1;
+  background: linear-gradient(180deg, #1E3A2B 0%, #2A4E3B 100%);
+  color: #FFFFFF;
   border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.40),
     0 4px 14px rgba(30, 58, 43, 0.22),
     0 1px 3px rgba(30, 58, 43, 0.12);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .liquid-button-primary:hover {
   transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(180deg, #244633 0%, #325F47 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 8px 20px rgba(30, 58, 43, 0.28),
-    0 2px 5px rgba(30, 58, 43, 0.15);
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.55),
+    0 8px 22px rgba(30, 58, 43, 0.30),
+    0 2px 6px rgba(30, 58, 43, 0.15);
 }
 .liquid-button-primary:active {
   transform: translateY(0) scale(0.98);
@@ -244,26 +250,126 @@ h1, h2, h3, h4, .font-display {
 
 /* Apple Secondary Pill */
 .liquid-button-glass {
-  background: rgba(255, 255, 255, 0.70);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.62) 100%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: #1E3A2B;
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   border-radius: 9999px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 2px 8px rgba(30, 58, 43, 0.05);
+    inset 0 1px 0.5px #ffffff,
+    0 2px 6px rgba(30, 58, 43, 0.04),
+    0 8px 18px rgba(30, 58, 43, 0.05);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .liquid-button-glass:hover {
-  background: rgba(255, 255, 255, 0.90);
-  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.80) 100%);
+  transform: translateY(-1.5px) scale(1.02);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    0 4px 12px rgba(30, 58, 43, 0.08);
+    inset 0 1px 0.5px #ffffff,
+    0 4px 12px rgba(30, 58, 43, 0.07),
+    0 12px 24px rgba(30, 58, 43, 0.06);
 }
 .liquid-button-glass:active {
   transform: translateY(0) scale(0.98);
+}
+
+/* =========================================================================
+   Universal Light Mode Liquid Glass Surface System
+   Ensures ALL cards, wells, and pills receive authentic Apple optical depth
+   ========================================================================= */
+
+/* Major Light Mode Panels */
+:root:not(.dark) [class*="bg-white/8"],
+:root:not(.dark) [class*="bg-white/7"],
+:root:not(.dark) [class*="bg-white/9"] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.54) 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) contrast(102%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%) !important;
+  border-color: rgba(255, 255, 255, 0.88) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 6px -1px rgba(30, 58, 43, 0.04),
+    0 14px 34px -4px rgba(30, 58, 43, 0.09),
+    0 28px 60px -8px rgba(30, 58, 43, 0.05) !important;
+}
+
+/* Subtle Parchment & Recessed Glass Wells */
+:root:not(.dark) [class*="bg-[#F4EEE1]"],
+:root:not(.dark) [class*="bg-[#FAF8F3]"],
+:root:not(.dark) [class*="bg-[#FAF6EE]"] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.70) 0%, rgba(245, 239, 227, 0.48) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-color: rgba(255, 255, 255, 0.82) !important;
+  box-shadow:
+    inset 0 1.5px 0.5px rgba(255, 255, 255, 0.95),
+    0 2px 8px rgba(30, 58, 43, 0.04),
+    0 12px 28px rgba(30, 58, 43, 0.06) !important;
+}
+
+/* Recessed Inner Containers (Micro Wells) */
+:root:not(.dark) [class*="bg-white/60"],
+:root:not(.dark) [class*="bg-white/50"],
+:root:not(.dark) [class*="bg-stone-50"] {
+  background: rgba(255, 255, 255, 0.50) !important;
+  backdrop-filter: blur(16px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(170%) !important;
+  border-color: rgba(255, 255, 255, 0.78) !important;
+  box-shadow: inset 0 1px 1.5px rgba(30, 58, 43, 0.03), inset 0 0.5px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Light Mode Frosted Control Pills & Badges */
+:root:not(.dark) button[class*="bg-white/"],
+:root:not(.dark) [role="button"][class*="bg-white/"] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.64) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    inset 0 1px 0.5px #ffffff,
+    0 2px 6px rgba(30, 58, 43, 0.04),
+    0 6px 16px rgba(30, 58, 43, 0.05) !important;
+}
+
+:root:not(.dark) button[class*="bg-white/"]:hover,
+:root:not(.dark) [role="button"][class*="bg-white/"]:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 100%) !important;
+  box-shadow:
+    inset 0 1px 0.5px #ffffff,
+    0 4px 12px rgba(30, 58, 43, 0.07),
+    0 10px 22px rgba(30, 58, 43, 0.06) !important;
+}
+
+/* Translucent Soft Alert Chips in Light Mode */
+:root:not(.dark) .bg-emerald-50,
+:root:not(.dark) [class*="bg-emerald-50/"] {
+  background-color: rgba(63, 107, 74, 0.10) !important;
+  border-color: rgba(63, 107, 74, 0.20) !important;
+  color: #1E3A2B !important;
+}
+
+:root:not(.dark) .bg-amber-50,
+:root:not(.dark) [class*="bg-amber-50/"] {
+  background-color: rgba(217, 164, 65, 0.12) !important;
+  border-color: rgba(217, 164, 65, 0.24) !important;
+  color: #8F6612 !important;
+}
+
+:root:not(.dark) .bg-red-50,
+:root:not(.dark) [class*="bg-red-50/"] {
+  background-color: rgba(193, 98, 45, 0.11) !important;
+  border-color: rgba(193, 98, 45, 0.22) !important;
+  color: #9A3412 !important;
+}
+
+/* Light Mode Borders - Eliminate Dull Gray Hairlines */
+:root:not(.dark) [class*="border-[#E5E0D8]"],
+:root:not(.dark) [class*="border-[#D9D3C7]"],
+:root:not(.dark) [class*="border-stone-200"],
+:root:not(.dark) [class*="border-stone-300"] {
+  border-color: rgba(30, 58, 43, 0.08) !important;
 }
 
 /* =========================================================================
@@ -336,21 +442,33 @@ h1, h2, h3, h4, .font-display {
   pointer-events: none;
   z-index: 0;
   background:
-    /* Smooth, wide atmospheric canopy - gentle and seamless, no dark glitch at top */
-    radial-gradient(ellipse 140% 50% at 50% 0%, rgba(30, 58, 43, 0.08) 0%, transparent 70%),
-    /* Top-Left Radiant Jade & Sage Wash */
-    radial-gradient(circle 950px at 8% 18%, rgba(63, 130, 90, 0.16) 0%, transparent 65%),
-    /* Top-Right Luminous Honey Amber Wash */
-    radial-gradient(circle 950px at 92% 18%, rgba(226, 160, 48, 0.18) 0%, transparent 65%),
-    /* Center Subtle Champagne Illumination */
-    radial-gradient(circle 850px at 50% 50%, rgba(245, 222, 178, 0.22) 0%, transparent 70%),
-    /* Bottom-Left Warm Terracotta Amber */
-    radial-gradient(circle 1000px at 12% 85%, rgba(193, 98, 45, 0.13) 0%, transparent 65%),
-    /* Bottom-Right Deep Pine Glow */
-    radial-gradient(circle 1000px at 88% 85%, rgba(63, 107, 74, 0.15) 0%, transparent 65%),
-    /* Base Organic Warm Silk Tone */
-    #F6F2E9;
+    /* Atmospheric deep canopy wash */
+    radial-gradient(ellipse 130% 50% at 50% -5%, rgba(30, 58, 43, 0.09) 0%, transparent 65%),
+    /* Top-Left Radiant Moss & Sage Wash */
+    radial-gradient(circle 1050px at 6% 14%, rgba(63, 130, 90, 0.22) 0%, transparent 60%),
+    /* Top-Right Luminous Honey Wheat Amber */
+    radial-gradient(circle 950px at 94% 16%, rgba(217, 164, 65, 0.20) 0%, transparent 60%),
+    /* Center Ambient Luminous Champagne Wash */
+    radial-gradient(circle 900px at 50% 45%, rgba(245, 226, 192, 0.32) 0%, transparent 65%),
+    /* Mid-Left Jade Glow */
+    radial-gradient(circle 900px at 15% 55%, rgba(63, 107, 74, 0.15) 0%, transparent 60%),
+    /* Bottom-Left Warm Terracotta Ember Wash */
+    radial-gradient(circle 1100px at 10% 88%, rgba(193, 98, 45, 0.16) 0%, transparent 60%),
+    /* Bottom-Right Deep Pine Forest Glow */
+    radial-gradient(circle 1100px at 90% 88%, rgba(30, 58, 43, 0.14) 0%, transparent 60%),
+    /* Base Organic Silk Ivory Tone */
+    #F8F6F0;
   transform: translateZ(0);
+}
+
+.ambient-mesh-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }
 
 /* Dark Mode Ambient Mesh Background */

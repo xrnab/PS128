@@ -89,6 +89,10 @@ export default async function Home() {
           </HelplineModal>
         </div>
 
+        {/* Soft diffused background light pools behind hero and stat bento */}
+        <div className="absolute top-12 left-10 w-[42vw] h-[42vw] rounded-full bg-[rgba(63,107,74,0.14)] blur-[100px] pointer-events-none -z-10" />
+        <div className="absolute top-16 right-10 w-[38vw] h-[38vw] rounded-full bg-[rgba(217,164,65,0.15)] blur-[100px] pointer-events-none -z-10" />
+
         <div className="grid items-center gap-12 pt-10 lg:grid-cols-[1.05fr_.95fr] lg:pt-16">
           <div className="relative z-10">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/85 bg-white/75 px-3.5 py-1.5 text-xs font-semibold text-[#1E3A2B] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_2px_8px_rgba(30,58,43,0.04)] backdrop-blur-xl">

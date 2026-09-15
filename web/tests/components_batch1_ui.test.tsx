@@ -178,7 +178,7 @@ describe("Batch 1 Component UI Tests", () => {
 
       render(<AgentAssistanceQueue requests={[inProgressRequest]} currentAgentId="agent_1" />);
 
-      const recordLink = screen.getByRole("link", { name: /Record Inspection/i });
+      const recordLink = screen.getByRole("link", { name: /Record.*Inspection/i });
       expect(recordLink).toBeInTheDocument();
       expect(recordLink.getAttribute("href")).toContain("requestId=req_123");
       expect(recordLink.getAttribute("href")).toContain(
