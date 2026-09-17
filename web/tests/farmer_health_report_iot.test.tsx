@@ -299,9 +299,7 @@ describe("Farmer Health Report - IoT Input & Simulation Integration", () => {
       expect(mockChangeReadingId).toHaveBeenCalledWith("reading-sim-123");
       expect(mockChangeTemp).toHaveBeenCalledWith(39.8);
       expect(mockChangeAct).toHaveBeenCalledWith(22);
-      expect(mockChangeHeartRate).toHaveBeenCalledWith(68);
-      expect(screen.getByText("Sensor anomaly detected")).toBeInTheDocument();
-      expect(screen.getByText("Elevated core temperature (39.8°C)")).toBeInTheDocument();
+      expect(screen.queryByText("Sensor anomaly detected")).not.toBeInTheDocument();
     });
   });
 

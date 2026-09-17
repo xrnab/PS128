@@ -714,24 +714,6 @@ export function IoTInput({
         </div>
       )}
 
-      {/* Backend Anomaly Observation Banner */}
-      {hasAnomaly && backendAnomalies.length > 0 && (
-        <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-300 text-amber-950 text-xs space-y-1.5 animate-fade-in shadow-2xs">
-          <div className="flex items-center gap-1.5 font-bold text-amber-900">
-            <AlertTriangle className="h-4 w-4 text-amber-700 shrink-0" />
-            <span>{iotCopy.sensorAnomalyDetected || "Sensor anomaly detected"}</span>
-          </div>
-          <ul className="list-disc list-inside space-y-0.5 text-[11px] text-amber-900/90 pl-1 font-medium">
-            {backendAnomalies.map((anomaly, idx) => (
-              <li key={idx}>{anomaly}</li>
-            ))}
-          </ul>
-          <p className="text-[10px] text-amber-800 italic pt-0.5">
-            {iotCopy.vetReviewNote || "Clinical observation only. Veterinary examination recommended."}
-          </p>
-        </div>
-      )}
-
       {/* Vitals Input Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl border border-[#E5E0D8] bg-[#FAF8F3] shadow-2xs">
         {/* Core Temperature */}
