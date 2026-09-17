@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, HTTPException, Status
+from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
 import datetime
@@ -18,7 +18,7 @@ class TelemetryPayload(BaseModel):
 
 # In-memory database cache to hold the latest reading for each animal
 telemetry_cache = {}
-@router.post("/telemetry", status_code=Status.HTTP_200_OK)
+@router.post("/telemetry", status_code=status.HTTP_200_OK)
 async def receive_telemetry(payload: TelemetryPayload):
     """
     Receives live IoT telemetry payload from ESP32 hardware node,
@@ -55,12 +55,12 @@ async def receive_telemetry(payload: TelemetryPayload):
     except Exception as e:
         logger.error(f"❌ Telemetry processing failure: {e}")
         raise HTTPException(
-            status_code=Status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error processing IoT telemetry."
         )
 
 
-@router.get("/telemetry/{animal_id}", status_code=Status.HTTP_200_OK)
+@router.get("/telemetry/{animal_id}", status_code=status.HTTP_200_OK)
 async def get_latest_telemetry(animal_id: str):
     """
     Retrieves the latest live IoT telemetry reading for a specific animal ID.
