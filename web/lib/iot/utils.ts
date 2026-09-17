@@ -49,3 +49,20 @@ export function computeDeviceConnectionState(
 
   return "NO_DEVICE";
 }
+
+/**
+ * Sanitizes and normalizes an IoT device identifier, preventing repeated "ESP32-ESP32-" prefixes
+ * while ensuring proper formatting (e.g. "COW-01" -> "ESP32-COW-01", "ESP32-ESP32-COW-01" -> "ESP32-COW-01").
+ */
+export function normalizeDeviceId(rawId?: string | null, fallback: string = "ESP32-COW-01"): string {
+  if (!rawId) return fallback;
+  let cleaned = rawId.trim();
+  if (!cleaned) return fallback;
+  while (cleaned.toUpperCase().startsWith("ESP32-ESP32-")) {
+    cleaned = cleaned.substring(6);
+  }
+  if (!cleaned.toUpperCase().startsWith("ESP32-")) {
+    cleaned = `ESP32-${cleaned}`;
+  }
+  return cleaned;
+}

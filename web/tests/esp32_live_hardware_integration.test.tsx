@@ -214,4 +214,105 @@ describe("ESP32 Live Hardware Node (MLX90614 + MPU6050) Integration", () => {
       })
     );
   });
+
+  it("4. normalizeDeviceId correctly strips double prefix (ESP32-ESP32-COW-01 -> ESP32-COW-01)", async () => {
+    const { normalizeDeviceId } = await import("@/lib/iot/utils");
+    expect(normalizeDeviceId("ESP32-ESP32-COW-01")).toBe("ESP32-COW-01");
+    expect(normalizeDeviceId("ESP32-COW-01")).toBe("ESP32-COW-01");
+    expect(normalizeDeviceId("COW-01")).toBe("ESP32-COW-01");
+    expect(normalizeDeviceId(null)).toBe("ESP32-COW-01");
+    expect(normalizeDeviceId(undefined)).toBe("ESP32-COW-01");
+  });
+
+  it("5. Live hardware readings from Arduino IDE (27.63°C, 11 activity) sync into IoTInput without duplicate prefix", async () => {
+    const mockChangeTemp = vi.fn();
+    const mockChangeAct = vi.fn();
+    const mockChangeSource = vi.fn();
+
+    // Mock fetch returning the exact values from the user's Arduino IDE Serial Monitor:
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url.includes("/api/iot/telemetry")) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              success: true,
+              isLive: true,
+              telemetry: {
+                animal_id: "ESP32-COW-01",
+                temperature: 27.63,
+                activity: 11,
+                activity_index: 11,
+                fever_flag: false,
+                lethargy_flag: true,
+                has_anomaly: true,
+                anomalies: ["Hypothermia detected: Core temp 27.63°C below 37.5°C threshold.", "Lethargy detected: Movement activity index (11) is critically low."],
+                hardware: "ESP32 + MLX90614 + MPU6050",
+                received_at: new Date().toISOString(),
+              },
+            }),
+        });
+      }
+      return Promise.resolve({ ok: false });
+    });
+
+    vi.mocked(iotActions.getAnimalIoTMonitoringDataAction).mockResolvedValue({
+      animal: {
+        id: "animal-cow-1",
+        tag: "ESP32-COW-01", // Tag already has ESP32-
+        species: "COW",
+        breed: "Gir",
+        ageMonths: 36,
+        farmName: "Farm",
+        villageName: "Village",
+        districtName: "District",
+      },
+      device: {
+        id: "dev-1",
+        deviceIdentifier: "ESP32-ESP32-COW-01", // previously corrupted ID in DB
+        source: "REAL",
+        status: "ONLINE",
+        connectionState: "REAL_ONLINE",
+        lastSeenAt: new Date().toISOString(),
+        lastTemperature: 27.63,
+        lastActivity: 11,
+        lastAnomalyState: true,
+      },
+      connectionState: "REAL_ONLINE",
+      readings: [],
+      latestReading: null,
+      summary: { totalReadings: 1, simulatedReadings: 0, realReadings: 1, anomaliesCount: 1 },
+    });
+
+    render(
+      <IoTInput
+        animalId="animal-cow-1"
+        animalTag="ESP32-COW-01"
+        temperature={null}
+        activity={null}
+        heartRate={null}
+        iotSource={null}
+        iotReadingId={null}
+        onChangeTemperature={mockChangeTemp}
+        onChangeActivity={mockChangeAct}
+        onChangeHeartRate={vi.fn()}
+        onChangeIotSource={mockChangeSource}
+        onChangeIotReadingId={vi.fn()}
+      />
+    );
+
+    // Verify banner renders sanitized "Device ESP32-COW-01 is active", NOT "Device ESP32-ESP32-COW-01"
+    await waitFor(() => {
+      expect(screen.getByText("ESP32-COW-01")).toBeInTheDocument();
+      expect(screen.queryByText("ESP32-ESP32-COW-01")).not.toBeInTheDocument();
+    });
+
+    // Auto-populates with live 27.63°C and 11 activity
+    await waitFor(() => {
+      expect(mockChangeTemp).toHaveBeenCalledWith(27.63);
+      expect(mockChangeAct).toHaveBeenCalledWith(11);
+      expect(mockChangeSource).toHaveBeenCalledWith("REAL");
+    });
+  });
 });
+

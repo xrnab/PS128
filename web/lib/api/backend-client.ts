@@ -455,31 +455,58 @@ export async function fetchLatestIoTTelemetry(
   animalId: string
 ): Promise<LiveESP32Telemetry | null> {
   const baseUrl = getBackendBaseUrl();
-  const endpoint = `${baseUrl}/api/iot/telemetry/${encodeURIComponent(animalId)}`;
-
-  try {
-    const response = await fetchWithTimeout(
-      endpoint,
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-      },
-      8000 // 8 second timeout
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    if (data?.success && data?.telemetry) {
-      return data.telemetry as LiveESP32Telemetry;
-    }
-    return null;
-  } catch (err) {
-    console.warn(`[Live IoT Telemetry Fetch Notice]: Failed to reach ${endpoint}:`, err);
-    return null;
+  let cleanId = (animalId || "ESP32-COW-01").trim();
+  while (cleanId.toUpperCase().startsWith("ESP32-ESP32-")) {
+    cleanId = cleanId.substring(6);
   }
+
+  const endpointsToTry = [
+    `${baseUrl}/api/iot/telemetry/${encodeURIComponent(cleanId)}`,
+    `${baseUrl}/api/iot/data/${encodeURIComponent(cleanId)}`,
+    `${baseUrl}/api/iot/data?animal_id=${encodeURIComponent(cleanId)}`,
+    `${baseUrl}/api/iot/telemetry?animal_id=${encodeURIComponent(cleanId)}`,
+  ];
+
+  for (const endpoint of endpointsToTry) {
+    try {
+      const response = await fetchWithTimeout(
+        endpoint,
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        },
+        5000 // 5 second timeout per probe
+      );
+
+      if (!response.ok) {
+        continue;
+      }
+
+      const data = await response.json();
+      if (data?.success && data?.telemetry) {
+        return data.telemetry as LiveESP32Telemetry;
+      }
+
+      if (data && typeof data.temperature === "number") {
+        return {
+          animal_id: data.animal_id || cleanId,
+          temperature: data.temperature,
+          activity: data.activity ?? data.activity_index ?? 0,
+          activity_index: data.activity_index ?? data.activity ?? 0,
+          fever_flag: Boolean(data.fever_flag || data.temperature > 39.5),
+          lethargy_flag: Boolean(data.lethargy_flag || (data.activity ?? data.activity_index ?? 50) < 30),
+          has_anomaly: Boolean(data.has_anomaly),
+          anomalies: data.anomalies || [],
+          hardware: data.hardware || "ESP32 + MLX90614 + MPU6050",
+          received_at: data.received_at || new Date().toISOString(),
+        };
+      }
+    } catch {
+      // Continue to next probe endpoint
+    }
+  }
+
+  return null;
 }
 

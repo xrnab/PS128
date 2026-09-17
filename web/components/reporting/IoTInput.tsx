@@ -27,6 +27,7 @@ import {
   ingestIoTTelemetryAction,
   IoTConnectionState,
 } from "@/lib/actions/iot";
+import { normalizeDeviceId } from "@/lib/iot/utils";
 
 export interface IoTInputProps {
   animalId?: string;
@@ -136,23 +137,34 @@ export function IoTInput({
     setIsFetchingLive(true);
     setSimulationError(null);
     try {
-      const targetId = resolvedDeviceId || (animalTag ? `ESP32-${animalTag}` : "ESP32-COW-01");
+      const targetId = normalizeDeviceId(resolvedDeviceId || animalTag || "ESP32-COW-01");
       const res = await fetch(`/api/iot/telemetry/${encodeURIComponent(targetId)}`);
       if (res.ok) {
         const data = await res.json();
         if (data?.success && data?.telemetry) {
           const tel = data.telemetry;
-          onChangeTemperature(tel.temperature);
-          onChangeActivity(tel.activity ?? tel.activity_index ?? null);
-          onChangeIotSource("REAL");
-          setHasAnomaly(Boolean(tel.has_anomaly));
-          setBackendAnomalies(tel.anomalies || []);
-          setDeviceState("REAL_ONLINE");
-          setResolvedDeviceId(tel.animal_id || targetId);
-          const timeStr = tel.received_at
-            ? new Date(tel.received_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-            : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-          setLastUpdated(timeStr);
+          const isRealLiveReading =
+            data.isLive === true ||
+            (tel.temperature !== undefined &&
+              tel.temperature !== null &&
+              !tel.hardware?.includes("Awaiting"));
+
+          if (isRealLiveReading) {
+            onChangeTemperature(tel.temperature);
+            onChangeActivity(tel.activity ?? tel.activity_index ?? null);
+            onChangeIotSource("REAL");
+            setHasAnomaly(Boolean(tel.has_anomaly));
+            setBackendAnomalies(tel.anomalies || []);
+            setDeviceState("REAL_ONLINE");
+            setResolvedDeviceId(normalizeDeviceId(tel.animal_id || targetId));
+            const timeStr = tel.received_at
+              ? new Date(tel.received_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+              : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            setLastUpdated(timeStr);
+          } else {
+            // Awaiting physical ESP32 data - keep targetId clean
+            setResolvedDeviceId(normalizeDeviceId(targetId));
+          }
         }
       }
     } catch (err) {
@@ -190,7 +202,7 @@ export function IoTInput({
         const data = await getAnimalIoTMonitoringDataAction(animalId);
         if (!isMountedRef.current) return;
 
-        setResolvedDeviceId(data.device.deviceIdentifier || linkedIotDeviceId || null);
+        setResolvedDeviceId(normalizeDeviceId(data.device.deviceIdentifier || linkedIotDeviceId || null));
         const connection = data.connectionState;
         setDeviceState(connection);
 
@@ -255,7 +267,7 @@ export function IoTInput({
     getAnimalIoTMonitoringDataAction(animalId)
       .then((data) => {
         if (ignore) return;
-        setResolvedDeviceId(data.device.deviceIdentifier || linkedIotDeviceId || null);
+        setResolvedDeviceId(normalizeDeviceId(data.device.deviceIdentifier || linkedIotDeviceId || null));
         const connection = data.connectionState;
         setDeviceState(connection);
 
@@ -461,7 +473,7 @@ export function IoTInput({
               <span>{t("physicalEsp32Online")}</span>
             </div>
             <p className="text-[11px] text-emerald-800/90 pl-6">
-              Device <span className="font-mono font-semibold">{resolvedDeviceId || `ESP32-${animalTag}`}</span> is active. Live biometric sensor telemetry auto-filled below.
+              Device <span className="font-mono font-semibold">{normalizeDeviceId(resolvedDeviceId || animalTag)}</span> is active. Live biometric sensor telemetry auto-filled below.
               {lastUpdated && <span className="ml-1 text-emerald-700">({iotCopy.lastUpdated || "Last updated"}: {lastUpdated})</span>}
             </p>
           </div>
@@ -676,7 +688,7 @@ export function IoTInput({
                 Live ESP32 Streaming Active:
               </span>{" "}
               <span className="text-[11px] text-emerald-800">
-                Auto-fetching from <span className="font-mono font-semibold">{resolvedDeviceId || "ESP32-COW-01"}</span> (Adafruit MLX90614 IR Temp + MPU6050 Motion) every 5s.
+                Auto-fetching from <span className="font-mono font-semibold">{normalizeDeviceId(resolvedDeviceId || animalTag || "ESP32-COW-01")}</span> (Adafruit MLX90614 IR Temp + MPU6050 Motion) every 5s.
               </span>
             </div>
           </div>

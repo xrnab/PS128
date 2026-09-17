@@ -13,7 +13,7 @@ import {
 import { createInAppNotification } from "./notifications";
 import { IoTDeviceSource, IoTDeviceStatus, UserRole } from "@prisma/client";
 
-import { computeDeviceConnectionState, IoTConnectionState } from "@/lib/iot/utils";
+import { computeDeviceConnectionState, IoTConnectionState, normalizeDeviceId } from "@/lib/iot/utils";
 
 export type { IoTConnectionState };
 
@@ -166,7 +166,7 @@ export async function getAnimalIoTMonitoringDataAction(animalId: string) {
 
   // If animal has no IoTDevice row yet, provision a default offline device
   if (!activeDevice) {
-    const defaultIdentifier = animal.iotDeviceId || `ESP32-${animal.tag}`;
+    const defaultIdentifier = normalizeDeviceId(animal.iotDeviceId || animal.tag);
     activeDevice = await prisma.ioTDevice.create({
       data: {
         deviceIdentifier: defaultIdentifier,
