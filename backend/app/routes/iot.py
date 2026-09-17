@@ -6,8 +6,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Define the router matching the path sent by ESP32 (/api/iot/telemetry)
-router = APIRouter(prefix="/api/iot", tags=["IoT Telemetry"])
+# Define the router matching the path sent by ESP32 (/api/iot/telemetry and /api/iot/data)
+router = APIRouter(prefix="/api/iot", tags=["IoT & Wearables"])
 
 # 1. Pydantic schema matching the ESP32 JSON payload exactly
 class TelemetryPayload(BaseModel):
@@ -23,6 +23,23 @@ class IoTDataRequestPayload(BaseModel):
     use_simulation: Optional[bool] = False
     simulate_fever: Optional[bool] = False
 
+class IoTSensorParametersResponse(BaseModel):
+    success: bool = True
+    isLive: bool = True
+    animal_id: str
+    temperature: float
+    activity: int
+    activity_index: int
+    ambient_temp: Optional[float] = None
+    fever_flag: bool = False
+    hypothermia_flag: bool = False
+    lethargy_flag: bool = False
+    has_anomaly: bool = False
+    anomalies: List[str] = []
+    hardware: str = "ESP32 + MLX90614 + MPU6050"
+    received_at: str
+    telemetry: Optional[dict] = None
+
 # In-memory database cache to hold the latest reading for each animal
 telemetry_cache = {}
 
@@ -34,7 +51,7 @@ def normalize_device_id(raw_id: Optional[str]) -> str:
         cleaned = cleaned[6:]
     return cleaned
 
-@router.post("/telemetry", status_code=status.HTTP_200_OK)
+@router.post("/telemetry", status_code=status.HTTP_200_OK, tags=["IoT & Wearables"], summary="Ingest IoT Telemetry")
 async def receive_telemetry(payload: TelemetryPayload):
     """
     Receives live IoT telemetry payload from ESP32 hardware node,
@@ -64,12 +81,13 @@ async def receive_telemetry(payload: TelemetryPayload):
             "temperature": round(payload.temperature, 2),
             "activity": payload.activity,
             "activity_index": payload.activity,
+            "ambient_temp": payload.ambient_temp,
             "fever_flag": is_fever,
+            "hypothermia_flag": is_hypothermic,
             "lethargy_flag": is_lethargic,
             "has_anomaly": is_fever or is_hypothermic or is_lethargic,
             "anomalies": anomalies,
             "hardware": "ESP32 + MLX90614 + MPU6050",
-            "ambient_temp": payload.ambient_temp,
             "received_at": datetime.datetime.utcnow().isoformat() + "Z"
         }
 
@@ -107,7 +125,13 @@ async def receive_telemetry(payload: TelemetryPayload):
         )
 
 
-@router.get("/telemetry/{animal_id}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/telemetry/{animal_id}",
+    response_model=IoTSensorParametersResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["IoT & Wearables"],
+    summary="Get IoT Telemetry by Animal ID"
+)
 async def get_latest_telemetry(animal_id: str):
     """
     Retrieves the latest live IoT telemetry reading for a specific animal ID.
@@ -116,14 +140,23 @@ async def get_latest_telemetry(animal_id: str):
     clean_id = normalize_device_id(animal_id)
 
     matched = None
-    # 1. Direct or cleaned match in cache
+    # 1. Direct match in cache
     for key in [animal_id, clean_id]:
         if key in telemetry_cache:
             matched = telemetry_cache[key]
             break
 
-    # 2. Check alternate prefix or suffix matches
+    # 2. Case-insensitive match in cache
     if not matched:
+        lower_map = {k.lower(): v for k, v in telemetry_cache.items()}
+        for k in [animal_id.lower(), clean_id.lower()]:
+            if k in lower_map:
+                matched = lower_map[k]
+                break
+
+    # 3. Check alternate prefix or suffix matches
+    if not matched:
+        lower_map = {k.lower(): v for k, v in telemetry_cache.items()}
         alt_ids = [
             f"ESP32-{clean_id.replace('ESP32-', '')}",
             clean_id.replace("ESP32-", ""),
@@ -134,6 +167,9 @@ async def get_latest_telemetry(animal_id: str):
             if alt in telemetry_cache:
                 matched = telemetry_cache[alt]
                 break
+            if alt.lower() in lower_map:
+                matched = lower_map[alt.lower()]
+                break
 
     if matched:
         res = dict(matched)
@@ -141,24 +177,30 @@ async def get_latest_telemetry(animal_id: str):
         return {
             "success": True,
             "isLive": True,
-            "telemetry": res,
             "animal_id": res.get("animal_id", clean_id),
             "temperature": res.get("temperature", 38.5),
             "activity": res.get("activity", 45),
             "activity_index": res.get("activity_index", 45),
+            "ambient_temp": res.get("ambient_temp"),
+            "fever_flag": res.get("fever_flag", False),
+            "hypothermia_flag": res.get("hypothermia_flag", False),
+            "lethargy_flag": res.get("lethargy_flag", False),
             "has_anomaly": res.get("has_anomaly", False),
             "anomalies": res.get("anomalies", []),
             "hardware": res.get("hardware", "ESP32 + MLX90614 + MPU6050"),
-            "received_at": res.get("received_at", datetime.datetime.utcnow().isoformat() + "Z")
+            "received_at": res.get("received_at", datetime.datetime.utcnow().isoformat() + "Z"),
+            "telemetry": res,
         }
 
-    # 3. Return default normal baseline if ESP32 hasn't transmitted yet
+    # 4. Return default normal baseline if ESP32 hasn't transmitted yet
     default_rec = {
         "animal_id": clean_id,
         "temperature": 38.5,
         "activity": 45,
         "activity_index": 45,
+        "ambient_temp": 24.0,
         "fever_flag": False,
+        "hypothermia_flag": False,
         "lethargy_flag": False,
         "has_anomaly": False,
         "anomalies": [],
@@ -168,27 +210,62 @@ async def get_latest_telemetry(animal_id: str):
     return {
         "success": True,
         "isLive": False,
+        **default_rec,
         "telemetry": default_rec,
-        **default_rec
     }
 
 
-@router.get("/telemetry", status_code=status.HTTP_200_OK)
+@router.get(
+    "/telemetry",
+    response_model=IoTSensorParametersResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["IoT & Wearables"],
+    summary="Get IoT Telemetry"
+)
 async def get_default_telemetry(animal_id: Optional[str] = "ESP32-COW-01"):
     return await get_latest_telemetry(animal_id or "ESP32-COW-01")
 
 
-@router.get("/data/{animal_id}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/data/{animal_id}",
+    response_model=IoTSensorParametersResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["IoT & Wearables"],
+    summary="Get IoT Sensor Parameters by Animal ID",
+    description="Retrieves the latest sensor parameters (MLX90614 body temp, MPU6050 motion index) transmitted by the ESP32 for a specific animal ID."
+)
 async def get_data_by_id(animal_id: str):
+    """
+    Retrieves the latest sensor parameters transmitted by the ESP32 for a specific animal ID.
+    Compatible with:
+      - Adafruit MLX90614 IR Body Temperature
+      - Adafruit MPU6050 Motion Activity Index
+    """
     return await get_latest_telemetry(animal_id)
 
 
-@router.get("/data", status_code=status.HTTP_200_OK)
+@router.get(
+    "/data",
+    response_model=IoTSensorParametersResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["IoT & Wearables"],
+    summary="Get IoT Sensor Parameters",
+    description="Retrieves the latest sensor parameters transmitted by the ESP32 hardware node."
+)
 async def get_default_data(animal_id: Optional[str] = "ESP32-COW-01"):
+    """
+    Retrieves the latest sensor parameters transmitted by the ESP32 hardware node.
+    """
     return await get_latest_telemetry(animal_id or "ESP32-COW-01")
 
 
-@router.post("/data", status_code=status.HTTP_200_OK)
+@router.post(
+    "/data",
+    status_code=status.HTTP_200_OK,
+    tags=["IoT & Wearables"],
+    summary="Ingest IoT Data",
+    description="Ingests vital telemetry from ESP32 collar/tag or simulator. Evaluates temperature and mobility patterns in real time."
+)
 async def ingest_iot_data_endpoint(payload: IoTDataRequestPayload):
     """
     Authoritative ingestion endpoint used by Next.js backend-client and direct ESP32 transmissions.
@@ -227,6 +304,7 @@ async def ingest_iot_data_endpoint(payload: IoTDataRequestPayload):
             "activity": act,
             "activity_index": act,
             "fever_flag": is_fever,
+            "hypothermia_flag": is_hypothermic,
             "lethargy_flag": is_lethargic,
             "has_anomaly": is_fever or is_hypothermic or is_lethargic,
             "anomalies": anomalies,
