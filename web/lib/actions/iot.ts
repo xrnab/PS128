@@ -4,7 +4,12 @@ import prisma from "@/lib/db/prisma";
 import { revalidatePath } from "next/cache";
 import { requireFarmer, assertFarmerOwnsAnimal } from "@/lib/auth/permissions";
 import { requireActiveUser } from "@/lib/auth/session";
-import { ingestIoTData, BackendTimeoutError, getBackendHealth } from "@/lib/api/backend-client";
+import {
+  ingestIoTData,
+  BackendTimeoutError,
+  getBackendHealth,
+  fetchLatestIoTTelemetry,
+} from "@/lib/api/backend-client";
 import { createInAppNotification } from "./notifications";
 import { IoTDeviceSource, IoTDeviceStatus, UserRole } from "@prisma/client";
 
@@ -447,3 +452,120 @@ export async function toggleDeviceSimulationModeAction(
     },
   };
 }
+
+/**
+ * Fetches the latest live telemetry from the physical ESP32 node (ESP32-COW-01)
+ * or associated animal device, evaluates status, and persists to DB.
+ */
+export async function fetchLiveESP32TelemetryAction(
+  animalId: string,
+  deviceId?: string
+) {
+  const user = await requireActiveUser();
+  if (user.role === UserRole.FARMER) {
+    await assertFarmerOwnsAnimal(animalId);
+  }
+
+  const animal = await prisma.animal.findUnique({
+    where: { id: animalId },
+    include: {
+      herd: { include: { farm: true } },
+      iotDevices: { orderBy: { updatedAt: "desc" }, take: 1 },
+    },
+  });
+
+  if (!animal) {
+    return { success: false, error: "Animal not found" };
+  }
+
+  const lookupId = deviceId || animal.iotDevices[0]?.deviceIdentifier || animal.iotDeviceId || "ESP32-COW-01";
+  const liveTelemetry = await fetchLatestIoTTelemetry(lookupId);
+
+  if (!liveTelemetry) {
+    return {
+      success: false,
+      error: "Unable to reach the live ESP32 telemetry feed. Ensure the device is powered and connected to Wi-Fi.",
+    };
+  }
+
+  const deviceIdentifier = lookupId;
+  const previousDevice = animal.iotDevices[0];
+  const previousAnomalyState = previousDevice?.lastAnomalyState || false;
+
+  const device = await prisma.ioTDevice.upsert({
+    where: { deviceIdentifier },
+    create: {
+      deviceIdentifier,
+      animalId: animal.id,
+      source: IoTDeviceSource.REAL,
+      status: IoTDeviceStatus.ONLINE,
+      lastSeenAt: new Date(),
+      lastTemperature: liveTelemetry.temperature,
+      lastActivity: liveTelemetry.activity,
+      lastAnomalyState: liveTelemetry.has_anomaly,
+    },
+    update: {
+      animalId: animal.id,
+      source: IoTDeviceSource.REAL,
+      status: IoTDeviceStatus.ONLINE,
+      lastSeenAt: new Date(),
+      lastTemperature: liveTelemetry.temperature,
+      lastActivity: liveTelemetry.activity,
+      lastAnomalyState: liveTelemetry.has_anomaly,
+    },
+  });
+
+  const reading = await prisma.ioTReading.create({
+    data: {
+      deviceId: device.id,
+      animalId: animal.id,
+      source: IoTDeviceSource.REAL,
+      temperature: liveTelemetry.temperature,
+      activityIndex: liveTelemetry.activity,
+      hasAnomaly: liveTelemetry.has_anomaly,
+      anomalies: liveTelemetry.anomalies || [],
+      recordedAt: new Date(),
+    },
+  });
+
+  if (liveTelemetry.has_anomaly && !previousAnomalyState) {
+    const ownerUserId = animal.herd.farm.farmerUserId || user.id;
+    await createInAppNotification({
+      userId: ownerUserId,
+      title: `⚠️ Live ESP32 Sensor Alert: #${animal.tag} (ESP32-COW-01)`,
+      message: `Physiological anomaly detected by MLX90614/MPU6050: Temp ${liveTelemetry.temperature}°C, Activity ${liveTelemetry.activity}/100.`,
+      link: `/farmer/animals/${animal.id}`,
+      type: "IOT_HEALTH_RISK",
+    });
+  }
+
+  revalidatePath("/farmer/iot");
+  revalidatePath(`/farmer/animals/${animal.id}`);
+
+  return {
+    success: true,
+    connectionState: computeDeviceConnectionState(device),
+    device: {
+      id: device.id,
+      deviceIdentifier: device.deviceIdentifier,
+      animalId: device.animalId,
+      source: device.source,
+      status: device.status,
+      lastSeenAt: device.lastSeenAt ? device.lastSeenAt.toISOString() : null,
+      lastTemperature: device.lastTemperature,
+      lastActivity: device.lastActivity,
+      lastAnomalyState: device.lastAnomalyState,
+    },
+    reading: {
+      id: reading.id,
+      source: reading.source,
+      temperature: reading.temperature,
+      activityIndex: reading.activityIndex,
+      hasAnomaly: reading.hasAnomaly,
+      anomalies: reading.anomalies,
+      recordedAt: reading.recordedAt.toISOString(),
+    },
+    telemetry: liveTelemetry,
+  };
+}
+

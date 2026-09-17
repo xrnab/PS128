@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ export interface MockESP32SimulatorProps {
   onSendTelemetry: (payload: {
     temperature: number;
     activity: number;
-    source: "SIMULATED";
+    source?: "SIMULATED" | "REAL";
   }) => Promise<{ success: boolean; message?: string }>;
 }
 
@@ -97,6 +97,78 @@ export function MockESP32Simulator({
       }
     };
   }, []);
+
+  // Physical ESP32 Hardware Mode State (ESP32-COW-01)
+  const [simulatorMode, setSimulatorMode] = useState<"SIMULATION" | "PHYSICAL">("SIMULATION");
+  const [liveTelemetry, setLiveTelemetry] = useState<{
+    animal_id: string;
+    temperature: number;
+    activity: number;
+    fever_flag: boolean;
+    lethargy_flag: boolean;
+    has_anomaly: boolean;
+    anomalies?: string[];
+    received_at: string;
+  } | null>(null);
+  const [isHardwareAutoSync, setIsHardwareAutoSync] = useState<boolean>(false);
+  const [isFetchingHardware, setIsFetchingHardware] = useState<boolean>(false);
+  const [hardwarePackets, setHardwarePackets] = useState<number>(0);
+
+  const fetchLiveTelemetry = useCallback(async () => {
+    setIsFetchingHardware(true);
+    try {
+      const targetId = animalTag ? `ESP32-${animalTag}` : "ESP32-COW-01";
+      const res = await fetch(`/api/iot/telemetry/${encodeURIComponent(targetId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.success && data?.telemetry) {
+          setLiveTelemetry(data.telemetry);
+          setHardwarePackets((p) => p + 1);
+        }
+      }
+    } catch (err) {
+      console.warn("[Hardware Telemetry Fetch Warning]:", err);
+    } finally {
+      setIsFetchingHardware(false);
+    }
+  }, [animalTag]);
+
+  // Automatic 5-second polling loop matching ESP32 firmware TRANSMIT_INTERVAL_MS = 5000
+  useEffect(() => {
+    if (!isHardwareAutoSync) return;
+    fetchLiveTelemetry();
+    const t = setInterval(() => {
+      fetchLiveTelemetry();
+    }, 5000);
+    return () => clearInterval(t);
+  }, [isHardwareAutoSync, fetchLiveTelemetry]);
+
+  const handleIngestLiveHardware = async () => {
+    const tempToIngest = liveTelemetry ? liveTelemetry.temperature : 38.5;
+    const actToIngest = liveTelemetry ? liveTelemetry.activity : 45;
+    setIsTransmitting(true);
+    setTransmissionStatus("SENDING");
+    setStatusMessage("Persisting live ESP32-COW-01 telemetry into ledger...");
+    try {
+      const res = await onSendTelemetry({
+        temperature: tempToIngest,
+        activity: actToIngest,
+        source: "REAL",
+      });
+      if (res.success) {
+        setTransmissionStatus("SUCCESS");
+        setStatusMessage("Live ESP32 telemetry ingested successfully!");
+      } else {
+        setTransmissionStatus("ERROR");
+        setStatusMessage(res.message || "Failed to persist reading");
+      }
+    } catch (err) {
+      setTransmissionStatus("ERROR");
+      setStatusMessage(err instanceof Error ? err.message : "Ingestion error");
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
 
   const getActiveDisplayValues = (): { temperature: number; activity: number } => {
     if (scenario === "CUSTOM") {
@@ -283,11 +355,222 @@ export function MockESP32Simulator({
             </div>
           </div>
         </div>
+
+        {/* Mode Selector: Virtual Simulator vs Live Physical ESP32 Node */}
+        <div className="flex items-center gap-2 pt-3 border-t border-stone-800/80">
+          <button
+            type="button"
+            data-testid="mode-tab-simulation"
+            onClick={() => setSimulatorMode("SIMULATION")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              simulatorMode === "SIMULATION"
+                ? "bg-emerald-800/80 text-white border border-emerald-500/50 shadow-xs"
+                : "text-stone-400 hover:text-stone-200 hover:bg-stone-900"
+            }`}
+          >
+            <Sliders className="h-3.5 w-3.5" />
+            <span>Virtual Simulator</span>
+          </button>
+
+          <button
+            type="button"
+            data-testid="mode-tab-hardware"
+            onClick={() => {
+              setSimulatorMode("PHYSICAL");
+              fetchLiveTelemetry();
+            }}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              simulatorMode === "PHYSICAL"
+                ? "bg-emerald-800/80 text-white border border-emerald-500/50 shadow-xs"
+                : "text-stone-400 hover:text-stone-200 hover:bg-stone-900"
+            }`}
+          >
+            <Radio className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Physical ESP32 Node (ESP32-COW-01)</span>
+          </button>
+        </div>
       </CardHeader>
 
       <CardContent className="p-4 sm:p-6 space-y-6">
-        {/* Scenario Presets */}
-        <div className="space-y-2.5">
+        {simulatorMode === "PHYSICAL" ? (
+          <div className="space-y-6 animate-fade-in">
+            {/* Firmware Specification Card */}
+            <div className="p-4 rounded-2xl bg-stone-900/80 border border-emerald-500/30 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${isHardwareAutoSync ? "bg-emerald-400 opacity-75" : "bg-stone-500 opacity-0"}`}></span>
+                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isHardwareAutoSync ? "bg-emerald-500" : "bg-stone-500"}`}></span>
+                  </span>
+                  <span className="font-bold text-sm text-stone-100">ESP32 Surveillance Node Hardware</span>
+                  <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-500/40 font-mono text-[10px]">
+                    #define ANIMAL_ID &quot;ESP32-COW-01&quot;
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsHardwareAutoSync(!isHardwareAutoSync)}
+                    className={`h-8 text-xs rounded-xl font-semibold gap-1.5 transition-all ${
+                      isHardwareAutoSync
+                        ? "bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-500 animate-pulse"
+                        : "border-stone-700 bg-stone-800 text-stone-300 hover:bg-stone-700"
+                    }`}
+                  >
+                    <Radio className="h-3 w-3" />
+                    <span>{isHardwareAutoSync ? "Live Auto-Poll (5s ON)" : "Start Auto-Poll (5s)"}</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={isFetchingHardware}
+                    onClick={fetchLiveTelemetry}
+                    className="h-8 text-xs text-stone-300 hover:bg-stone-800 rounded-xl gap-1"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isFetchingHardware ? "animate-spin" : ""}`} />
+                    <span>Fetch Now</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Sensor Specs Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="p-2.5 rounded-xl bg-stone-950/60 border border-stone-800 space-y-1">
+                  <div className="flex items-center gap-1.5 text-stone-400 font-mono text-[11px]">
+                    <Thermometer className="h-3.5 w-3.5 text-rose-400" />
+                    <span>IR TEMPERATURE SENSOR</span>
+                  </div>
+                  <div className="text-stone-200 font-semibold">Adafruit MLX90614</div>
+                  <div className="text-[10px] text-stone-500 font-mono">mlx.readObjectTempC()</div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-stone-950/60 border border-stone-800 space-y-1">
+                  <div className="flex items-center gap-1.5 text-stone-400 font-mono text-[11px]">
+                    <ActivityIcon className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>6-DOF MOTION IMU</span>
+                  </div>
+                  <div className="text-stone-200 font-semibold">Adafruit MPU6050</div>
+                  <div className="text-[10px] text-stone-500 font-mono">10 Hz dynamic motion sample</div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-stone-950/60 border border-stone-800 space-y-1">
+                  <div className="flex items-center gap-1.5 text-stone-400 font-mono text-[11px]">
+                    <Cpu className="h-3.5 w-3.5 text-amber-400" />
+                    <span>NETWORK & TELEMETRY</span>
+                  </div>
+                  <div className="text-stone-200 font-semibold">Wi-Fi (SSID: Danish07)</div>
+                  <div className="text-[10px] text-stone-500 font-mono">POST /api/iot/telemetry (5s)</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Readout & Visualizer */}
+            <div className="p-4 rounded-2xl bg-stone-950 border border-stone-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-stone-300 uppercase tracking-wider">
+                  Live Sensor Signals (ESP32-COW-01)
+                </span>
+                <span className="text-[11px] font-mono text-stone-400">
+                  Packets Received: <strong className="text-emerald-400">{hardwarePackets}</strong>
+                  {liveTelemetry?.received_at && (
+                    <span className="ml-2 text-stone-500">
+                      (Last: {new Date(liveTelemetry.received_at).toLocaleTimeString()})
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Object Temp Card */}
+                <div className="p-4 rounded-xl bg-[#151B17] border border-stone-800 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <span className="text-xs font-mono text-stone-400 flex items-center gap-1.5">
+                      <Thermometer className="h-4 w-4 text-rose-400" />
+                      Object Temperature (MLX90614)
+                    </span>
+                    <div className="text-2xl font-bold font-mono text-stone-100">
+                      {liveTelemetry ? `${liveTelemetry.temperature.toFixed(2)} °C` : "38.50 °C"}
+                    </div>
+                  </div>
+                  <Badge
+                    className={`font-mono text-xs ${
+                      (liveTelemetry?.temperature ?? 38.5) > 39.5
+                        ? "bg-rose-950 text-rose-300 border-rose-600"
+                        : "bg-emerald-950 text-emerald-300 border-emerald-600"
+                    }`}
+                  >
+                    {(liveTelemetry?.temperature ?? 38.5) > 39.5 ? "FEVER > 39.5°C" : "NORMAL TEMP"}
+                  </Badge>
+                </div>
+
+                {/* Activity Index Card */}
+                <div className="p-4 rounded-xl bg-[#151B17] border border-stone-800 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <span className="text-xs font-mono text-stone-400 flex items-center gap-1.5">
+                      <ActivityIcon className="h-4 w-4 text-emerald-400" />
+                      Activity Index (MPU6050 IMU)
+                    </span>
+                    <div className="text-2xl font-bold font-mono text-stone-100">
+                      {liveTelemetry ? `${liveTelemetry.activity} / 100` : "45 / 100"}
+                    </div>
+                  </div>
+                  <Badge
+                    className={`font-mono text-xs ${
+                      (liveTelemetry?.activity ?? 45) < 30
+                        ? "bg-amber-950 text-amber-300 border-amber-600"
+                        : "bg-emerald-950 text-emerald-300 border-emerald-600"
+                    }`}
+                  >
+                    {(liveTelemetry?.activity ?? 45) < 30 ? "LETHARGIC < 30" : "ACTIVE"}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Status Banner */}
+              {transmissionStatus !== "IDLE" && (
+                <div
+                  className={`p-3 rounded-xl border text-xs flex items-center gap-2 ${
+                    transmissionStatus === "SUCCESS"
+                      ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                      : transmissionStatus === "SENDING"
+                      ? "bg-blue-950/60 border-blue-500/40 text-blue-300"
+                      : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                  }`}
+                >
+                  {transmissionStatus === "SUCCESS" ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  ) : transmissionStatus === "SENDING" ? (
+                    <RefreshCw className="h-4 w-4 animate-spin text-blue-400 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+                  )}
+                  <span>{statusMessage}</span>
+                </div>
+              )}
+
+              {/* Ingest Action Button */}
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <Button
+                  type="button"
+                  onClick={handleIngestLiveHardware}
+                  disabled={isTransmitting}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl text-xs h-9 px-4 cursor-pointer gap-2 shadow-sm"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Ingest Live Packet into Animal Ledger</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Scenario Presets */}
+            <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <Label className="text-xs font-semibold text-stone-300 uppercase tracking-wider">
               1. Select Biometric Simulation Preset
@@ -537,6 +820,8 @@ export function MockESP32Simulator({
             )}
           </div>
         </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

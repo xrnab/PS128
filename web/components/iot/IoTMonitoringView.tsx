@@ -126,15 +126,16 @@ export function IoTMonitoringView({
   const handleSendTelemetry = async (payload: {
     temperature: number;
     activity: number;
-    source: "SIMULATED";
+    source?: "SIMULATED" | "REAL";
   }): Promise<{ success: boolean; message?: string }> => {
     setActionError(null);
     try {
+      const source = payload.source || "SIMULATED";
       const result = await ingestIoTTelemetryAction({
         animalId: currentAnimalId,
         temperature: payload.temperature,
         activity: payload.activity,
-        source: "SIMULATED",
+        source,
       });
 
       if (!result.success || !result.reading) {

@@ -434,3 +434,52 @@ export async function ingestIoTData(payload: IoTDataRequest): Promise<IoTDataRes
   }
 }
 
+export interface LiveESP32Telemetry {
+  animal_id: string;
+  temperature: number;
+  activity: number;
+  activity_index?: number;
+  fever_flag: boolean;
+  lethargy_flag: boolean;
+  has_anomaly: boolean;
+  anomalies?: string[];
+  hardware?: string;
+  received_at: string;
+}
+
+/**
+ * Retrieves the latest live IoT telemetry reading from the FastAPI backend (GET /api/iot/telemetry/{animal_id}).
+ * Compatible with live hardware ESP32 streaming MLX90614 (IR temp) + MPU6050 (activity) packets.
+ */
+export async function fetchLatestIoTTelemetry(
+  animalId: string
+): Promise<LiveESP32Telemetry | null> {
+  const baseUrl = getBackendBaseUrl();
+  const endpoint = `${baseUrl}/api/iot/telemetry/${encodeURIComponent(animalId)}`;
+
+  try {
+    const response = await fetchWithTimeout(
+      endpoint,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      },
+      8000 // 8 second timeout
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    if (data?.success && data?.telemetry) {
+      return data.telemetry as LiveESP32Telemetry;
+    }
+    return null;
+  } catch (err) {
+    console.warn(`[Live IoT Telemetry Fetch Notice]: Failed to reach ${endpoint}:`, err);
+    return null;
+  }
+}
+

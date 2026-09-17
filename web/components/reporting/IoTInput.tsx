@@ -110,6 +110,10 @@ export function IoTInput({
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
+  // Live Physical ESP32 Hardware Streaming State (MLX90614 + MPU6050)
+  const [isLiveStreaming, setIsLiveStreaming] = useState<boolean>(false);
+  const [isFetchingLive, setIsFetchingLive] = useState<boolean>(false);
+
   // Simulation State
   const [selectedPreset, setSelectedPreset] = useState<SimulationPreset>("NORMAL");
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
@@ -126,6 +130,49 @@ export function IoTInput({
       isMountedRef.current = false;
     };
   }, []);
+
+  // Fetch live telemetry from physical ESP32 node (ESP32-COW-01)
+  const handleFetchLiveTelemetry = useCallback(async () => {
+    setIsFetchingLive(true);
+    setSimulationError(null);
+    try {
+      const targetId = resolvedDeviceId || (animalTag ? `ESP32-${animalTag}` : "ESP32-COW-01");
+      const res = await fetch(`/api/iot/telemetry/${encodeURIComponent(targetId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.success && data?.telemetry) {
+          const tel = data.telemetry;
+          onChangeTemperature(tel.temperature);
+          onChangeActivity(tel.activity ?? tel.activity_index ?? null);
+          onChangeIotSource("REAL");
+          setHasAnomaly(Boolean(tel.has_anomaly));
+          setBackendAnomalies(tel.anomalies || []);
+          setDeviceState("REAL_ONLINE");
+          setResolvedDeviceId(tel.animal_id || targetId);
+          const timeStr = tel.received_at
+            ? new Date(tel.received_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+            : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          setLastUpdated(timeStr);
+        }
+      }
+    } catch (err) {
+      console.warn("[Live Telemetry Sync Warning]:", err);
+    } finally {
+      if (isMountedRef.current) {
+        setIsFetchingLive(false);
+      }
+    }
+  }, [resolvedDeviceId, animalTag, onChangeTemperature, onChangeActivity, onChangeIotSource]);
+
+  // Real-time 5-second polling loop matching ESP32 firmware TRANSMIT_INTERVAL_MS = 5000
+  useEffect(() => {
+    if (!isLiveStreaming) return;
+    handleFetchLiveTelemetry();
+    const timer = setInterval(() => {
+      handleFetchLiveTelemetry();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isLiveStreaming, handleFetchLiveTelemetry]);
 
   // Check physical device connection when animal changes or user refreshes
   const checkDeviceConnection = useCallback(
@@ -424,6 +471,26 @@ export function IoTInput({
               type="button"
               variant="outline"
               size="sm"
+              onClick={() => {
+                const next = !isLiveStreaming;
+                setIsLiveStreaming(next);
+                if (next) {
+                  handleFetchLiveTelemetry();
+                }
+              }}
+              className={`h-8 text-xs rounded-xl cursor-pointer gap-1.5 shadow-2xs font-semibold ${
+                isLiveStreaming
+                  ? "border-emerald-500 bg-emerald-700 hover:bg-emerald-800 text-white"
+                  : "border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50"
+              }`}
+            >
+              <Radio className={`h-3 w-3 ${isLiveStreaming ? "text-white animate-pulse" : "text-emerald-600"}`} />
+              <span>{isLiveStreaming ? "Live 5s Active" : "Auto-Sync 5s"}</span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               disabled={checkingDevice}
               onClick={() => checkDeviceConnection(true)}
               className="h-8 text-xs border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50 rounded-xl cursor-pointer gap-1.5 shadow-2xs"
@@ -490,8 +557,33 @@ export function IoTInput({
             </p>
           </div>
 
-          {/* Simulation Trigger Button & Preset Dropdown */}
-          <div className="flex items-center gap-2 pl-6 sm:pl-0 shrink-0">
+          {/* Action Buttons: Live ESP32 Hardware + Simulation */}
+          <div className="flex items-center gap-2 pl-6 sm:pl-0 shrink-0 flex-wrap">
+            {/* Live ESP32 Auto-Sync (5s) */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isFetchingLive}
+              onClick={() => {
+                const next = !isLiveStreaming;
+                setIsLiveStreaming(next);
+                if (next) {
+                  handleFetchLiveTelemetry();
+                }
+              }}
+              data-testid="live-esp32-stream-btn"
+              className={`h-8 text-xs rounded-xl cursor-pointer gap-1.5 shadow-2xs font-semibold ${
+                isLiveStreaming
+                  ? "border-emerald-500 bg-emerald-700 hover:bg-emerald-800 text-white"
+                  : "border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
+              }`}
+              title="Connects to live physical ESP32 node (ESP32-COW-01) with MLX90614 + MPU6050 and auto-fetches every 5s"
+            >
+              <Radio className={`h-3 w-3 ${isLiveStreaming ? "text-white animate-pulse" : "text-emerald-700"}`} />
+              <span>{isLiveStreaming ? "Live ESP32 (5s Active)" : "Live ESP32 (5s)"}</span>
+            </Button>
+
             {deviceState === "REAL_OFFLINE" && (
               <Button
                 type="button"
@@ -571,6 +663,37 @@ export function IoTInput({
         </div>
       )}
 
+      {/* Active Live ESP32 Hardware Streaming Readout */}
+      {isLiveStreaming && (
+        <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs animate-fade-in">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+            </span>
+            <div>
+              <span className="font-bold text-emerald-900">
+                Live ESP32 Streaming Active:
+              </span>{" "}
+              <span className="text-[11px] text-emerald-800">
+                Auto-fetching from <span className="font-mono font-semibold">{resolvedDeviceId || "ESP32-COW-01"}</span> (Adafruit MLX90614 IR Temp + MPU6050 Motion) every 5s.
+              </span>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => handleFetchLiveTelemetry()}
+            disabled={isFetchingLive}
+            className="h-7 text-xs text-emerald-800 hover:bg-emerald-100 rounded-lg px-2.5 shrink-0"
+          >
+            <RefreshCw className={`h-3 w-3 mr-1 ${isFetchingLive ? "animate-spin" : ""}`} />
+            <span>Sync Now</span>
+          </Button>
+        </div>
+      )}
+
       {/* Simulation Error Alert */}
       {simulationError && (
         <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-fade-in">
@@ -608,7 +731,7 @@ export function IoTInput({
             </Label>
             {temperature !== null && (
               <span className="text-[10px] text-stone-500 font-mono">
-                {iotSource === "REAL" ? "Live ESP32" : iotSource === "SIMULATED" ? "Simulated" : "Manual"}
+                {iotSource === "REAL" ? "Live MLX90614" : iotSource === "SIMULATED" ? "Simulated" : "Manual"}
               </span>
             )}
           </div>
@@ -638,7 +761,7 @@ export function IoTInput({
             </Label>
             {activity !== null && (
               <span className="text-[10px] text-stone-500 font-mono">
-                {activity < 30 ? "Low" : activity > 85 ? "High" : "Normal"}
+                {iotSource === "REAL" ? "Live MPU6050" : activity < 30 ? "Low" : activity > 85 ? "High" : "Normal"}
               </span>
             )}
           </div>
