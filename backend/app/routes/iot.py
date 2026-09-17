@@ -1,53 +1,84 @@
-﻿from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from app.services.iot_simulator import generate_simulated_telemetry
+﻿from fastapi import APIRouter, HTTPException, Status
+from pydantic import BaseModel
+from typing import Optional
+import datetime
+import logging
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
 
-class IoTDataRequest(BaseModel):
-    animal_id: str = Field(default="ESP32-COW-01", example="ESP32-COW-01")
-    temperature: Optional[float] = Field(default=None, example=40.1)
-    activity: Optional[int] = Field(default=None, example=22)
-    use_simulation: Optional[bool] = Field(default=False, example=False)
-    simulate_fever: Optional[bool] = Field(default=False, example=False)
+# Define the router matching the path sent by ESP32 (/api/iot/telemetry)
+router = APIRouter(prefix="/api/iot", tags=["IoT Telemetry"])
 
-class IoTDataResponse(BaseModel):
+# 1. Pydantic schema matching the ESP32 JSON payload exactly
+class TelemetryPayload(BaseModel):
     animal_id: str
     temperature: float
-    activity_index: int
-    has_anomaly: bool
-    anomalies: List[str]
+    activity: int
+    ambient_temp: Optional[float] = None
 
-@router.post("/iot/data", response_model=IoTDataResponse, tags=["IoT & Wearables"])
-async def ingest_iot_data(payload: IoTDataRequest):
+# In-memory database cache to hold the latest reading for each animal
+telemetry_cache = {}
+@router.post("/telemetry", status_code=Status.HTTP_200_OK)
+async def receive_telemetry(payload: TelemetryPayload):
+    """
+    Receives live IoT telemetry payload from ESP32 hardware node,
+    evaluates hyperthermia and lethargy thresholds, and caches the result.
+    """
     try:
-        if payload.use_simulation or payload.temperature is None:
-            simulated = generate_simulated_telemetry(
-                animal_id=payload.animal_id,
-                simulate_fever=payload.simulate_fever
-            )
-            temp = simulated["temperature"]
-            activity = simulated["activity_index"]
-        else:
-            temp = payload.temperature
-            activity = payload.activity if payload.activity is not None else 50
+        # Evaluate physiological thresholds for livestock
+        is_fever = payload.temperature > 39.5
+        is_lethargic = payload.activity < 30
 
-        anomalies = []
-        if temp > 39.5:
-            anomalies.append(f"Hyperthermia detected: Core temp {temp}°C exceeds 39.5°C threshold.")
-        elif temp < 37.5:
-            anomalies.append(f"Hypothermia detected: Core temp {temp}°C below 37.5°C threshold.")
+        record = {
+            "animal_id": payload.animal_id,
+            "temperature": payload.temperature,
+            "activity": payload.activity,
+            "fever_flag": is_fever,
+            "lethargy_flag": is_lethargic,
+            "has_anomaly": is_fever or is_lethargic,
+            "received_at": datetime.datetime.utcnow().isoformat() + "Z"
+        }
 
-        if activity < 30:
-            anomalies.append(f"Lethargy detected: Movement activity index ({activity}) is critically low.")
+        # Cache the latest telemetry record in memory by animal_id
+        telemetry_cache[payload.animal_id] = record
+
+        logger.info(
+            f"✅ Ingested IoT Telemetry for {payload.animal_id}: "
+            f"Temp={payload.temperature}°C, Activity={payload.activity}"
+        )
 
         return {
-            "animal_id": payload.animal_id,
-            "temperature": temp,
-            "activity_index": activity,
-            "has_anomaly": len(anomalies) > 0,
-            "anomalies": anomalies
+            "status": "success",
+            "message": "Telemetry received and processed successfully",
+            "data": record
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"❌ Telemetry processing failure: {e}")
+        raise HTTPException(
+            status_code=Status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error processing IoT telemetry."
+        )
+
+
+@router.get("/telemetry/{animal_id}", status_code=Status.HTTP_200_OK)
+async def get_latest_telemetry(animal_id: str):
+    """
+    Retrieves the latest live IoT telemetry reading for a specific animal ID.
+    Used by the Next.js frontend (IoTAnalysisCard) to show real-time sensor signals.
+    """
+    if animal_id in telemetry_cache:
+        return {"success": True, "telemetry": telemetry_cache[animal_id]}
+    
+    # Return default normal baseline if ESP32 hasn't transmitted yet
+    return {
+        "success": True,
+        "telemetry": {
+            "animal_id": animal_id,
+            "temperature": 38.5,
+            "activity": 45,
+            "fever_flag": False,
+            "lethargy_flag": False,
+            "has_anomaly": False,
+            "received_at": datetime.datetime.utcnow().isoformat() + "Z"
+        }
+    }
