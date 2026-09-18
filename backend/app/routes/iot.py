@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 import datetime
 import logging
+from app.services.iot_thresholds import evaluate_temperature_vitals
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,7 @@ class TelemetryPayload(BaseModel):
     temperature: float
     activity: int
     ambient_temp: Optional[float] = None
+    species: Optional[str] = None
 
 class IoTDataRequestPayload(BaseModel):
     animal_id: Optional[str] = "ESP32-COW-01"
@@ -22,6 +24,7 @@ class IoTDataRequestPayload(BaseModel):
     activity: Optional[int] = None
     use_simulation: Optional[bool] = False
     simulate_fever: Optional[bool] = False
+    species: Optional[str] = None
 
 class IoTSensorParametersResponse(BaseModel):
     success: bool = True
@@ -62,16 +65,30 @@ async def receive_telemetry(payload: TelemetryPayload):
     """
     try:
         clean_id = normalize_device_id(payload.animal_id)
-        # Evaluate physiological thresholds for livestock
-        is_fever = payload.temperature > 39.5
-        is_hypothermic = payload.temperature < 37.5
+        # Infer species from payload or device identifier
+        species = payload.species
+        if not species:
+            norm_id = (payload.animal_id or clean_id).upper()
+            if "GOAT" in norm_id:
+                species = "Goat"
+            elif "BUFFALO" in norm_id:
+                species = "Buffalo"
+            elif "SHEEP" in norm_id:
+                species = "Sheep"
+            elif "DOG" in norm_id:
+                species = "Dog"
+            elif "CAT" in norm_id:
+                species = "Cat"
+            else:
+                species = "Cow"
+
+        # Evaluate species-aware physiological thresholds
+        is_fever, is_hypothermic, temp_desc = evaluate_temperature_vitals(payload.temperature, species=species)
         is_lethargic = payload.activity < 30
 
         anomalies: List[str] = []
-        if is_fever:
-            anomalies.append(f"Hyperthermia: {payload.temperature:.2f}°C (Threshold > 39.5°C)")
-        elif is_hypothermic:
-            anomalies.append(f"Hypothermia: {payload.temperature:.2f}°C (Threshold < 37.5°C)")
+        if temp_desc:
+            anomalies.append(temp_desc)
         if is_lethargic:
             anomalies.append(f"Lethargy: Activity Index {payload.activity}/100 (Threshold < 30)")
 
@@ -286,14 +303,28 @@ async def ingest_iot_data_endpoint(payload: IoTDataRequestPayload):
             act = int(payload.activity) if payload.activity is not None else 50
             source_desc = "ESP32 + MLX90614 + MPU6050"
 
-        is_fever = temp > 39.5
-        is_hypothermic = temp < 37.5
+        # Infer species from payload or device identifier
+        species = payload.species
+        if not species:
+            norm_id = (payload.animal_id or clean_id).upper()
+            if "GOAT" in norm_id:
+                species = "Goat"
+            elif "BUFFALO" in norm_id:
+                species = "Buffalo"
+            elif "SHEEP" in norm_id:
+                species = "Sheep"
+            elif "DOG" in norm_id:
+                species = "Dog"
+            elif "CAT" in norm_id:
+                species = "Cat"
+            else:
+                species = "Cow"
+
+        is_fever, is_hypothermic, temp_desc = evaluate_temperature_vitals(temp, species=species)
         is_lethargic = act < 30
         anomalies: List[str] = []
-        if is_fever:
-            anomalies.append(f"Hyperthermia: {temp:.2f}°C (>39.5°C)")
-        elif is_hypothermic:
-            anomalies.append(f"Hypothermia detected: Core temp {temp:.2f}°C below 37.5°C threshold.")
+        if temp_desc:
+            anomalies.append(temp_desc)
         if is_lethargic:
             anomalies.append(f"Lethargy detected: Movement activity index ({act}) is critically low.")
 

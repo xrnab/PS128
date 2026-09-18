@@ -168,3 +168,44 @@ export async function GET(
   }
 }
 
+/**
+ * POST /api/iot/telemetry/[animalId]
+ *
+ * Ingests live telemetry directly via web server proxy with species-aware
+ * threshold checking and Telegram push notification alerting.
+ */
+export async function POST(
+  req: NextRequest,
+  context: { params: Promise<{ animalId: string }> }
+) {
+  try {
+    const { animalId } = await context.params;
+    const body = await req.json();
+
+    const { processTelemetryIngestion } = await import("@/lib/iot/telemetry-service");
+
+    const result = await processTelemetryIngestion({
+      animalIdOrTag: animalId || body.animal_id || body.animalId,
+      deviceId: body.deviceId || body.device_id,
+      temperature: typeof body.temperature === "number" ? body.temperature : null,
+      activity: typeof body.activity === "number" ? body.activity : null,
+      ambientTemp: typeof body.ambient_temp === "number" ? body.ambient_temp : null,
+      useSimulation: Boolean(body.use_simulation || body.useSimulation),
+      simulateFever: Boolean(body.simulate_fever || body.simulateFever),
+      source: body.source || "REAL",
+    });
+
+    return NextResponse.json(result);
+  } catch (err: unknown) {
+    console.error("[IoT Telemetry Ingestion Route Error]:", err);
+    return NextResponse.json(
+      {
+        success: false,
+        error: err instanceof Error ? err.message : "Failed to ingest IoT telemetry",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+

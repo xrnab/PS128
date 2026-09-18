@@ -1,5 +1,22 @@
 import { TelegramInlineKeyboardMarkup } from "./client";
 
+export const MSG_WELCOME_PROMPT =
+  "<b>Welcome to Maitri!</b>\n\n" +
+  "To receive real-time livestock health notifications, please click " +
+  "<b>'Connect Telegram'</b> on your Maitri Profile page to link this chat.";
+export const MSG_INVALID_TOKEN = "Sorry, this Telegram connection link is invalid.";
+export const MSG_EXPIRED_TOKEN =
+  "This Telegram connection link has expired. Please generate a new link from your Maitri profile.";
+export const MSG_USED_TOKEN = "This Telegram connection link has already been used.";
+export const MSG_ALREADY_CONNECTED =
+  "This Telegram account is already connected to a Maitri account.";
+export const MSG_INTERNAL_FAILURE =
+  "Something went wrong while connecting your Telegram account. Please try again from Maitri.";
+export const MSG_SUCCESS_CONNECTED =
+  "<b>Maitri Telegram Connected</b>\n\n" +
+  "Your Telegram account has been successfully connected to your Maitri account.\n\n" +
+  "You will now receive important Maitri notifications here.";
+
 /**
  * Escapes characters for Telegram HTML mode:
  * & -> &amp;
@@ -60,6 +77,12 @@ export function getActionButtonLabel(type: string): string {
     case "CRITICAL_ALERT":
     case "OUTBREAK_ALERT":
       return "⚠️ View Outbreak Alert";
+    case "IOT_FEVER_ALERT":
+    case "IOT_HYPOTHERMIA_ALERT":
+    case "IOT_HEALTH_RISK":
+      return "🩺 View Animal Vitals";
+    case "IOT_RECOVERY_ALERT":
+      return "📋 View Status";
     default:
       return "🔗 Open in Maitri";
   }

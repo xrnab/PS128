@@ -24,7 +24,8 @@ try:
         )
         HOST: str = "0.0.0.0"
         PORT: int = 8000
-        DATABASE_URL: str = ""
+        DATABASE_URL: str = "postgresql://neondb_owner:npg_ELpCBn0XIk3O@ep-quiet-queen-b3dwdnph-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        DIRECT_URL: str = "postgresql://neondb_owner:npg_ELpCBn0XIk3O@ep-quiet-queen-b3dwdnph.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
         GEMINI_API_KEY_1: str = ""
         GEMINI_API_KEY_2: str = ""
         
@@ -49,6 +50,7 @@ try:
         class Config:
             env_file = Path(__file__).resolve().parents[1] / ".env"
             case_sensitive = True
+            extra = "ignore"
 
     settings = Settings()
 
@@ -71,7 +73,8 @@ except ImportError:
             )
             self.HOST: str = os.getenv("HOST", "0.0.0.0")
             self.PORT: int = int(os.getenv("PORT", "8000"))
-            self.DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+            self.DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://neondb_owner:npg_ELpCBn0XIk3O@ep-quiet-queen-b3dwdnph-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+            self.DIRECT_URL: str = os.getenv("DIRECT_URL", "postgresql://neondb_owner:npg_ELpCBn0XIk3O@ep-quiet-queen-b3dwdnph.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
             self.GEMINI_API_KEY_1: str = os.getenv("GEMINI_API_KEY_1", "")
             self.GEMINI_API_KEY_2: str = os.getenv("GEMINI_API_KEY_2", "")
             self.GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash") # Fixed here as well

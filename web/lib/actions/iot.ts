@@ -14,6 +14,7 @@ import { createInAppNotification } from "./notifications";
 import { IoTDeviceSource, IoTDeviceStatus, UserRole } from "@prisma/client";
 
 import { computeDeviceConnectionState, IoTConnectionState, normalizeDeviceId } from "@/lib/iot/utils";
+import { processTelemetryIngestion } from "@/lib/iot/telemetry-service";
 
 export type { IoTConnectionState };
 
@@ -274,95 +275,22 @@ export async function ingestIoTTelemetryAction(input: IoTTelemetryInput) {
     return { success: false, error: "Animal not found" };
   }
 
-  const source: IoTDeviceSource =
-    input.source === "REAL" ? IoTDeviceSource.REAL : IoTDeviceSource.SIMULATED;
-
   // Lightweight pre-warm of idle backend container (non-blocking)
   getBackendHealth().catch(() => {});
 
-  // 1. Authoritative Backend Processing via FastAPI POST /api/iot/data
-  let backendResult;
-  try {
-    backendResult = await ingestIoTData({
-      animal_id: animal.tag,
-      temperature: input.temperature !== undefined ? input.temperature : null,
-      activity: input.activity !== undefined ? input.activity : null,
-      use_simulation: source === IoTDeviceSource.SIMULATED,
-      simulate_fever: Boolean(input.simulateFever),
-    });
-  } catch (err) {
-    console.error("[FastAPI IoT Ingestion Failure]:", err);
-    if (err instanceof BackendTimeoutError) {
-      return {
-        success: false,
-        error:
-          "The livestock health backend is waking up from an idle state — please wait about 30 seconds and try again.",
-      };
-    }
-    return {
-      success: false,
-      error: "Unable to reach the backend IoT ingestion service. Please try again.",
-    };
-  }
-
-  // 2. Resolve or Update Device Record
-  const deviceIdentifier =
-    input.deviceId ||
-    animal.iotDevices[0]?.deviceIdentifier ||
-    animal.iotDeviceId ||
-    `ESP32-${animal.tag}`;
-
-  const previousDevice = animal.iotDevices[0];
-  const previousAnomalyState = previousDevice?.lastAnomalyState || false;
-
-  const device = await prisma.ioTDevice.upsert({
-    where: { deviceIdentifier },
-    create: {
-      deviceIdentifier,
-      animalId: animal.id,
-      source,
-      status: source === IoTDeviceSource.SIMULATED ? IoTDeviceStatus.SIMULATING : IoTDeviceStatus.ONLINE,
-      lastSeenAt: new Date(),
-      lastTemperature: backendResult.temperature,
-      lastActivity: backendResult.activity_index,
-      lastAnomalyState: backendResult.has_anomaly,
-    },
-    update: {
-      animalId: animal.id,
-      source,
-      status: source === IoTDeviceSource.SIMULATED ? IoTDeviceStatus.SIMULATING : IoTDeviceStatus.ONLINE,
-      lastSeenAt: new Date(),
-      lastTemperature: backendResult.temperature,
-      lastActivity: backendResult.activity_index,
-      lastAnomalyState: backendResult.has_anomaly,
-    },
+  const result = await processTelemetryIngestion({
+    animalIdOrTag: animal.id,
+    deviceId: input.deviceId,
+    temperature: input.temperature !== undefined ? input.temperature : null,
+    activity: input.activity !== undefined ? input.activity : null,
+    useSimulation: input.source !== "REAL" && Boolean(input.useSimulation),
+    simulateFever: Boolean(input.simulateFever),
+    source: input.source,
   });
 
-  // 3. Save IoTReading record
-  const reading = await prisma.ioTReading.create({
-    data: {
-      deviceId: device.id,
-      animalId: animal.id,
-      source,
-      temperature: backendResult.temperature,
-      activityIndex: backendResult.activity_index,
-      hasAnomaly: backendResult.has_anomaly,
-      anomalies: backendResult.anomalies,
-      recordedAt: new Date(),
-    },
+  const device = await prisma.ioTDevice.findUnique({
+    where: { deviceIdentifier: result.deviceId },
   });
-
-  // 4. Non-Spamming Notification: Send in-app notification ONLY on transition to anomaly state
-  if (backendResult.has_anomaly && !previousAnomalyState) {
-    const ownerUserId = animal.herd.farm.farmerUserId || user.id;
-    await createInAppNotification({
-      userId: ownerUserId,
-      title: `⚠️ IoT Sensor Risk: #${animal.tag} (${source === IoTDeviceSource.SIMULATED ? "Simulated" : "ESP32"})`,
-      message: `Vitals alert: ${backendResult.anomalies.join(" • ")}. Core Temp: ${backendResult.temperature}°C, Activity: ${backendResult.activity_index}.`,
-      link: `/farmer/animals/${animal.id}`,
-      type: "IOT_HEALTH_RISK",
-    });
-  }
 
   revalidatePath("/farmer/iot");
   revalidatePath(`/farmer/animals/${animal.id}`);
@@ -371,22 +299,22 @@ export async function ingestIoTTelemetryAction(input: IoTTelemetryInput) {
     success: true,
     connectionState: computeDeviceConnectionState(device),
     device: {
-      id: device.id,
-      deviceIdentifier: device.deviceIdentifier,
-      source: device.source,
-      status: device.status,
-      lastSeenAt: device.lastSeenAt ? device.lastSeenAt.toISOString() : null,
+      id: device?.id || result.deviceId,
+      deviceIdentifier: result.deviceId,
+      source: result.source,
+      status: device?.status || IoTDeviceStatus.ONLINE,
+      lastSeenAt: device?.lastSeenAt ? device.lastSeenAt.toISOString() : null,
     },
     reading: {
-      id: reading.id,
-      deviceId: device.deviceIdentifier,
+      id: result.readingId || "latest",
+      deviceId: result.deviceId,
       animalId: animal.id,
-      source: reading.source,
-      temperature: reading.temperature,
-      activityIndex: reading.activityIndex,
-      hasAnomaly: reading.hasAnomaly,
-      anomalies: reading.anomalies,
-      recordedAt: reading.recordedAt.toISOString(),
+      source: result.source,
+      temperature: result.temperature,
+      activityIndex: result.activityIndex,
+      hasAnomaly: result.hasAnomaly,
+      anomalies: result.anomalies,
+      recordedAt: result.receivedAt,
     },
   };
 }
