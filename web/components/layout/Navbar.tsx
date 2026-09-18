@@ -131,11 +131,11 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-2 sm:top-3 z-50 w-full px-3 sm:px-6 max-w-[1440px] mx-auto mb-3 sm:mb-4 transition-all duration-300">
-      <div className="h-14 sm:h-16 px-3 sm:px-4.5 flex items-center justify-between gap-2 rounded-2xl md:rounded-full bg-white/80 dark:bg-[#0A1610]/85 backdrop-blur-[24px] border border-white/80 dark:border-white/14 shadow-[0_8px_32px_rgba(30,58,43,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]">
+    <header className="sticky top-2 sm:top-3 z-50 w-full px-2 sm:px-6 max-w-[1440px] mx-auto mb-2 sm:mb-4 transition-all duration-300">
+      <div className="h-14 sm:h-16 px-2.5 sm:px-4.5 flex items-center justify-between gap-1.5 sm:gap-2 rounded-2xl md:rounded-full bg-white/80 dark:bg-[#0A1610]/85 backdrop-blur-[24px] border border-white/80 dark:border-white/14 shadow-[0_8px_32px_rgba(30,58,43,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]">
         {/* Brand Identity */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 select-none">
-          <div className="flex h-8.5 w-8.5 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl md:rounded-full bg-white/95 dark:bg-white/90 overflow-hidden shadow-[inset_0_1px_rgba(255,255,255,.95),0_2px_8px_rgba(0,0,0,0.12)] border border-black/5 dark:border-white/20 transition-all group-hover:scale-105">
+        <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5 group shrink-0 select-none">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl md:rounded-full bg-white/95 dark:bg-white/90 overflow-hidden shadow-[inset_0_1px_rgba(255,255,255,.95),0_2px_8px_rgba(0,0,0,0.12)] border border-black/5 dark:border-white/20 transition-all group-hover:scale-105">
             <Image
               src="/images/maitri-livestock-logo.png"
               alt="Maitri logo"
@@ -180,12 +180,12 @@ export function Navbar() {
         </nav>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Fast Portal Switcher Dropdown */}
           <div className="relative" ref={portalRef}>
             <button
               onClick={() => setPortalMenuOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/8 dark:hover:bg-white/15 border border-black/8 dark:border-white/15 text-xs text-[#15271E] dark:text-[#BDEEC5] font-medium transition-all shadow-2xs cursor-pointer whitespace-nowrap"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/8 dark:hover:bg-white/15 border border-black/8 dark:border-white/15 text-xs text-[#15271E] dark:text-[#BDEEC5] font-medium transition-all shadow-2xs cursor-pointer whitespace-nowrap min-h-[36px]"
               title="Switch role portal"
             >
               <Layers className="h-3.5 w-3.5 text-[#B87A1E] dark:text-[#D9A441] shrink-0" />
@@ -195,7 +195,7 @@ export function Navbar() {
 
             {/* Apple Liquid Glass Dropdown Menu */}
             {portalMenuOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white/95 dark:bg-[#0D1B14]/95 backdrop-blur-[24px] border border-black/10 dark:border-white/15 shadow-[0_16px_40px_rgba(30,58,43,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1">
+              <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-24px)] rounded-2xl bg-white/95 dark:bg-[#0D1B14]/95 backdrop-blur-[24px] border border-black/10 dark:border-white/15 shadow-[0_16px_40px_rgba(30,58,43,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#4A6B56] dark:text-[#AECEB9]/70 px-3 py-1">
                   Switch Active Portal
                 </div>
@@ -233,7 +233,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setLocale("en")}
-              className={`px-2 py-0.5 rounded-full transition-all text-[11px] cursor-pointer ${
+              className={`px-1.5 sm:px-2 py-0.5 rounded-full transition-all text-[11px] cursor-pointer min-h-[32px] flex items-center justify-center ${
                 locale === "en"
                   ? "bg-[#1E3A2B] text-white dark:bg-[#3F6B4A] dark:text-[#F4EEE1] shadow-xs font-bold"
                   : "text-[#4A6B56] hover:text-[#15271E] dark:text-[#AECEB9] dark:hover:text-[#F4EEE1]"
@@ -245,7 +245,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setLocale("mr")}
-              className={`px-2 py-0.5 rounded-full transition-all text-[11px] cursor-pointer ${
+              className={`px-1.5 sm:px-2 py-0.5 rounded-full transition-all text-[11px] cursor-pointer min-h-[32px] flex items-center justify-center ${
                 locale === "mr"
                   ? "bg-[#1E3A2B] text-white dark:bg-[#3F6B4A] dark:text-[#F4EEE1] shadow-xs font-bold"
                   : "text-[#4A6B56] hover:text-[#15271E] dark:text-[#AECEB9] dark:hover:text-[#F4EEE1]"
@@ -257,14 +257,14 @@ export function Navbar() {
           </div>
 
           <Show when="signed-out">
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <SignInButton mode="modal">
-                <Button variant="outline" size="sm" className="text-xs h-8 px-3 text-[#15271E] dark:text-[#F4EEE1] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border-black/10 dark:border-white/20 rounded-full">
+                <Button variant="outline" size="sm" className="text-xs h-8 px-2.5 sm:px-3 text-[#15271E] dark:text-[#F4EEE1] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border-black/10 dark:border-white/20 rounded-full">
                   {dictionary.nav.signIn}
                 </Button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <Button size="sm" className="text-xs h-8 px-3.5 hidden xs:inline-flex sm:inline-flex bg-[#1E3A2B] text-white hover:bg-[#2A4E3B] dark:bg-[#F4EEE1] dark:text-[#1E3A2B] dark:hover:bg-white shadow-md rounded-full font-semibold">
+                <Button size="sm" className="text-xs h-8 px-3.5 hidden sm:inline-flex bg-[#1E3A2B] text-white hover:bg-[#2A4E3B] dark:bg-[#F4EEE1] dark:text-[#1E3A2B] dark:hover:bg-white shadow-md rounded-full font-semibold">
                   {dictionary.nav.signUp}
                 </Button>
               </SignUpButton>
@@ -272,9 +272,9 @@ export function Navbar() {
           </Show>
 
           <Show when="signed-in">
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <Link href="/dashboard" title="Dashboard">
-                <Button size="sm" variant="outline" className="text-xs h-8 px-2.5 sm:px-3 text-[#15271E] dark:text-[#F4EEE1] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border-black/8 dark:border-white/20 flex items-center gap-1.5 rounded-full shrink-0">
+                <Button size="sm" variant="outline" className="text-xs h-8 px-2 sm:px-3 text-[#15271E] dark:text-[#F4EEE1] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border-black/8 dark:border-white/20 flex items-center gap-1.5 rounded-full shrink-0">
                   <Home className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#BDEEC5]" />
                   <span className="hidden xl:inline">{dictionary.nav.dashboard}</span>
                 </Button>

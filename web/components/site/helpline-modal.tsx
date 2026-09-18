@@ -72,7 +72,7 @@ export function HelplineModal({ children }: { children: ReactNode }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setOpen(false)}
         >
           <div
@@ -80,15 +80,15 @@ export function HelplineModal({ children }: { children: ReactNode }) {
             aria-modal="true"
             aria-labelledby={titleId}
             aria-describedby={descriptionId}
-            className="w-full max-w-md overflow-hidden rounded-3xl border border-white/80 dark:border-white/16 bg-[#FAF6EE]/95 dark:bg-[#0F1E16]/95 backdrop-blur-2xl p-0 shadow-2xl dark:shadow-[0_24px_54px_rgba(0,0,0,0.7)] text-[#1D1C14] dark:text-[#F4EEE1]"
+            className="w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-white/80 dark:border-white/16 bg-[#FAF6EE]/95 dark:bg-[#0F1E16]/95 backdrop-blur-2xl p-0 shadow-2xl dark:shadow-[0_24px_54px_rgba(0,0,0,0.7)] text-[#1D1C14] dark:text-[#F4EEE1]"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-[#1E3A2B]/10 dark:border-white/10 bg-white/60 dark:bg-black/30 px-6 py-5">
+            <div className="flex items-start justify-between gap-3 border-b border-[#1E3A2B]/10 dark:border-white/10 bg-white/60 dark:bg-black/30 px-4 sm:px-6 py-4 sm:py-5 shrink-0">
               <div className="min-w-0">
-                <h2 id={titleId} className="text-xl font-bold tracking-tight text-[#1E3A2B] dark:text-[#F5EFE6] font-display">
+                <h2 id={titleId} className="text-lg sm:text-xl font-bold tracking-tight text-[#1E3A2B] dark:text-[#F5EFE6] font-display">
                   {t("helplineModalTitle")}
                 </h2>
-                <p id={descriptionId} className="mt-1 text-xs text-[#4A3324]/75 dark:text-[#C8BBAA]">
+                <p id={descriptionId} className="mt-0.5 sm:mt-1 text-xs text-[#4A3324]/75 dark:text-[#C8BBAA]">
                   {t("helplineModalSub")}
                 </p>
               </div>
@@ -96,14 +96,14 @@ export function HelplineModal({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label={tCommon("close")}
                 onClick={() => setOpen(false)}
-                className="shrink-0 rounded-full border border-white/80 dark:border-white/15 p-2 text-[#4A3324]/80 dark:text-stone-300 hover:bg-white dark:hover:bg-white/10 hover:text-[#1E3A2B] dark:hover:text-white transition-colors cursor-pointer"
+                className="shrink-0 rounded-full border border-white/80 dark:border-white/15 p-1.5 sm:p-2 text-[#4A3324]/80 dark:text-stone-300 hover:bg-white dark:hover:bg-white/10 hover:text-[#1E3A2B] dark:hover:text-white transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="space-y-4 px-6 py-5 text-xs sm:text-sm text-[#1E3A2B] dark:text-[#F4EEE1]">
-              <div className="flex items-start gap-3">
+            <div className="space-y-3.5 sm:space-y-4 px-4 sm:px-6 py-4 sm:py-5 text-xs sm:text-sm text-[#1E3A2B] dark:text-[#F4EEE1] overflow-y-auto">
+              <div className="flex items-start gap-2.5 sm:gap-3">
                 <PhoneCall className="mt-0.5 h-4 w-4 shrink-0 text-[#3F6B4A] dark:text-[#50C878]" />
                 <p className="leading-relaxed">
                   {t("helplineAvail")}
