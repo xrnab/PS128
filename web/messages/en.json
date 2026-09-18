@@ -1635,10 +1635,10 @@
   "demoVideo": {
     "watchDemo": "Watch Demo",
     "modalTitle": "Maitri Live Demonstration",
-    "video1Title": "PS128 Maitri IOT Demo",
-    "video2Title": "PS128 Field Intelligence Walkthrough",
-    "tab1": "IoT Hardware & Telemetry",
-    "tab2": "Field Intelligence",
+    "video1Title": "PS128 Maitri Hardware Device Demo",
+    "video2Title": "PS128 Maitri IoT Implementation Demo",
+    "tab1": "Hardware Device",
+    "tab2": "IoT Implementation",
     "close": "Close demo modal",
     "telemetryTag": "Live Telemetry & Diagnostics"
   }

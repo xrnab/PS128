@@ -14,18 +14,18 @@ export interface DemoVideoItem {
 
 export const DEMO_VIDEOS: readonly DemoVideoItem[] = [
   {
-    id: "https://youtu.be/x6H0suXY7SI",
+    id: "https://youtu.be/1T-oxDdzUbg",
     titleKey: "video1Title",
-    defaultTitle: "PS128 Maitri IOT Demo",
+    defaultTitle: "PS128 Maitri Hardware Device Demo",
     tabKey: "tab1",
-    defaultTabLabel: "IoT Hardware & Telemetry",
+    defaultTabLabel: "Hardware Device",
   },
   {
-    id: "x6H0suXY7SI",
+    id: "https://youtu.be/x6H0suXY7SI",
     titleKey: "video2Title",
-    defaultTitle: "PS128 Field Intelligence Walkthrough",
+    defaultTitle: "PS128 Maitri IoT Implementation Demo",
     tabKey: "tab2",
-    defaultTabLabel: "Field Intelligence",
+    defaultTabLabel: "IoT Implementation",
   },
 ] as const;
 

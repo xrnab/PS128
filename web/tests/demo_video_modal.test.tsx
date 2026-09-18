@@ -64,9 +64,9 @@ describe("DemoVideoModal Component", () => {
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(dialog).toHaveAttribute("aria-labelledby", "demo-video-title");
 
-    const iframe = screen.getByTitle(/PS128 Maitri IOT Demo/i);
+    const iframe = screen.getByTitle(/PS128 Maitri Hardware Device Demo/i);
     expect(iframe).toBeInTheDocument();
-    expect(iframe).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/x6H0suXY7SI?rel=0");
+    expect(iframe).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/1T-oxDdzUbg?rel=0");
     expect(iframe).toHaveAttribute(
       "allow",
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -80,6 +80,8 @@ describe("DemoVideoModal Component", () => {
     fireEvent.click(tab2);
 
     expect(screen.getByText(DEMO_VIDEOS[1].defaultTitle)).toBeInTheDocument();
+    const iframe2 = screen.getByTitle(/PS128 Maitri IoT Implementation Demo/i);
+    expect(iframe2).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/x6H0suXY7SI?rel=0");
   });
 
   it("calls onClose when close button is clicked", () => {
