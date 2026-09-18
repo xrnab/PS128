@@ -195,7 +195,7 @@ export function Navbar() {
 
             {/* Apple Liquid Glass Dropdown Menu */}
             {portalMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white/95 dark:bg-[#0D1B14]/95 backdrop-blur-[24px] border border-black/10 dark:border-white/15 shadow-[0_16px_40px_rgba(30,58,43,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1">
+              <div className="absolute left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white/95 dark:bg-[#0D1B14]/95 backdrop-blur-[24px] border border-black/10 dark:border-white/15 shadow-[0_16px_40px_rgba(30,58,43,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#4A6B56] dark:text-[#AECEB9]/70 px-3 py-1">
                   Switch Active Portal
                 </div>
