@@ -41,7 +41,7 @@ try:
         TELEGRAM_WEBHOOK_SECRET: str = ""
         TELEGRAM_WEBHOOK_URL: str = ""
         TELEGRAM_API_BASE_URL: str = "https://api.telegram.org"
-        FRONTEND_URL: str = "http://localhost:3000"
+        FRONTEND_URL: str = "https://ps-128-mea4.vercel.app"
 
         @property
         def cors_origins(self) -> List[str]:
@@ -85,7 +85,7 @@ except ImportError:
             self.TELEGRAM_WEBHOOK_SECRET: str = os.getenv("TELEGRAM_WEBHOOK_SECRET", "")
             self.TELEGRAM_WEBHOOK_URL: str = os.getenv("TELEGRAM_WEBHOOK_URL", "")
             self.TELEGRAM_API_BASE_URL: str = os.getenv("TELEGRAM_API_BASE_URL", "https://api.telegram.org")
-            self.FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
+            self.FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://ps-128-mea4.vercel.app")
 
         @property
         def cors_origins(self) -> List[str]:

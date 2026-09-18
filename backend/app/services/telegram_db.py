@@ -36,6 +36,7 @@ class TelegramDBService:
 
         # Clean URL if contains pooler or ssl params
         try:
+            # pyrefly: ignore [missing-import]
             import psycopg
             return psycopg.connect(db_url)
         except ImportError:
@@ -104,6 +105,35 @@ class TelegramDBService:
         except Exception as err:
             logger.error(f"[Telegram DB] Error checking existing chat connection: {err}")
             raise
+
+    async def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieves basic user info (name, role, phone) by user ID.
+        """
+        try:
+            with self._get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT id, name, role, phone
+                        FROM "User"
+                        WHERE id = %s
+                        LIMIT 1;
+                        """,
+                        (user_id,),
+                    )
+                    row = cur.fetchone()
+                    if not row:
+                        return None
+                    return {
+                        "id": row[0],
+                        "name": row[1],
+                        "role": row[2],
+                        "phone": row[3],
+                    }
+        except Exception as err:
+            logger.error(f"[Telegram DB] Error fetching user by ID: {err}")
+            return None
 
     async def link_account_atomically(
         self,

@@ -1,8 +1,10 @@
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import health, predict, analytics, master, advisory, telegram
 from app.routes.iot import router as iot_router
+from app.services.telegram_poller import telegram_poller
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -28,6 +30,14 @@ app.include_router(analytics.router, prefix=settings.API_V1_STR)
 app.include_router(master.router, prefix=settings.API_V1_STR)
 app.include_router(advisory.router, prefix=settings.API_V1_STR)
 app.include_router(telegram.router, prefix=settings.API_V1_STR)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(telegram_poller.start())
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    telegram_poller.stop()
 
 @app.get("/", include_in_schema=False)
 async def root():

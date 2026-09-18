@@ -97,7 +97,14 @@ async def telegram_webhook(
     except Exception:
         return {"ok": True, "status": "invalid_json"}
 
-    # 2. Extract Message & Chat Info
+    return await process_telegram_update(update)
+
+
+async def process_telegram_update(update: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Core business logic to process an incoming Telegram update.
+    Handles /start and /start <token> linking.
+    """
     message = update.get("message")
     if not message:
         return {"ok": True, "status": "ignored_non_message"}
@@ -111,22 +118,55 @@ async def telegram_webhook(
     chat_id = str(chat["id"])
     username = message.get("from", {}).get("username")
 
-    # 3. Handle /start command
-    if not text.startswith("/start"):
-        return {"ok": True, "status": "ignored_command"}
+    import re
 
-    # Case A: User sent /start without a linking token
-    if text == "/start" or text == "/start ":
-        await telegram_client.send_message(chat_id=chat_id, text=MSG_WELCOME_PROMPT)
+    # 3. Check for 64-character hex linking token anywhere in message text
+    token_match = re.search(r"([a-f0-9]{64})", text, re.IGNORECASE)
+    token = token_match.group(1).lower() if token_match else None
+
+    # Case A: No token provided in the message
+    if not token:
+        # Check if chat is already connected to an active user
+        existing_conn = await telegram_db.get_connection_by_chat_id(chat_id)
+        if existing_conn:
+            user_info = await telegram_db.get_user_by_id(existing_conn["userId"])
+            user_name = user_info.get("name") if user_info else "Maitri User"
+            user_role = user_info.get("role", "FARMER") if user_info else "FARMER"
+            connected_msg = (
+                "<b>Maitri Livestock Health Bot</b>\n\n"
+                "Status: <b>Connected & Active</b> ✅\n"
+                f"Account: <b>{user_name}</b> ({user_role})\n\n"
+                "Your Telegram is registered to receive:\n"
+                "• 🌡️ <b>IoT Animal Alerts</b> (Fever & Hypothermia)\n"
+                "• 📋 <b>Case Reports</b> & Status Updates\n"
+                "• 🩺 <b>Veterinary Advice</b> & Prescriptions"
+            )
+            reply_markup = {
+                "inline_keyboard": [
+                    [{"text": "Open Maitri", "url": "https://ps-128-mea4.vercel.app/farmer"}]
+                ]
+            }
+            await telegram_client.send_message(
+                chat_id=chat_id,
+                text=connected_msg,
+                reply_markup=reply_markup,
+            )
+            return {"ok": True, "status": "active_status_sent"}
+
+        # Not connected yet: send welcome instructions
+        reply_markup = {
+            "inline_keyboard": [
+                [{"text": "Connect from Maitri", "url": "https://ps-128-mea4.vercel.app/farmer/profile"}]
+            ]
+        }
+        await telegram_client.send_message(
+            chat_id=chat_id,
+            text=MSG_WELCOME_PROMPT,
+            reply_markup=reply_markup,
+        )
         return {"ok": True, "status": "welcome_prompt_sent"}
 
-    # Case B: User sent /start <token>
-    token = text[7:].strip()
-    if not token:
-        await telegram_client.send_message(chat_id=chat_id, text=MSG_WELCOME_PROMPT)
-        return {"ok": True, "status": "empty_token"}
-
-    # 4. Hash Token (SHA-256)
+    # Case B: Token found, hash Token (SHA-256)
     token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
 
     try:
@@ -175,10 +215,11 @@ async def telegram_webhook(
 
         # 10. Send Confirmation Message
         reply_markup = None
-        if settings.FRONTEND_URL:
+        frontend_url = settings.FRONTEND_URL or "https://ps-128-mea4.vercel.app"
+        if frontend_url and not ("localhost" in frontend_url or "127.0.0.1" in frontend_url):
             reply_markup = {
                 "inline_keyboard": [
-                    [{"text": "Open Maitri", "url": settings.FRONTEND_URL}]
+                    [{"text": "Open Maitri", "url": frontend_url}]
                 ]
             }
 

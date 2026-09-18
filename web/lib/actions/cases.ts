@@ -13,6 +13,8 @@ import {
   RoutedLocationInfo,
   AssignedUserInfo,
 } from "@/lib/geo/routing";
+import { processTelemetryIngestion } from "@/lib/iot/telemetry-service";
+import { createInAppNotification } from "@/lib/actions/notifications";
 
 const caseReportSchema = z.object({
   submissionId: z.string().min(1, "Submission ID is required for double-submit protection"),
@@ -256,7 +258,37 @@ export async function createCaseReportAction(input: CaseReportInput): Promise<Ca
         };
       }
 
-      // 12. Invalidate Next.js cache so the newly assigned case appears instantly
+      // 12. If report contains telemetry, ingest into IoT pipeline to evaluate vital thresholds and trigger Telegram alerts
+      if (typeof data.iotData?.temperature === "number") {
+        try {
+          await processTelemetryIngestion({
+            animalIdOrTag: animal.id,
+            deviceId: data.iotData?.iotDeviceId || animal.iotDeviceId,
+            temperature: data.iotData.temperature,
+            activity: data.iotData?.activity,
+            source: data.iotData?.source === "SIMULATED" ? "SIMULATED" : "REAL",
+          });
+        } catch (iotErr) {
+          console.warn("[Case Report IoT Ingestion Notice]:", iotErr);
+        }
+      }
+
+      // 13. Create In-App Notification and Telegram alert confirming case registration
+      try {
+        const vetName = routeResult.assignedVeterinarian?.name;
+        const assignedText = vetName ? `Assigned to Dr. ${vetName}.` : "Assigned for veterinary review.";
+        await createInAppNotification({
+          userId: appUser.id,
+          title: `📋 Health Report Registered: #${newCase.caseNumber}`,
+          message: `Health case submitted for ${animal.species} #${animal.tag}. ${assignedText}`,
+          link: `/farmer/animals/${animal.id}`,
+          type: "CASE_ASSIGNED",
+        });
+      } catch (notifErr) {
+        console.warn("[Case Report Notification Notice]:", notifErr);
+      }
+
+      // 14. Invalidate Next.js cache so the newly assigned case appears instantly
       try {
         revalidatePath("/vet");
         revalidatePath("/vet/cases");

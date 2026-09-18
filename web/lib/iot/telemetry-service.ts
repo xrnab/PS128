@@ -290,11 +290,11 @@ export async function processTelemetryIngestion(
           farmerUser.id,
           previousState,
           currentState,
-          `${classification.species} #${animal.tag} temperature alert: ${temp}°C (${alertType})`
+          `${classification.species} #${animal?.tag || cleanId} temperature alert: ${temp}°C (${alertType})`
         ).catch(() => {});
       } else {
         console.log(
-          `[IoT Alert Throttled]: Notification for ${animal.tag} (${alertType}) suppressed by 30-min cooldown.`
+          `[IoT Alert Throttled]: Notification for ${animal?.tag || cleanId} (${alertType}) suppressed by 30-min cooldown.`
         );
       }
     } else if (isRecoveryTransition) {
@@ -315,8 +315,8 @@ export async function processTelemetryIngestion(
       if (!recentRecovery) {
         alertTriggered = true;
         const title = isMarathi
-          ? `ℹ️ प्रकृतीत सुधारणा: [${animal.tag}] ${classification.thresholdConfig.marathiName}`
-          : `ℹ️ Vitals Restored: [${animal.tag}] ${classification.species}`;
+          ? `ℹ️ प्रकृतीत सुधारणा: [${animal?.tag || cleanId}] ${classification.thresholdConfig.marathiName}`
+          : `ℹ️ Vitals Restored: [${animal?.tag || cleanId}] ${classification.species}`;
 
         const message = isMarathi ? classification.recoveryMessageMr : classification.recoveryMessageEn;
 
@@ -342,7 +342,7 @@ export async function processTelemetryIngestion(
           farmerUser.id,
           previousState,
           currentState,
-          `${classification.species} #${animal.tag} vitals restored: ${temp}°C`
+          `${classification.species} #${animal?.tag || cleanId} vitals restored: ${temp}°C`
         ).catch(() => {});
       }
     }

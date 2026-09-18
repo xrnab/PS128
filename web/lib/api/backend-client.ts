@@ -440,6 +440,7 @@ export interface LiveESP32Telemetry {
   activity: number;
   activity_index?: number;
   fever_flag: boolean;
+  hypothermia_flag?: boolean;
   lethargy_flag: boolean;
   has_anomaly: boolean;
   anomalies?: string[];

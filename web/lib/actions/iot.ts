@@ -165,19 +165,35 @@ export async function getAnimalIoTMonitoringDataAction(animalId: string) {
 
   let activeDevice = animal.iotDevices[0] || null;
 
-  // If animal has no IoTDevice row yet, provision a default offline device
+  // If animal has no IoTDevice row yet, provision or link a default device safely without collisions
   if (!activeDevice) {
-    const defaultIdentifier = normalizeDeviceId(animal.iotDeviceId || animal.tag);
-    activeDevice = await prisma.ioTDevice.create({
-      data: {
+    const rawTag = animal.tag || animal.species || animal.id.slice(-6);
+    let defaultIdentifier = normalizeDeviceId(animal.iotDeviceId || rawTag);
+
+    // If deviceIdentifier is already taken by a different animal, use a unique identifier scoped to this animal
+    const existingDevice = await prisma.ioTDevice.findUnique({
+      where: { deviceIdentifier: defaultIdentifier },
+      select: { id: true, animalId: true },
+    });
+
+    if (existingDevice && existingDevice.animalId && existingDevice.animalId !== animal.id) {
+      defaultIdentifier = normalizeDeviceId(`ESP32-${rawTag}-${animal.id.slice(-6)}`);
+    }
+
+    activeDevice = await prisma.ioTDevice.upsert({
+      where: { deviceIdentifier: defaultIdentifier },
+      create: {
         deviceIdentifier: defaultIdentifier,
         animalId: animal.id,
         source: IoTDeviceSource.SIMULATED,
         status: IoTDeviceStatus.OFFLINE,
       },
+      update: {
+        animalId: animal.id,
+      },
     });
 
-    if (!animal.iotDeviceId) {
+    if (!animal.iotDeviceId || animal.iotDeviceId !== defaultIdentifier) {
       await prisma.animal.update({
         where: { id: animal.id },
         data: { iotDeviceId: defaultIdentifier },
@@ -358,6 +374,7 @@ export async function toggleDeviceSimulationModeAction(
       lastSeenAt: simulateActive ? new Date() : null,
     },
     update: {
+      animalId: animal.id,
       source: simulateActive ? IoTDeviceSource.SIMULATED : IoTDeviceSource.REAL,
       status: simulateActive ? IoTDeviceStatus.SIMULATING : IoTDeviceStatus.OFFLINE,
       ...(simulateActive ? { lastSeenAt: new Date() } : {}),

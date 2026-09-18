@@ -114,7 +114,7 @@ export async function dispatchTelegramNotification(
 
     // 7. Update delivery record based on Telegram response
     if (sendResult.success) {
-      await prisma.telegramNotificationDelivery.update({
+      await prisma.telegramNotificationDelivery.updateMany({
         where: { id: delivery.id },
         data: {
           status: NotificationStatus.SENT,
@@ -132,7 +132,7 @@ export async function dispatchTelegramNotification(
     } else {
       const safeError = sanitizeTelegramError(sendResult.error);
 
-      await prisma.telegramNotificationDelivery.update({
+      await prisma.telegramNotificationDelivery.updateMany({
         where: { id: delivery.id },
         data: {
           status: NotificationStatus.FAILED,

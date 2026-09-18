@@ -117,8 +117,12 @@ export function formatTelegramNotification(notification: {
       targetUrl = `${baseUrl}${targetUrl}`;
     }
 
-    // Telegram Bot API requires full HTTP/HTTPS URLs for inline keyboard buttons
-    if (targetUrl.startsWith("http://") || targetUrl.startsWith("https://")) {
+    // Telegram Bot API requires full HTTP/HTTPS public URLs for inline keyboard buttons (no localhost)
+    if (
+      (targetUrl.startsWith("http://") || targetUrl.startsWith("https://")) &&
+      !targetUrl.includes("localhost") &&
+      !targetUrl.includes("127.0.0.1")
+    ) {
       const buttonLabel = getActionButtonLabel(notification.type);
       replyMarkup = {
         inline_keyboard: [
