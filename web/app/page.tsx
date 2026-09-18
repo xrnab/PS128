@@ -3,12 +3,13 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Camera, CheckCircle2, MapPin, PhoneCall, Sparkles, WifiOff, Activity, ShieldCheck, HeartPulse } from "lucide-react";
+import { ArrowUpRight, Camera, CheckCircle2, MapPin, PhoneCall, Sparkles, WifiOff } from "lucide-react";
 import prisma from "@/lib/db/prisma";
 import { Button } from "@/components/ui/button";
 import { SurveillanceHeatmap } from "@/components/authority/SurveillanceHeatmap";
 import { formatBlockName, formatVillageName, type MapMarkerData } from "@/components/authority/mapUtils";
 import { HelplineModal } from "@/components/site/helpline-modal";
+import { DemoVideoButton } from "@/components/site/DemoVideoButton";
 import { MotionFadeIn } from "@/components/motion/MotionFadeIn";
 import { MotionHeroImage } from "@/components/motion/MotionHeroImage";
 import { MotionRoleEcosystem } from "@/components/motion/MotionRoleEcosystem";
@@ -123,6 +124,7 @@ export default async function Home() {
                   </Button>
                 </SignUpButton>
               </Show>
+              <DemoVideoButton />
               <Link
                 href={userId ? "/dashboard" : "/farmer"}
                 className="liquid-button-glass rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm font-semibold text-[#1E3A2B] inline-flex items-center min-h-[44px]"
