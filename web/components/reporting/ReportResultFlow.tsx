@@ -794,7 +794,7 @@ export function ReportResultFlow({
         </ol>
 
         {farmerAdvisory?.advisory && (
-          <div className="mt-3 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 font-medium leading-relaxed">
+          <div className="mt-3 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 font-medium leading-relaxed whitespace-pre-line">
             {farmerAdvisory.advisory}
           </div>
         )}

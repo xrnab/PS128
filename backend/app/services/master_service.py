@@ -101,7 +101,19 @@ class MasterAnalysisEngine:
         risk_score = 15
         if ml_confidence > 0.20:
             risk_score += 20
-        if vision_res and vision_res.get("visual_anomaly_detected"):
+        has_vision_anomaly = False
+        if vision_res:
+            if vision_res.get("visual_anomaly_detected"):
+                has_vision_anomaly = True
+            else:
+                pred = vision_res.get("primary_prediction") or vision_res.get("condition") or vision_res.get("disease")
+                if not pred and vision_res.get("detected_classes"):
+                    classes = vision_res.get("detected_classes")
+                    if isinstance(classes, list) and len(classes) > 0:
+                        pred = classes[0]
+                if pred and str(pred).strip().lower() not in ["healthy", "none", "rejected: unrecognized image", "no disease detected"]:
+                    has_vision_anomaly = True
+        if has_vision_anomaly:
             risk_score += 25  # Increased risk for confirmed visual lesions
         if len(iot_anomalies) > 0:
             risk_score += 25
@@ -115,6 +127,7 @@ class MasterAnalysisEngine:
 
         # Combine all streams into a unified object
         analysis_summary = {
+            "health_report": health_report,
             "overall_risk_score": risk_score,
             "overall_risk_level": risk_level,
             "disease_prediction": ml_res,
