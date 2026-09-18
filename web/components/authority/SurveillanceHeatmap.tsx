@@ -30,7 +30,7 @@ import { useTranslations } from "next-intl";
 function HeatmapLoading() {
   const t = useTranslations("authority");
   return (
-    <div className="h-130 sm:h-155 w-full rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex flex-col items-center justify-center text-xs text-stone-600 gap-3">
+    <div className="h-80 sm:h-120 md:h-140 w-full rounded-2xl bg-[#FAF8F3] border border-[#E5E0D8] flex flex-col items-center justify-center text-xs text-stone-600 gap-3">
       <div className="h-7 w-7 border-3 border-emerald-700 border-t-transparent rounded-full animate-spin" />
       <span className="font-semibold">{t("loadingGis")}</span>
     </div>
@@ -180,12 +180,12 @@ export function SurveillanceHeatmap({
   };
 
   return (
-    <Card className="liquid-glass-card rounded-3xl overflow-hidden p-0">
+    <Card className="liquid-glass-card rounded-2xl sm:rounded-3xl overflow-hidden p-0">
       {/* Top Header & Geospatial Toolbar */}
-      <div className="p-6 border-b border-[#1E3A2B]/8 space-y-4">
+      <div className="p-3.5 sm:p-6 border-b border-[#1E3A2B]/8 space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <div className="text-base flex items-center gap-2 text-[#1E3A2B] font-bold font-display">
                 <MapPin className="h-4 w-4 text-[#3F6B4A]" />
                 <span>{t("gisMapTitle")}</span>
@@ -199,7 +199,7 @@ export function SurveillanceHeatmap({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 flex-nowrap">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             {/* User-Initiated GPS Button */}
             <Button
               size="sm"

@@ -475,11 +475,11 @@ export default function SurveillanceHeatmapInternal({
   }, [focusCoord]);
 
   return (
-    <div className="w-full h-full relative min-h-[480px]">
+    <div className="w-full h-full relative min-h-[340px] sm:min-h-[480px]">
       <div
         ref={mapContainerRef}
-        className="w-full h-full min-h-[480px] rounded-2xl z-0"
-        style={{ height: "100%", minHeight: "480px" }}
+        className="w-full h-full min-h-[340px] sm:min-h-[480px] rounded-xl sm:rounded-2xl z-0"
+        style={{ height: "100%" }}
       />
     </div>
   );
