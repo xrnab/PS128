@@ -1631,5 +1631,15 @@
     "farmerDashboardCardTitle": "Voice Line Demo (IVR)",
     "farmerDashboardCardDesc": "Simulate reporting livestock illness or dispatching agents via an automated telephone line for feature phones.",
     "tryVoiceLine": "Open Voice Line Demo"
+  },
+  "demoVideo": {
+    "watchDemo": "Watch Demo",
+    "modalTitle": "Maitri Live Demonstration",
+    "video1Title": "PS128 Maitri IOT Demo",
+    "video2Title": "PS128 Field Intelligence Walkthrough",
+    "tab1": "IoT Hardware & Telemetry",
+    "tab2": "Field Intelligence",
+    "close": "Close demo modal",
+    "telemetryTag": "Live Telemetry & Diagnostics"
   }
 }
