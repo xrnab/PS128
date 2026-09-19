@@ -81,6 +81,8 @@ export function getActionButtonLabel(type: string): string {
     case "IOT_HYPOTHERMIA_ALERT":
     case "IOT_HEALTH_RISK":
       return "🩺 View Animal Vitals";
+    case "IOT_LETHARGY_ALERT":
+      return "⚠️ View Activity Data";
     case "IOT_RECOVERY_ALERT":
       return "📋 View Status";
     default:

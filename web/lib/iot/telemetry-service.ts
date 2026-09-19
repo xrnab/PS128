@@ -42,6 +42,8 @@ export interface TelemetryIngestionResult {
 const ANOMALY_COOLDOWN_MS = 30 * 60 * 1000;
 // 5-minute cooldown for recovery alerts
 const RECOVERY_COOLDOWN_MS = 5 * 60 * 1000;
+// 15-minute cooldown for lethargy alerts
+const LETHARGY_COOLDOWN_MS = 15 * 60 * 1000;
 
 /**
  * Authoritative Unified IoT Telemetry Ingestion & Species-Aware Alert Service.
@@ -109,12 +111,18 @@ export async function processTelemetryIngestion(
   let temp: number;
   let act: number;
 
-  if (source === IoTDeviceSource.SIMULATED || input.temperature === null || input.temperature === undefined) {
+  // Bug 1 Fix: When user provides explicit temperature/activity values for simulation,
+  // use those directly instead of calling backend (which would override them).
+  const hasExplicitTemp = typeof input.temperature === "number";
+  const hasExplicitActivity = typeof input.activity === "number";
+
+  if (source === IoTDeviceSource.SIMULATED && !hasExplicitTemp) {
+    // No explicit values provided — call backend for simulation
     try {
       const backendRes = await ingestIoTData({
         animal_id: animal?.tag || cleanId,
-        temperature: input.temperature ?? null,
-        activity: input.activity ?? null,
+        temperature: null,
+        activity: null,
         use_simulation: true,
         simulate_fever: simulateFever,
       });
@@ -125,9 +133,26 @@ export async function processTelemetryIngestion(
       temp = simulateFever ? 40.4 : 38.6;
       act = simulateFever ? 18 : 62;
     }
-  } else {
+  } else if (hasExplicitTemp) {
+    // Explicit values from user (REAL, SIMULATED preset, or manual) — use directly
     temp = Number(input.temperature);
-    act = typeof input.activity === "number" ? input.activity : 50;
+    act = hasExplicitActivity ? Number(input.activity) : 50;
+  } else {
+    // No temperature at all — fallback to backend simulation
+    try {
+      const backendRes = await ingestIoTData({
+        animal_id: animal?.tag || cleanId,
+        temperature: null,
+        activity: null,
+        use_simulation: true,
+        simulate_fever: simulateFever,
+      });
+      temp = backendRes.temperature;
+      act = backendRes.activity_index;
+    } catch {
+      temp = simulateFever ? 40.4 : 38.6;
+      act = simulateFever ? 18 : 62;
+    }
   }
 
   // 3. Species-Aware Temperature Classification
@@ -182,6 +207,12 @@ export async function processTelemetryIngestion(
   const previousState: TemperatureVitalState = previousClassification?.state || "NORMAL";
   const currentState: TemperatureVitalState = classification.state;
 
+  // Track lethargy state transitions (Bug 2 Fix)
+  const previousIsLethargic =
+    previousReading && typeof previousReading.activityIndex === "number"
+      ? previousReading.activityIndex < 30
+      : false;
+
   // State transitions:
   const isAbnormalTransition =
     (currentState === "FEVER" || currentState === "HYPOTHERMIA") &&
@@ -190,6 +221,9 @@ export async function processTelemetryIngestion(
   const isRecoveryTransition =
     currentState === "NORMAL" &&
     (previousState === "FEVER" || previousState === "HYPOTHERMIA");
+
+  // Lethargy transition: animal just became lethargic (was not lethargic before)
+  const isLethargyTransition = isLethargic && !previousIsLethargic;
 
   // 6. Persist IoTDevice and IoTReading in Postgres
   const device = await prisma.ioTDevice.upsert({
@@ -242,7 +276,16 @@ export async function processTelemetryIngestion(
 
   const farmerUser = animal?.herd?.farm?.farmerUser;
 
-  if (farmerUser && (isAbnormalTransition || isRecoveryTransition)) {
+  // Bug 4 Fix: Log warning when farmer user is not resolvable (no notifications possible)
+  if (!farmerUser && animal) {
+    console.warn(
+      `[IoT Alert Skipped]: No farmerUser found for animal #${animal.tag || animal.id}. ` +
+      `Farm "${animal.herd?.farm?.name || 'unknown'}" has farmerUserId=${animal.herd?.farm?.farmerUserId || 'null'}. ` +
+      `Notifications will NOT be sent until a farmer is assigned.`
+    );
+  }
+
+  if (farmerUser && (isAbnormalTransition || isRecoveryTransition || isLethargyTransition)) {
     const isMarathi = farmerUser.preferredLanguage === "mr";
 
     if (isAbnormalTransition) {
@@ -297,7 +340,64 @@ export async function processTelemetryIngestion(
           `[IoT Alert Throttled]: Notification for ${animal?.tag || cleanId} (${alertType}) suppressed by 30-min cooldown.`
         );
       }
-    } else if (isRecoveryTransition) {
+    }
+
+    // Bug 2 Fix: Lethargy-specific notifications (independent of temperature state)
+    if (isLethargyTransition && !isAbnormalTransition) {
+      // Only send lethargy alert if we didn't already send a temperature alert this cycle
+      const lethargyAlertType = "IOT_LETHARGY_ALERT";
+
+      const recentLethargyAlert = await prisma.inAppNotification.findFirst({
+        where: {
+          userId: farmerUser.id,
+          type: lethargyAlertType,
+          link: animal ? { contains: animal.id } : undefined,
+          createdAt: {
+            gte: new Date(Date.now() - LETHARGY_COOLDOWN_MS),
+          },
+        },
+      });
+
+      if (!recentLethargyAlert) {
+        alertTriggered = true;
+        alertType = lethargyAlertType;
+        const title = isMarathi ? classification.lethargyTitleMr : classification.lethargyTitleEn;
+        const message = isMarathi
+          ? `${classification.lethargyMessageMr} हालचाल: ${act}/100.`
+          : `${classification.lethargyMessageEn} Activity: ${act}/100.`;
+
+        const notif = await prisma.inAppNotification.create({
+          data: {
+            userId: farmerUser.id,
+            title,
+            message,
+            link: animal ? `/farmer/animals/${animal.id}` : "/farmer/iot",
+            type: lethargyAlertType,
+          },
+        });
+
+        notificationId = notif.id;
+
+        dispatchTelegramNotification(notif.id).catch((err) => {
+          console.error("[IoT Telegram Lethargy Dispatch Failure]:", err);
+        });
+
+        logAuditEvent(
+          null,
+          "IOT_LETHARGY_ALERT",
+          farmerUser.id,
+          `activity:${previousReading?.activityIndex ?? 'unknown'}`,
+          `activity:${act}`,
+          `${classification.species} #${animal?.tag || cleanId} lethargy detected: Activity ${act}/100, Temp ${temp}°C`
+        ).catch(() => {});
+      } else {
+        console.log(
+          `[IoT Alert Throttled]: Lethargy notification for ${animal?.tag || cleanId} suppressed by 15-min cooldown.`
+        );
+      }
+    }
+
+    if (isRecoveryTransition) {
       alertType = "IOT_RECOVERY_ALERT";
 
       // 5-Minute Cooldown Check for recovery

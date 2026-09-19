@@ -108,6 +108,20 @@ export async function POST(request: Request) {
       }
 
       // Atomic Account Linking via Prisma Transaction
+      // Pre-clear: Deactivate any stale TelegramConnection that holds this chatId
+      // (from this or any other user) to prevent @unique constraint violations
+      // on telegramChatId during the upsert below.
+      await prisma.telegramConnection.updateMany({
+        where: {
+          telegramChatId: chatId,
+          userId: { not: linkRecord.userId },
+        },
+        data: {
+          isActive: false,
+          telegramChatId: `__revoked_${chatId}_${Date.now()}`,
+        },
+      });
+
       await prisma.$transaction([
         // 1. Mark token as used
         prisma.telegramLinkToken.update({

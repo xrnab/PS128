@@ -24,6 +24,10 @@ export interface TemperatureClassification {
   alertMessageMr: string;
   recoveryMessageEn: string;
   recoveryMessageMr: string;
+  lethargyTitleEn: string;
+  lethargyTitleMr: string;
+  lethargyMessageEn: string;
+  lethargyMessageMr: string;
 }
 
 /**
@@ -205,6 +209,12 @@ export function classifyTemperature(
   const recoveryMessageEn = `✅ [${animalTag}] ${config.speciesName} temperature normalized: ${roundedTemp}°C recorded (normal range ${config.normalLow}°C–${config.normalHigh}°C). Vitals stable.`;
   const recoveryMessageMr = `✅ [${animalTag}] ${config.marathiName}: तापमान सामान्य झाले: ${roundedTemp}°C नोंदवला गेला (सामान्य मर्यादा ${config.normalLow}°C–${config.normalHigh}°C). प्रकृती स्थिर.`;
 
+  // Lethargy alert templates (activity-based, independent of temperature)
+  const lethargyTitleEn = `⚠️ Lethargy Alert: [${animalTag}] ${config.speciesName}`;
+  const lethargyTitleMr = `⚠️ सुस्ती इशारा: [${animalTag}] ${config.marathiName}`;
+  const lethargyMessageEn = `⚠️ [${animalTag}] ${config.speciesName} showing low activity (lethargy detected). Temperature: ${roundedTemp}°C. Check on the animal immediately via Maitri app.`;
+  const lethargyMessageMr = `⚠️ [${animalTag}] ${config.marathiName}: कमी हालचाल (सुस्ती आढळली). तापमान: ${roundedTemp}°C. त्वरित मैत्री ॲपवर तपासा.`;
+
   return {
     state,
     temperature: roundedTemp,
@@ -217,5 +227,9 @@ export function classifyTemperature(
     alertMessageMr,
     recoveryMessageEn,
     recoveryMessageMr,
+    lethargyTitleEn,
+    lethargyTitleMr,
+    lethargyMessageEn,
+    lethargyMessageMr,
   };
 }

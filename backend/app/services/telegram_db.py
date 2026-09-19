@@ -161,6 +161,17 @@ class TelegramDBService:
                         (now, token_id),
                     )
 
+                    # 1b. Deactivate and rename any conflicting active connection on this telegramChatId
+                    cur.execute(
+                        """
+                        UPDATE "TelegramConnection"
+                        SET "isActive" = false,
+                            "telegramChatId" = CONCAT('__revoked_', %s, '_', %s)
+                        WHERE "telegramChatId" = %s AND "userId" != %s;
+                        """,
+                        (telegram_chat_id, str(int(now.timestamp())), telegram_chat_id, user_id),
+                    )
+
                     # 2. Upsert TelegramConnection for the user
                     cur.execute(
                         """
