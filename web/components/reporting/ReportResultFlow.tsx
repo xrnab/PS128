@@ -7,6 +7,7 @@ import { CaseReportResult } from "@/lib/actions/cases";
 import { runCaseAnalysisAction } from "@/lib/actions/analysis";
 import type { YoloVisionAnalysis } from "@/lib/types/livestock";
 import { Button } from "@/components/ui/button";
+import { formatDoctorName } from "@/lib/utils";
 import {
   CheckCircle2,
   Clock,
@@ -335,7 +336,7 @@ export function ReportResultFlow({
           {assignedVet ? (
             <div className="flex items-center justify-between pt-0.5">
               <div>
-                <span className="font-bold text-sm text-[#1E3A2B] block">Dr. {assignedVet.name}</span>
+                <span className="font-bold text-sm text-[#1E3A2B] block">{formatDoctorName(assignedVet.name)}</span>
                 <span className="text-[11px] text-[#4A3324]/75">
                   Jurisdiction: <strong className="uppercase">{assignmentLevel || "District"}</strong>
                 </span>

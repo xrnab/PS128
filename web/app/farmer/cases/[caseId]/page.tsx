@@ -21,7 +21,7 @@ import {
   FlaskConical,
   Pill,
 } from "lucide-react";
-import { formatDateTime, formatDate } from "@/lib/utils";
+import { formatDateTime, formatDate, formatDoctorName } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
 export default async function FarmerCaseDetailPage({
@@ -163,7 +163,7 @@ export default async function FarmerCaseDetailPage({
                     <UserCheck className="h-4 w-4 text-emerald-700 shrink-0" />
                     <div>
                       <span className="text-[10px] text-stone-500 block">{t("examiningVet")}</span>
-                      <strong className="text-stone-900">Dr. {latestReport.vetUser.name}</strong>
+                      <strong className="text-stone-900">{formatDoctorName(latestReport.vetUser.name)}</strong>
                     </div>
                   </div>
 
@@ -271,7 +271,7 @@ export default async function FarmerCaseDetailPage({
                         </div>
                         {r.notes && <p className="text-stone-600">{r.notes}</p>}
                         <div className="text-[11px] text-stone-500">
-                          By Dr. {r.vetUser.name} • Action: {r.action}
+                          By {formatDoctorName(r.vetUser.name)} • Action: {r.action}
                         </div>
                       </div>
                     ))}
@@ -299,7 +299,7 @@ export default async function FarmerCaseDetailPage({
                   <span className="text-stone-500">Assigned Clinician:</span>
                   {healthCase.assignedVeterinarianUser ? (
                     <span className="font-bold text-emerald-950">
-                      Dr. {healthCase.assignedVeterinarianUser.name}
+                      {formatDoctorName(healthCase.assignedVeterinarianUser.name)}
                       {healthCase.assignmentLevel && (
                         <span className="ml-1 text-[10px] font-normal text-emerald-800 uppercase">
                           ({healthCase.assignmentLevel})

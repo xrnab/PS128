@@ -21,7 +21,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { VetAction } from "@prisma/client";
-import { formatDateTime, formatDate } from "@/lib/utils";
+import { formatDateTime, formatDate, formatDoctorName } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
 export default async function VetCaseDetailPage({
@@ -231,7 +231,7 @@ export default async function VetCaseDetailPage({
                           <span className="text-emerald-800 text-[10px]">{formatDate(vr.createdAt)}</span>
                         </div>
                         <p className="text-emerald-900 text-[11px]">
-                          Veterinarian: Dr. {vr.vetUser.name} • Action: {vr.action}
+                          Veterinarian: {formatDoctorName(vr.vetUser.name)} • Action: {vr.action}
                           {vr.notes ? ` • ${vr.notes}` : ""}
                         </p>
                       </div>

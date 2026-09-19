@@ -5,7 +5,7 @@ import { getFarmerDashboardMetricsAction } from "@/lib/actions/farmer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MotionFadeIn } from "@/components/motion/MotionFadeIn";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatDoctorName } from "@/lib/utils";
 import {
   PlusCircle,
   MessageSquare,
@@ -320,7 +320,7 @@ export default async function FarmerPortalPage() {
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="text-stone-400 dark:text-stone-500">{t("destinationVet")}</span>
                           {c.assignedVeterinarianUser ? (
-                            <span className="font-bold text-[#15271E] dark:text-[#F4EEE1]">Dr. {c.assignedVeterinarianUser.name}</span>
+                            <span className="font-bold text-[#15271E] dark:text-[#F4EEE1]">{formatDoctorName(c.assignedVeterinarianUser.name)}</span>
                           ) : (
                             <span className="text-[#C1622D] font-medium italic">{t("awaitingVetAssignment")}</span>
                           )}

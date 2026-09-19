@@ -9,7 +9,7 @@ import { getVetQueueAction, getVetDashboardMetricsAction } from "@/lib/actions/v
 import { RiskBadge } from "@/components/ai/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatDoctorName } from "@/lib/utils";
 import { SurveillanceHeatmap } from "@/components/authority/SurveillanceHeatmap";
 import type { MapMarkerData } from "@/components/authority/mapUtils";
 import {
@@ -697,7 +697,7 @@ export default async function VetDashboardPage({
                           <>
                             <span>•</span>
                             <span className="text-[#3F6B4A] font-semibold">
-                              Dr. {item.assignedVeterinarianUser.name}
+                              {formatDoctorName(item.assignedVeterinarianUser.name)}
                             </span>
                           </>
                         )}

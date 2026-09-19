@@ -190,8 +190,9 @@ async function runEndToEndVerification() {
       console.log(`  Retrieved Reviewing Doctor: "Dr. ${farmerView?.veterinaryReports[0]?.vetUser.name}"`);
 
       // Clean up
-      await prisma.veterinaryReport.delete({ where: { id: report.id } });
+      await prisma.veterinaryReport.deleteMany({ where: { id: report.id } });
       await prisma.case.deleteMany({ where: { id: { in: [c1.id, c2.id] } } });
+      await prisma.user.deleteMany({ where: { id: { in: [vet1.id, vet2.id] } } });
     }
   }
 

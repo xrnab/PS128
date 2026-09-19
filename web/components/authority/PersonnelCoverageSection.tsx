@@ -18,7 +18,7 @@ import {
   Calendar,
   User,
 } from "lucide-react";
-import { formatDate, formatDateTime } from "@/lib/utils";
+import { formatDate, formatDateTime, formatDoctorName } from "@/lib/utils";
 
 interface PersonnelCoverageSectionProps {
   veterinarians: VetCoverageItem[];
@@ -142,7 +142,7 @@ export function PersonnelCoverageSection({
                     filteredVets.map((vet) => (
                       <tr key={vet.id} className="hover:bg-purple-50/30 transition-colors">
                         <td className="py-3 px-4">
-                          <div className="font-bold text-[#191F1C]">Dr. {vet.name}</div>
+                          <div className="font-bold text-[#191F1C]">{formatDoctorName(vet.name)}</div>
                           <div className="text-[11px] text-stone-500 flex items-center gap-1 mt-0.5">
                             <Phone className="h-3 w-3 text-stone-400" />
                             <span>{vet.phone}</span>
@@ -300,7 +300,7 @@ export function PersonnelCoverageSection({
               <div>
                 <div className="flex items-center gap-2">
                   <Stethoscope className="h-5 w-5 text-purple-700" />
-                  <h3 className="text-base font-bold text-[#191F1C]">Dr. {selectedVet.name} • {t("clinicalCaseload")}</h3>
+                  <h3 className="text-base font-bold text-[#191F1C]">{formatDoctorName(selectedVet.name)} • {t("clinicalCaseload")}</h3>
                   <Badge className="bg-purple-100 text-purple-900 border-purple-200 text-xs">
                     {selectedVet.serviceArea}
                   </Badge>

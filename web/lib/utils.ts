@@ -78,3 +78,19 @@ export function formatTime(
     return "—";
   }
 }
+
+/**
+ * Formats a veterinarian or doctor name, ensuring a single clean "Dr." prefix.
+ * e.g. "Arpan Atha" -> "Dr. Arpan Atha"
+ * e.g. "Dr. Arpan Atha" -> "Dr. Arpan Atha"
+ * e.g. "Dr. Dr. Alpha Medic" -> "Dr. Alpha Medic"
+ */
+export function formatDoctorName(name?: string | null): string {
+  if (!name || typeof name !== "string") return "";
+  let cleaned = name.trim();
+  // Strip any leading repeated "Dr." or "Dr" variants
+  while (/^dr\.?\s+/i.test(cleaned)) {
+    cleaned = cleaned.replace(/^dr\.?\s+/i, "").trim();
+  }
+  return `Dr. ${cleaned}`;
+}
