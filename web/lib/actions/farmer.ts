@@ -637,22 +637,86 @@ export async function ensureFarmerPrimaryFarmAction(farmerId?: string): Promise<
       };
     }
 
-    // 2. Check if farmer has a valid registered village
-    if (!farmer.villageId) {
-      console.log(`[Farm Provisioning]: Farmer ${farmer.name} (${targetUserId}) has no registered village location. Status: unable_to_be_provisioned`);
+    // 2. Ensure farmer has a valid registered village (resolve or auto-create if missing)
+    let targetVillageId = farmer.villageId;
+
+    if (!targetVillageId) {
+      if (farmer.blockId) {
+        let defaultVillage = await prisma.village.findFirst({
+          where: { blockId: farmer.blockId },
+        });
+        if (!defaultVillage) {
+          const block = await prisma.block.findUnique({ where: { id: farmer.blockId } });
+          if (block) {
+            defaultVillage = await prisma.village.create({
+              data: {
+                name: `${block.name} Main`,
+                blockId: block.id,
+              },
+            });
+          }
+        }
+        if (defaultVillage) {
+          targetVillageId = defaultVillage.id;
+          await prisma.user.update({
+            where: { id: farmer.id },
+            data: { villageId: defaultVillage.id },
+          });
+        }
+      } else if (farmer.districtId) {
+        let defaultBlock = await prisma.block.findFirst({
+          where: { districtId: farmer.districtId },
+        });
+        if (!defaultBlock) {
+          const dist = await prisma.district.findUnique({ where: { id: farmer.districtId } });
+          if (dist) {
+            defaultBlock = await prisma.block.create({
+              data: {
+                name: `${dist.name} District Center`,
+                districtId: dist.id,
+              },
+            });
+          }
+        }
+        if (defaultBlock) {
+          let defaultVillage = await prisma.village.findFirst({
+            where: { blockId: defaultBlock.id },
+          });
+          if (!defaultVillage) {
+            defaultVillage = await prisma.village.create({
+              data: {
+                name: `${defaultBlock.name} Main`,
+                blockId: defaultBlock.id,
+              },
+            });
+          }
+          if (defaultVillage) {
+            targetVillageId = defaultVillage.id;
+            await prisma.user.update({
+              where: { id: farmer.id },
+              data: { blockId: defaultBlock.id, villageId: defaultVillage.id },
+            });
+          }
+        }
+      }
+    }
+
+    if (!targetVillageId) {
+      console.log(`[Farm Provisioning]: Farmer ${farmer.name} (${targetUserId}) has no registered location. Status: unable_to_be_provisioned`);
       return {
         farm: null,
         status: "unable_to_be_provisioned",
-        message: "No registered village location found on farmer profile.",
+        message: "No registered location found on farmer profile.",
       };
     }
 
     const village = await prisma.village.findUnique({
-      where: { id: farmer.villageId },
+      where: { id: targetVillageId },
+      include: { block: { include: { district: true } } },
     });
 
     if (!village) {
-      console.log(`[Farm Provisioning]: Registered villageId ${farmer.villageId} does not exist in database. Status: unable_to_be_provisioned`);
+      console.log(`[Farm Provisioning]: Registered villageId ${targetVillageId} does not exist in database. Status: unable_to_be_provisioned`);
       return {
         farm: null,
         status: "unable_to_be_provisioned",
@@ -683,13 +747,17 @@ export async function ensureFarmerPrimaryFarmAction(farmerId?: string): Promise<
         };
       }
 
+      const isPune = village.block?.district?.name?.toLowerCase().includes("pune");
+      const defaultLat = isPune ? 18.5793 : 22.5726;
+      const defaultLng = isPune ? 73.9806 : 88.3639;
+
       const newFarm = await tx.farm.create({
         data: {
           name: `${farmer.name || "My"} Farm`,
-          villageId: farmer.villageId!,
+          villageId: targetVillageId,
           farmerUserId: targetUserId,
-          latitude: 18.5793,
-          longitude: 73.9806,
+          latitude: defaultLat,
+          longitude: defaultLng,
         },
         select: { id: true, name: true, villageId: true },
       });

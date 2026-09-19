@@ -602,6 +602,22 @@ export async function resolveLocationHierarchyAction(input: {
     }
   }
 
+  // Dynamic District creation if a valid districtName was detected from geocoding
+  if (!resolvedDistrictId && districtName && districtName.trim().length > 1) {
+    try {
+      const cleanDist = districtName.trim();
+      const newDistrict = await prisma.district.upsert({
+        where: { name: cleanDist },
+        update: {},
+        create: { name: cleanDist },
+      });
+      resolvedDistrictId = newDistrict.id;
+      resolvedDistrictName = newDistrict.name;
+    } catch {
+      // Fallback gracefully
+    }
+  }
+
   // 2. Try to match Block
   if (resolvedDistrictId) {
     if (blockName) {
@@ -626,6 +642,30 @@ export async function resolveLocationHierarchyAction(input: {
       if (block) {
         resolvedBlockId = block.id;
         resolvedBlockName = block.name;
+      }
+    }
+
+    // Dynamic Block creation under resolved district if a valid blockName was detected
+    if (!resolvedBlockId && blockName && blockName.trim().length > 1) {
+      try {
+        const cleanBlock = blockName.trim();
+        const newBlock = await prisma.block.upsert({
+          where: {
+            districtId_name: {
+              districtId: resolvedDistrictId,
+              name: cleanBlock,
+            },
+          },
+          update: {},
+          create: {
+            districtId: resolvedDistrictId,
+            name: cleanBlock,
+          },
+        });
+        resolvedBlockId = newBlock.id;
+        resolvedBlockName = newBlock.name;
+      } catch {
+        // Fallback gracefully
       }
     }
   } else if (blockName) {

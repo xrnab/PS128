@@ -326,7 +326,10 @@ export function LocationSearch({
 
           {/* Map Preview ONLY if valid coordinates exist */}
           {showMapPreview && hasCoordinates && selectedLocation.latitude !== null && selectedLocation.longitude !== null && (
-            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-emerald-200 bg-stone-100 shadow-2xs">
+            <div
+              title="Selected Location Map Preview"
+              className="relative w-full h-36 rounded-xl overflow-hidden border border-emerald-200 bg-stone-100 shadow-2xs"
+            >
               <DynamicLocationMiniMap
                 latitude={selectedLocation.latitude}
                 longitude={selectedLocation.longitude}

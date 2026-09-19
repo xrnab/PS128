@@ -2,6 +2,7 @@ import prisma from "@/lib/db/prisma";
 import { FullAppUser } from "@/lib/auth/session";
 import { UserRole } from "@prisma/client";
 import { dispatchTelegramNotification } from "@/lib/telegram/delivery";
+import { resolveLocationHierarchyAction } from "@/lib/actions/geo";
 
 export enum LocationMatchTier {
   SAME_VILLAGE = "SAME_VILLAGE",
@@ -524,13 +525,52 @@ export async function routeCaseToVeterinarian(caseId: string): Promise<{
     };
   }
 
-  const locationCoords: LocationCoordinates = {
+  let locationCoords: LocationCoordinates = {
     villageId: farm.villageId,
     blockId: farm.village?.blockId,
     districtId: farm.village?.block?.districtId,
   };
 
-  const match = await findEligibleVeterinarians(locationCoords);
+  // If the farmer provided a dynamic GPS outbreak location in the report:
+  if (healthCase.gpsLat !== null && healthCase.gpsLng !== null) {
+    try {
+      const outbreakGeo = await resolveLocationHierarchyAction({
+        latitude: healthCase.gpsLat,
+        longitude: healthCase.gpsLng,
+        placeName: `Outbreak (${healthCase.gpsLat.toFixed(4)}, ${healthCase.gpsLng.toFixed(4)})`,
+      });
+      if (outbreakGeo.districtId) {
+        locationCoords = {
+          villageId: outbreakGeo.villageId || farm.villageId,
+          blockId: outbreakGeo.blockId || farm.village?.blockId,
+          districtId: outbreakGeo.districtId,
+        };
+        if (outbreakGeo.districtName) location.districtName = outbreakGeo.districtName;
+        if (outbreakGeo.blockName) location.blockName = outbreakGeo.blockName;
+        if (outbreakGeo.villageName) location.villageName = outbreakGeo.villageName;
+      }
+    } catch {
+      // Gracefully continue using home farm coordinates
+    }
+  }
+
+  let match = await findEligibleVeterinarians(locationCoords);
+
+  // If no vet found at dynamic outbreak location, fallback seamlessly to animal's home farm location
+  if ((!match || match.eligibleVets.length === 0) && locationCoords.districtId !== farm.village?.block?.districtId) {
+    const farmCoords: LocationCoordinates = {
+      villageId: farm.villageId,
+      blockId: farm.village?.blockId,
+      districtId: farm.village?.block?.districtId,
+    };
+    const fallbackMatch = await findEligibleVeterinarians(farmCoords);
+    if (fallbackMatch && fallbackMatch.eligibleVets.length > 0) {
+      match = fallbackMatch;
+      location.villageName = farm.village?.name || location.villageName;
+      location.blockName = farm.village?.block?.name || location.blockName;
+      location.districtName = farm.village?.block?.district?.name || location.districtName;
+    }
+  }
 
   if (!match || match.eligibleVets.length === 0) {
     // Awaiting assignment state: leave assignedVeterinarianUserId = null, assignmentLevel = null
