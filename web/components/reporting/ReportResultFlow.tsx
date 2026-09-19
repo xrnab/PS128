@@ -119,11 +119,6 @@ export function ReportResultFlow({
       ? "LOW"
       : "ELEVATED";
 
-  const diseasePrediction = analysis?.disease_prediction as Record<string, unknown> | null;
-  const suspectedCondition = diseasePrediction?.suspected_condition
-    ? String(diseasePrediction.suspected_condition)
-    : null;
-  const predictionConfidence = Number(diseasePrediction?.confidence ?? 0);
 
   // Vision signals
   const vision = (aiState?.visionResult || initialYoloResult) as Record<string, unknown> | null;
@@ -526,27 +521,6 @@ export function ReportResultFlow({
               </ul>
             </div>
 
-            {/* Suspected Condition Signal (Never labeled 'Diagnosis') */}
-            {suspectedCondition && (
-              <div className="p-4 rounded-2xl bg-white/75 border border-white/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-bold text-[#4A3324]/70 uppercase tracking-wider block">
-                    POSSIBLE CLINICAL CONDITION
-                  </span>
-                  <span className="text-sm font-bold text-[#1E3A2B]">{suspectedCondition}</span>
-                </div>
-                {predictionConfidence > 0 && (
-                  <div className="self-start sm:self-auto">
-                    <span className="text-[10px] text-stone-500 block sm:text-right">
-                      Model Confidence
-                    </span>
-                    <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-block">
-                      {Math.round(predictionConfidence * 100)}% Match
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Mandatory Regulatory Disclaimer */}
             <p className="text-[11px] text-[#4A3324]/70 italic text-center border-t border-[#1E3A2B]/8 pt-3">
@@ -729,7 +703,7 @@ export function ReportResultFlow({
       {/* ========================================================================= */}
       {/* 6. HANDOFF TO THE VETERINARIAN (Next Clinical Steps)                       */}
       {/* ========================================================================= */}
-      <div className="relative z-10 rounded-3xl bg-gradient-to-br from-white/90 to-[#FAF8F3]/90 backdrop-blur-xl border border-emerald-300/60 p-6 space-y-4 shadow-[0_12px_32px_rgba(30,58,43,0.08),inset_0_1px_0_rgba(255,255,255,0.8)]">
+      <div className="relative z-10 rounded-3xl bg-[#F4EEE1]/80 backdrop-blur-xl border border-white/70 p-6 space-y-4 shadow-[0_8px_24px_rgba(30,58,43,0.08),inset_0_1px_0_rgba(255,255,255,0.7)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E3A2B]/10 pb-3">
           <div className="flex items-center gap-2 text-xs font-bold text-[#1E3A2B] tracking-wide uppercase">
             <span>PRELIMINARY ASSESSMENT</span>
@@ -746,29 +720,29 @@ export function ReportResultFlow({
             NEXT CLINICAL STEPS
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#1E3A2B]">
-            <div className="p-2.5 rounded-xl bg-white/80 border border-[#E5E0D8] flex items-center gap-2">
-              <span className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-[10px] shrink-0">
+            <div className="p-2.5 rounded-xl bg-white/60 border border-white/70 flex items-center gap-2">
+              <span className="h-5 w-5 rounded-full bg-emerald-100/90 text-emerald-900 font-bold flex items-center justify-center text-[10px] shrink-0 border border-emerald-300/60">
                 1
               </span>
-              <span>Veterinarian review & triage</span>
+              <span className="font-semibold">Veterinarian review & triage</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/80 border border-[#E5E0D8] flex items-center gap-2">
-              <span className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-[10px] shrink-0">
+            <div className="p-2.5 rounded-xl bg-white/60 border border-white/70 flex items-center gap-2">
+              <span className="h-5 w-5 rounded-full bg-emerald-100/90 text-emerald-900 font-bold flex items-center justify-center text-[10px] shrink-0 border border-emerald-300/60">
                 2
               </span>
-              <span>Physical clinical examination</span>
+              <span className="font-semibold">Physical clinical examination</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/80 border border-[#E5E0D8] flex items-center gap-2">
-              <span className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-[10px] shrink-0">
+            <div className="p-2.5 rounded-xl bg-white/60 border border-white/70 flex items-center gap-2">
+              <span className="h-5 w-5 rounded-full bg-emerald-100/90 text-emerald-900 font-bold flex items-center justify-center text-[10px] shrink-0 border border-emerald-300/60">
                 3
               </span>
-              <span>Lab referral if required</span>
+              <span className="font-semibold">Lab referral if required</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/80 border border-[#E5E0D8] flex items-center gap-2">
-              <span className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-[10px] shrink-0">
+            <div className="p-2.5 rounded-xl bg-white/60 border border-white/70 flex items-center gap-2">
+              <span className="h-5 w-5 rounded-full bg-emerald-100/90 text-emerald-900 font-bold flex items-center justify-center text-[10px] shrink-0 border border-emerald-300/60">
                 4
               </span>
-              <span>Authorized treatment / follow-up</span>
+              <span className="font-semibold">Authorized treatment / follow-up</span>
             </div>
           </div>
         </div>
