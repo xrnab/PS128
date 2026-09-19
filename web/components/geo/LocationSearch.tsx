@@ -1,6 +1,20 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
+
+const DynamicLocationMiniMap = dynamic(
+  () => import("./LocationMiniMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-stone-100 text-stone-400 text-xs gap-2">
+        <div className="h-4 w-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+        <span>Loading map...</span>
+      </div>
+    ),
+  }
+);
 import {
   MapPin,
   Navigation,
@@ -312,15 +326,11 @@ export function LocationSearch({
 
           {/* Map Preview ONLY if valid coordinates exist */}
           {showMapPreview && hasCoordinates && selectedLocation.latitude !== null && selectedLocation.longitude !== null && (
-            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-emerald-200 bg-stone-100">
-              <iframe
-                title={t("mapPreviewTitle")}
-                className="w-full h-full border-0 pointer-events-none"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${selectedLocation.longitude - 0.01}%2C${selectedLocation.latitude - 0.01}%2C${selectedLocation.longitude + 0.01}%2C${selectedLocation.latitude + 0.01}&layer=mapnik&marker=${selectedLocation.latitude}%2C${selectedLocation.longitude}`}
+            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-emerald-200 bg-stone-100 shadow-2xs">
+              <DynamicLocationMiniMap
+                latitude={selectedLocation.latitude}
+                longitude={selectedLocation.longitude}
               />
-              <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded text-[10px] text-stone-600 font-medium border border-stone-200 shadow-2xs">
-                OpenStreetMap
-              </div>
             </div>
           )}
         </div>

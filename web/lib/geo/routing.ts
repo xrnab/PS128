@@ -158,6 +158,11 @@ export function canUserAccessCaseRecord(
     return farm.village.block.districtId === appUser.districtId;
   }
 
+  // 5. Admin Access: Full global jurisdiction
+  if (appUser.role === "ADMIN") {
+    return true;
+  }
+
   return false;
 }
 
@@ -194,6 +199,10 @@ export function canUserAccessAssistanceRequest(
       districtId: request.village.block.districtId,
     };
     return isLocationAuthorized(appUser, reqLocation);
+  }
+
+  if (appUser.role === "ADMIN") {
+    return true;
   }
 
   if (appUser.role === "VETERINARIAN" || appUser.role === "DISTRICT_AUTHORITY") {
@@ -260,7 +269,7 @@ export async function findEligibleVeterinarians(loc: LocationCoordinates): Promi
   // Strictly forbid cross-district: only users belonging to resolvedDistrictId (or roaming districtId=null)
   const allDistrictVets = await prisma.user.findMany({
     where: {
-      role: "VETERINARIAN",
+      role: { in: ["VETERINARIAN", "ADMIN"] },
       status: "ACTIVE",
       OR: [
         { districtId: resolvedDistrictId },
