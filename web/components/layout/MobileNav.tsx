@@ -31,6 +31,7 @@ export function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={true}
               title={item.label}
               className={`flex-1 min-w-0 max-w-[72px] sm:max-w-[88px] flex flex-col items-center justify-center py-1 px-1 rounded-xl md:rounded-full transition-all duration-200 min-h-[44px] touch-target ${
                 isActive

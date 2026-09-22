@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { MotionFadeIn } from "@/components/motion/MotionFadeIn";
 import { formatDateTime, formatDoctorName } from "@/lib/utils";
 import {
-  PlusCircle,
-  MessageSquare,
   PhoneCall,
   ChevronRight,
   Stethoscope,
@@ -16,11 +14,11 @@ import {
   Activity,
   CalendarCheck,
   UserCheck,
-  User,
   MapPin,
   Cpu,
 } from "lucide-react";
 import { DeleteAnimalButton } from "@/components/farmer/DeleteAnimalButton";
+import { FarmerActionButtons } from "@/components/farmer/FarmerActionButtons";
 import { getTranslations } from "next-intl/server";
 
 export default async function FarmerPortalPage() {
@@ -52,8 +50,8 @@ export default async function FarmerPortalPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 space-y-8 text-[#1D1C14] dark:text-[#F4EEE1]">
-      {/* Top Banner & Opening Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-black/8 dark:border-white/10">
+      {/* Top Banner & Opening Greeting with Large Quick Action Cards */}
+      <div className="space-y-6 pb-6 border-b border-black/8 dark:border-white/10">
         <div>
           <span className="text-xs uppercase tracking-wider text-[#2D5A3C] dark:text-[#8EE6A3] font-bold">
             {t("farmerAccountTerritory")}
@@ -66,6 +64,7 @@ export default async function FarmerPortalPage() {
             {farmer.village?.name && (
               <Link
                 href="/farmer/profile"
+                prefetch={true}
                 className="inline-flex items-center gap-1 text-xs font-semibold text-[#15271E] dark:text-[#BDEEC5] bg-[#EAF3EC] dark:bg-[#3F6B4A]/30 px-2.5 py-0.5 rounded-full border border-[#1E3A2B]/10 dark:border-white/15 hover:scale-102 transition-transform"
                 title={t("viewEditLocation")}
               >
@@ -76,39 +75,8 @@ export default async function FarmerPortalPage() {
           </p>
         </div>
 
-        {/* Action Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 sm:pt-0">
-          <Link href="/farmer/talk">
-            <Button variant="outline" size="sm" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
-              <MessageSquare className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
-              <span>{t("farmerTalkAi")}</span>
-            </Button>
-          </Link>
-          <Link href="/farmer/ivr">
-            <Button variant="outline" size="sm" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
-              <PhoneCall className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
-              <span>{tIvr("title")}</span>
-            </Button>
-          </Link>
-          <Link href="/farmer/iot">
-            <Button variant="outline" size="sm" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
-              <Cpu className="h-3.5 w-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
-              <span>{t("iotVitals")}</span>
-            </Button>
-          </Link>
-          <Link href="/farmer/request-help">
-            <Button size="sm" variant="outline" className="liquid-button-glass gap-1.5 text-xs h-9 px-3.5 rounded-full">
-              <UserCheck className="h-3.5 w-3.5 text-[#B87A1E] dark:text-[#E5A93C]" />
-              <span>{t("requestFieldAgent")}</span>
-            </Button>
-          </Link>
-          <Link href="/farmer/report">
-            <Button size="sm" className="liquid-button-primary gap-1.5 text-xs h-9 px-4 rounded-full">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span>{t("reportHealthConcern")}</span>
-            </Button>
-          </Link>
-        </div>
+        {/* Large Highly Recognizable Action Cards */}
+        <FarmerActionButtons />
       </div>
 
       {/* Bento Metrics Showcase (Apple Liquid Glass) */}
@@ -163,7 +131,7 @@ export default async function FarmerPortalPage() {
             </h2>
             <span className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("registeredLivestockTotal", { count: allAnimals.length })}</span>
           </div>
-          <Link href="/farmer/report" className="text-xs font-bold text-[#2D5A3C] dark:text-[#8EE6A3] hover:underline">
+          <Link href="/farmer/report" prefetch={true} className="text-xs font-bold text-[#2D5A3C] dark:text-[#8EE6A3] hover:underline">
             {t("registerNewAnimalLink")} →
           </Link>
         </div>
@@ -175,7 +143,7 @@ export default async function FarmerPortalPage() {
             <p className="text-xs text-stone-500 dark:text-[#8EAA97] max-w-sm mx-auto">
               {t("noRegisteredAnimalsLead")}
             </p>
-            <Link href="/farmer/report">
+            <Link href="/farmer/report" prefetch={true}>
               <Button size="sm" className="liquid-button-primary text-xs rounded-full">
                 {t("registerFirstAnimal")}
               </Button>
@@ -189,7 +157,7 @@ export default async function FarmerPortalPage() {
               return (
                 <MotionFadeIn key={animal.id} delay={idx * 50} direction="right">
                   <div className="min-w-72 sm:min-w-[320px] max-w-72 rounded-[28px] bg-white/75 dark:bg-[#0A1A12]/70 backdrop-blur-[24px] border border-white/80 dark:border-white/10 overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_8px_24px_rgba(30,58,43,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_16px_40px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 transition-all group flex flex-col justify-between shrink-0 snap-start h-full">
-                    <Link href={`/farmer/animals/${animal.id}`} className="block">
+                    <Link href={`/farmer/animals/${animal.id}`} prefetch={true} className="block">
                       <div className="relative h-44 w-full bg-stone-100 overflow-hidden">
                         <Image
                           src={getAnimalImage(animal.species)}
@@ -230,13 +198,13 @@ export default async function FarmerPortalPage() {
 
                     <div className="px-5 pb-5 pt-2 border-t border-black/5 dark:border-white/8 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Link href={`/farmer/animals/${animal.id}`}>
+                        <Link href={`/farmer/animals/${animal.id}`} prefetch={true}>
                           <Button size="sm" variant="outline" className="h-8 text-xs liquid-button-glass gap-1 px-3 rounded-full">
                             <span>{t("healthPassport")}</span>
                             <ChevronRight className="w-3.5 h-3.5" />
                           </Button>
                         </Link>
-                        <Link href={`/farmer/iot?animalId=${animal.id}`}>
+                        <Link href={`/farmer/iot?animalId=${animal.id}`} prefetch={true}>
                           <Button size="sm" variant="outline" className="h-8 text-xs liquid-button-glass gap-1 px-2.5 rounded-full">
                             <Cpu className="w-3.5 h-3.5 text-[#2D5A3C] dark:text-[#8EE6A3]" />
                             <span>IoT</span>
@@ -263,12 +231,12 @@ export default async function FarmerPortalPage() {
             <p className="text-xs text-stone-500 dark:text-[#8EAA97]">{t("activeReportsLead")}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/farmer/report">
+            <Link href="/farmer/report" prefetch={true}>
               <Button size="sm" variant="outline" className="liquid-button-glass text-xs h-8 px-3 rounded-full">
                 {t("selfReportCaseBtn")}
               </Button>
             </Link>
-            <Link href="/farmer/request-help">
+            <Link href="/farmer/request-help" prefetch={true}>
               <Button size="sm" variant="outline" className="liquid-button-glass text-xs h-8 px-3 rounded-full">
                 {t("fieldAgentVisitBtn")}
               </Button>
@@ -340,7 +308,7 @@ export default async function FarmerPortalPage() {
                           {formatDateTime(c.reportedAt)}
                         </span>
                         <div className="flex items-center gap-2">
-                          <Link href={`/farmer/cases/${c.id}`}>
+                          <Link href={`/farmer/cases/${c.id}`} prefetch={true}>
                             <Button size="sm" className="liquid-button-primary text-xs h-8 px-3 rounded-full">
                               {c.veterinaryReports && c.veterinaryReports.length > 0 ? t("viewVetReportBtn") : t("caseDetailsBtn")}
                             </Button>
@@ -447,7 +415,7 @@ export default async function FarmerPortalPage() {
             </p>
           </div>
         </div>
-        <Link href="/farmer/ivr">
+        <Link href="/farmer/ivr" prefetch={true}>
           <Button size="sm" className="liquid-button-primary gap-1.5 text-xs h-9 px-4 rounded-full">
             <PhoneCall className="h-3.5 w-3.5" />
             <span>{tIvr("tryVoiceLine")}</span>
@@ -468,7 +436,7 @@ export default async function FarmerPortalPage() {
             </p>
           </div>
         </div>
-        <Link href="/farmer/report">
+        <Link href="/farmer/report" prefetch={true}>
           <button className="bg-white text-[#1E3A2B] hover:bg-[#F4EEE1] font-bold text-xs px-5 py-2.5 rounded-full shadow-md transition-all cursor-pointer hover:scale-102 active:scale-98">
             {t("reportHealthConcern")}
           </button>

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -5,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
 import { Navbar } from "@/components/layout/Navbar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { NavigationProgressBar } from "@/components/layout/NavigationProgressBar";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { SyncStatusBadge } from "@/components/offline/SyncStatusBadge";
 import { LocaleProvider } from "@/components/layout/LocaleProvider";
@@ -26,7 +28,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Maitri — Livestock Health & Veterinary Surveillance Platform",
-  description: "Livestock disease early detection, rural field surveillance, and clinical decision support for farmers, veterinarians, and district authorities.",
+  description:
+    "Livestock disease early detection, rural field surveillance, and clinical decision support for farmers, veterinarians, and district authorities.",
   manifest: "/manifest.json",
   alternates: {
     languages: {
@@ -76,6 +79,9 @@ export default async function RootLayout({
             <LocaleProvider initialLocale={locale as Locale}>
               <ThemeProvider>
                 <SmoothScrollProvider>
+                  <Suspense fallback={null}>
+                    <NavigationProgressBar />
+                  </Suspense>
                   <FirstLoadExperience />
                   <PwaRegister />
                   <Navbar />

@@ -54,12 +54,7 @@ export interface FarmerProfileData {
   createdAt: string;
 }
 
-/**
- * Retrieves real database counts and recent activity for the Farmer Portal dashboard.
- */
-export async function getFarmerDashboardMetricsAction() {
-  const farmer = await requireFarmer();
-
+async function fetchFarmerDashboardMetricsData(farmer: Awaited<ReturnType<typeof requireFarmer>>) {
   const caseInclude = {
     createdByUser: { select: { id: true, name: true, phone: true } },
     reviewedByUser: { select: { id: true, name: true, phone: true } },
@@ -234,6 +229,42 @@ export async function getFarmerDashboardMetricsAction() {
     upcomingFollowUps,
     farms,
   };
+}
+
+export type FarmerDashboardMetrics = Awaited<ReturnType<typeof fetchFarmerDashboardMetricsData>>;
+
+const farmerMetricsMemoryCache = new Map<string, { data: FarmerDashboardMetrics; timestamp: number }>();
+const FARMER_CACHE_TTL_MS = 25 * 1000;
+
+export async function invalidateFarmerDashboardCache(farmerId?: string) {
+  if (farmerId) {
+    farmerMetricsMemoryCache.delete(farmerId);
+  } else {
+    farmerMetricsMemoryCache.clear();
+  }
+}
+
+/**
+ * Retrieves real database counts and recent activity for the Farmer Portal dashboard with instant caching.
+ */
+export async function getFarmerDashboardMetricsAction(): Promise<FarmerDashboardMetrics> {
+  const farmer = await requireFarmer();
+
+  const cached = farmerMetricsMemoryCache.get(farmer.id);
+  if (cached && Date.now() - cached.timestamp < FARMER_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
+  const result = await fetchFarmerDashboardMetricsData(farmer);
+
+  try {
+    farmerMetricsMemoryCache.set(farmer.id, {
+      data: result,
+      timestamp: Date.now(),
+    });
+  } catch {}
+
+  return result;
 }
 
 /**
@@ -437,14 +468,14 @@ export async function getFarmerProfileAction(): Promise<FarmerProfileData> {
     blockName: fullUser.block?.name || null,
     villageId: fullUser.villageId || null,
     villageName: fullUser.village?.name || null,
-    farms: fullUser.ownedFarms.map((f) => ({
+    farms: (fullUser.ownedFarms || []).map((f: any) => ({
       id: f.id,
       name: f.name,
       villageId: f.villageId,
       villageName: f.village.name,
       blockName: f.village.block.name,
       districtName: f.village.block.district.name,
-      animalCount: f.herds.reduce((sum, h) => sum + h.animals.length, 0),
+      animalCount: (f.herds || []).reduce((sum: number, h: any) => sum + (h.animals?.length || 0), 0),
       latitude: f.latitude,
       longitude: f.longitude,
     })),
