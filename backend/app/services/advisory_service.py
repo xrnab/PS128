@@ -229,6 +229,10 @@ def _analyze_stream_agreements(ctx: Dict[str, Any]) -> List[str]:
         points.append(
             "Discrepancy: The farmer noted skin lesions, but automated photographic inspection did not detect prominent cutaneous lesions in the uploaded image. Direct tactile veterinary palpation is needed."
         )
+    elif not ctx["visual_detected"] and not has_skin_reported:
+        points.append(
+            "Photo Analysis: No significant visual abnormality was detected in the uploaded photograph. The computer vision model found no lesion signatures."
+        )
 
     # 3. ML Prediction Alignment
     if ctx["has_ml_signal"] and ctx["visual_detected"] and ctx["yolo_condition"]:
@@ -315,6 +319,9 @@ CRITICAL INSTRUCTIONS FOR MULTI-STREAM SYNTHESIS:
    - Decision-support only. NEVER declare a definitive diagnosis ("the animal has X", "this IS X disease"). Use strictly non-prescriptive framing: "suspected", "consistent with", "presents signs of".
    - ABSOLUTELY NO DRUG NAMES OR DOSAGES (no antibiotics, analgesics, or pharmaceuticals).
    - Require immediate physical examination by a licensed veterinarian for formal prescription.
+
+4. VISION FIDELITY CONSTRAINT (MANDATORY):
+   Do NOT state a specific visual finding, confidence number, or diagnosis that is not literally present in the "Computer Vision (YOLO Lesion Scan)" field provided above. If the vision data says "No visual lesions detected" or "healthy scan" or lists no detected classes, the advisory MUST state plainly that the photo showed no visible abnormality. NEVER invent, infer, or fabricate a disease name, lesion type, or confidence percentage from the photo when the vision model did not return one. Violating this rule produces dangerous clinical misinformation.
 
 FORMAT THE ADVISORY EXACTLY AS:
 {header_emoji} **{header_label}:**
