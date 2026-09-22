@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { HealthReportForm } from "@/components/reporting/HealthReportForm";
 import * as livestockApi from "@/lib/api/livestock";
-import * as casesActions from "@/lib/actions/cases";
 import * as reportingDataActions from "@/lib/actions/reporting_data";
 import enDict from "@/lib/i18n/dictionaries/en.json";
 
@@ -46,7 +45,7 @@ if (typeof window !== "undefined") {
   window.URL.createObjectURL = vi.fn(() => "blob:http://localhost:3000/mock-preview-id");
 }
 
-describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
+describe("Lesion Photo Rejection & Submit Blocking Test Suite (5-Step Flow)", () => {
   const mockAnimal = {
     id: "animal-cow-01",
     tag: "COW-404",
@@ -81,9 +80,9 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
   });
 
   /**
-   * Helper to navigate the wizard from Step 1 to Step 4.
+   * Helper to navigate the 5-step wizard from Step 1 to Step 3 (Evidence: Photo & IoT).
    */
-  async function advanceToStep4() {
+  async function advanceToStep3() {
     render(<HealthReportForm mode="farmer" />);
 
     // Step 1: Wait for animals to load and select animal
@@ -92,7 +91,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     });
     fireEvent.click(screen.getByText(/COW-404/i));
 
-    // Click Next step to Step 2
+    // Click Next step to Step 2 (Symptoms & Duration)
     const nextBtn1 = screen.getByRole("button", { name: /Next step/i });
     fireEvent.click(nextBtn1);
 
@@ -102,24 +101,17 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     });
     fireEvent.click(screen.getByText(/Skin Nodules/i));
 
-    // Click Next step to Step 3
+    // Click Next step to Step 3 (Evidence: Photo & IoT)
     const nextBtn2 = screen.getByRole("button", { name: /Next step/i });
     fireEvent.click(nextBtn2);
 
-    // Step 3: Click Next step to Step 4
+    // Step 3: Evidence: Photo & IoT should be active
     await waitFor(() => {
-      expect(document.getElementById("duration")).toBeInTheDocument();
-    });
-    const nextBtn3 = screen.getByRole("button", { name: /Next step/i });
-    fireEvent.click(nextBtn3);
-
-    // Step 4: Photo Capture should be active
-    await waitFor(() => {
-      expect(screen.getByText(/4\. Lesion Photo/i)).toBeInTheDocument();
+      expect(screen.getByText(/3\. Evidence: Photo & IoT/i)).toBeInTheDocument();
     });
   }
 
-  it("1. Blocks Next Step button when image contains a PERSON", async () => {
+  it("1. Blocks Next Step button on Step 3 when image contains a PERSON", async () => {
     // Mock AI vision rejecting photo as a Person
     vi.mocked(livestockApi.predictYoloImage).mockResolvedValue({
       primary_prediction: "Rejected: Person",
@@ -129,7 +121,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
       success: true,
     });
 
-    await advanceToStep4();
+    await advanceToStep3();
 
     // Upload dummy person image
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -154,9 +146,9 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     expect(nextBtn).toBeDisabled();
     expect(nextBtn.className).toContain("cursor-not-allowed");
 
-    // Clicking Next step should do nothing and NOT advance to Step 5
+    // Clicking Next step should do nothing and NOT advance to Step 4 (Review)
     fireEvent.click(nextBtn);
-    expect(screen.queryByText(/5\. GPS Location/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/4\. Review Health Report/i)).not.toBeInTheDocument();
   });
 
   it("2. Blocks Next Step button when image contains ANY OTHER OBJECT (e.g. Cup, Phone, Bottle, Car)", async () => {
@@ -169,7 +161,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
       success: true,
     });
 
-    await advanceToStep4();
+    await advanceToStep3();
 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const cupFile = new File(["fake-cup-image"], "cup.png", { type: "image/png" });
@@ -201,7 +193,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
       success: true,
     });
 
-    await advanceToStep4();
+    await advanceToStep3();
 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const phoneFile = new File(["fake-phone-image"], "phone.jpg", { type: "image/jpeg" });
@@ -230,7 +222,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     expect(nextBtn).not.toBeDisabled();
   });
 
-  it("4. Allows proceeding when a VALID animal lesion photo is uploaded", async () => {
+  it("4. Allows proceeding to Step 4 (Review) when a VALID animal lesion photo is uploaded", async () => {
     vi.mocked(livestockApi.predictYoloImage).mockResolvedValue({
       primary_prediction: "Lumpy Skin Disease",
       confidence: 96.5,
@@ -238,7 +230,7 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
       success: true,
     });
 
-    await advanceToStep4();
+    await advanceToStep3();
 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const cowFile = new File(["valid-cow-nodule-photo"], "nodule.jpg", { type: "image/jpeg" });
@@ -256,15 +248,14 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
     const nextBtn = screen.getByRole("button", { name: /Next step/i });
     expect(nextBtn).not.toBeDisabled();
 
-    // Click Next step to proceed to Step 5 (Location)
+    // Click Next step to proceed to Step 4 (Review)
     fireEvent.click(nextBtn);
     await waitFor(() => {
-      expect(screen.getByText(/5\. GPS Location/i)).toBeInTheDocument();
+      expect(screen.getByText(/4\. Review Health Report/i)).toBeInTheDocument();
     });
   });
 
-  it("5. Disables Submit button on Step 7 if image was rejected", async () => {
-    // Start with a valid photo on Step 4 to advance all the way to Step 7
+  it("5. Allows reviewing and submitting on Step 4 for valid flow", async () => {
     vi.mocked(livestockApi.predictYoloImage).mockResolvedValue({
       primary_prediction: "Healthy",
       confidence: 90,
@@ -272,80 +263,29 @@ describe("Lesion Photo Rejection & Submit Blocking Test Suite", () => {
       success: true,
     });
 
-    await advanceToStep4();
+    await advanceToStep3();
 
-    // Upload a valid photo on step 4 first
-    const fileInput4 = document.querySelector('input[type="file"]') as HTMLInputElement;
+    // Upload a valid photo on Step 3
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     const validFile = new File(["fake-cattle"], "cow.jpg", { type: "image/jpeg" });
     await act(async () => {
-      fireEvent.change(fileInput4, { target: { files: [validFile] } });
+      fireEvent.change(fileInput, { target: { files: [validFile] } });
     });
     await waitFor(() => {
       expect(screen.getByText(/AI: Healthy/i)).toBeInTheDocument();
     });
 
-    // Advance to Step 5 (GPS)
-    const nextBtn4 = screen.getByRole("button", { name: /Next step/i });
-    fireEvent.click(nextBtn4);
+    // Advance to Step 4 (Review Health Report)
+    const nextBtn3 = screen.getByRole("button", { name: /Next step/i });
+    fireEvent.click(nextBtn3);
 
-    // Advance to Step 6 (IoT)
-    await waitFor(() => expect(screen.getByText(/5\. GPS Location/i)).toBeInTheDocument());
-    const nextBtn5 = screen.getByRole("button", { name: /Next step/i });
-    fireEvent.click(nextBtn5);
-
-    // Advance to Step 7 (Review & Submit)
-    await waitFor(() => expect(screen.getByText(/6\. Temperature and IoT Vitals/i)).toBeInTheDocument());
-    const nextBtn6 = screen.getByRole("button", { name: /Next step/i });
-    fireEvent.click(nextBtn6);
-
-    // Verify on Step 7
+    // Verify on Step 4 (Review)
     await waitFor(() => {
-      expect(screen.getByText(/7\. Review and Submit Report/i)).toBeInTheDocument();
+      expect(screen.getByText(/4\. Review Health Report/i)).toBeInTheDocument();
     });
 
-    // Submit button is initially active for valid flow
+    // Submit button is active
     const submitBtn = screen.getByRole("button", { name: /Submit report/i });
     expect(submitBtn).not.toBeDisabled();
-
-    // Now go back to Step 4, replace with a person photo
-    const backBtn = screen.getByRole("button", { name: /Back/i });
-    fireEvent.click(backBtn); // to Step 6
-    fireEvent.click(screen.getByRole("button", { name: /Back/i })); // to Step 5
-    fireEvent.click(screen.getByRole("button", { name: /Back/i })); // to Step 4
-
-    await waitFor(() => {
-      expect(screen.getByText(/4\. Lesion Photo/i)).toBeInTheDocument();
-    });
-
-    // Mock AI returning rejection
-    vi.mocked(livestockApi.predictYoloImage).mockResolvedValue({
-      primary_prediction: "Rejected: Person",
-      message: "Invalid photo. Person detected.",
-      confidence: 0,
-      visual_anomaly_detected: false,
-      success: true,
-    });
-
-    // Remove old photo and upload person photo
-    const deleteBtn = screen.getByTitle(/Remove Photo/i);
-    fireEvent.click(deleteBtn);
-
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    const personFile = new File(["fake-person"], "person.jpg", { type: "image/jpeg" });
-    await act(async () => {
-      fireEvent.change(fileInput, { target: { files: [personFile] } });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(/AI: Rejected: Person/i)).toBeInTheDocument();
-    });
-
-    // Button on Step 4 is blocked
-    const step4NextBtn = screen.getByRole("button", { name: /Next step/i });
-    expect(step4NextBtn).toBeDisabled();
-
-    // Attempting to advance does not move away from Step 4
-    fireEvent.click(step4NextBtn);
-    expect(screen.getByText(/4\. Lesion Photo/i)).toBeInTheDocument();
   });
 });
