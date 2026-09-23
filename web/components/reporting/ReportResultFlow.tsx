@@ -704,7 +704,22 @@ export function ReportResultFlow({
                     {photoUrl ? (
                       <div className="h-16 w-16 rounded-2xl overflow-hidden border border-[#E5E0D8] bg-stone-100 shrink-0 shadow-2xs">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={photoUrl} alt="Inspection Photo" className="h-full w-full object-cover" />
+                        <img
+                          src={
+                            photoUrl.startsWith("data:") || photoUrl.startsWith("blob:")
+                              ? photoUrl
+                              : photoUrl.includes("blob.vercel-storage.com") || photoUrl.startsWith("cases/") || photoUrl.includes("mock-blob.vercel-storage.com")
+                              ? submitResult.caseId
+                                ? `/api/media/photo/${submitResult.caseId}`
+                                : "/images/clinical/cattle_skin_lesions.jpg"
+                              : photoUrl
+                          }
+                          alt="Inspection Photo"
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/images/clinical/cattle_skin_lesions.jpg";
+                          }}
+                        />
                       </div>
                     ) : (
                       <div className="h-14 w-14 rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center text-stone-400 shrink-0">

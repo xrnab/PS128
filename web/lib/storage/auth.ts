@@ -1,6 +1,6 @@
 // import "server-only";
 import prisma from "@/lib/db/prisma";
-import { requireActiveUser, FullAppUser } from "@/lib/auth/session";
+import { getCurrentAppUser, FullAppUser } from "@/lib/auth/session";
 import { storageProvider } from "./index";
 
 export class PhotoAuthorizationError extends Error {
@@ -89,7 +89,10 @@ export async function getAuthorizedCasePhoto(caseId: string): Promise<{
   error?: string;
 }> {
   try {
-    const appUser = await requireActiveUser();
+    const appUser = await getCurrentAppUser();
+    if (!appUser || appUser.status !== "ACTIVE") {
+      return { success: false, error: "Unauthorized access: Active user required." };
+    }
 
     const healthCase = await prisma.case.findUnique({
       where: { id: caseId },
@@ -154,7 +157,10 @@ export async function getAuthorizedCasePhoto(caseId: string): Promise<{
  */
 export async function deleteCasePhoto(caseId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const appUser = await requireActiveUser();
+    const appUser = await getCurrentAppUser();
+    if (!appUser || appUser.status !== "ACTIVE") {
+      return { success: false, error: "Unauthorized access: Active user required." };
+    }
 
     const healthCase = await prisma.case.findUnique({
       where: { id: caseId },

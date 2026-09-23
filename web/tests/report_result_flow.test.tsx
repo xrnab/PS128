@@ -201,20 +201,19 @@ describe("ReportResultFlow - Liquid Ledger Assessment Flow", () => {
       />
     );
 
-    // Handoff
-    expect(screen.getByText("PRELIMINARY ASSESSMENT")).toBeInTheDocument();
-    expect(screen.getByText("VETERINARIAN REVIEW")).toBeInTheDocument();
-    expect(screen.getByText("NEXT CLINICAL STEPS")).toBeInTheDocument();
-    expect(screen.getByText("Veterinarian review & triage")).toBeInTheDocument();
-    expect(screen.getByText("Physical clinical examination")).toBeInTheDocument();
-    expect(screen.getByText("Lab referral if required")).toBeInTheDocument();
-    expect(screen.getByText("Authorized treatment / follow-up")).toBeInTheDocument();
+    // Handoff & Checklist
+    expect(screen.getByText("YOUR REPORT")).toBeInTheDocument();
+    expect(screen.getByText("VET REVIEW")).toBeInTheDocument();
+    expect(screen.getByText("What happens next")).toBeInTheDocument();
+    expect(screen.getByText("Vet will review & examine")).toBeInTheDocument();
+    expect(screen.getByText("Lab tests if needed")).toBeInTheDocument();
+    expect(screen.getByText("Treatment plan from vet")).toBeInTheDocument();
     expect(
-      screen.getByText("The veterinarian remains the final clinical decision authority.")
+      screen.getByText(/The veterinarian is the final decision authority/i)
     ).toBeInTheDocument();
 
     // Farmer Guidance
-    expect(screen.getByText("FARMER GUIDANCE")).toBeInTheDocument();
+    expect(screen.getByText("WHAT YOU SHOULD DO")).toBeInTheDocument();
     expect(screen.getByText("Keep the animal under observation.")).toBeInTheDocument();
     expect(screen.getByText("Avoid unnecessary contact with other animals.")).toBeInTheDocument();
 

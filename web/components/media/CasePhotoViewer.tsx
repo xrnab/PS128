@@ -21,7 +21,31 @@ export function CasePhotoViewer({
   aspectRatio = "auto",
 }: CasePhotoViewerProps) {
   const t = useTranslations("common.photo");
-  const [src, setSrc] = useState<string | null>(photoUrl || null);
+  const isPrivateBlobUrl = (url?: string | null): boolean => {
+    if (!url) return false;
+    return (
+      url.includes("blob.vercel-storage.com") ||
+      url.includes("mock-blob.vercel-storage.com") ||
+      url.startsWith("cases/")
+    );
+  };
+
+  const computeInitialSrc = (): string | null => {
+    if (!photoUrl) return null;
+    if (
+      photoUrl.startsWith("data:") ||
+      photoUrl.startsWith("blob:") ||
+      (photoUrl.startsWith("/") && !photoUrl.startsWith("//"))
+    ) {
+      return photoUrl;
+    }
+    if (isPrivateBlobUrl(photoUrl)) {
+      return null;
+    }
+    return photoUrl;
+  };
+
+  const [src, setSrc] = useState<string | null>(computeInitialSrc());
   const [loading, setLoading] = useState<boolean>(Boolean(caseId));
   const [error, setError] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState<boolean>(false);
@@ -34,8 +58,8 @@ export function CasePhotoViewer({
     fetch(proxyUrl)
       .then(async (res) => {
         if (!res.ok) {
-          // If proxy fails, try using direct photoUrl if available
-          if (photoUrl && (photoUrl.startsWith("http") || photoUrl.startsWith("/"))) {
+          // If proxy fails, only use direct photoUrl if safe (data URI or local path)
+          if (photoUrl && !isPrivateBlobUrl(photoUrl) && (photoUrl.startsWith("data:") || photoUrl.startsWith("/"))) {
             if (isMounted) {
               setSrc(photoUrl);
               setLoading(false);
@@ -54,7 +78,7 @@ export function CasePhotoViewer({
       })
       .catch((err) => {
         if (isMounted) {
-          if (photoUrl && (photoUrl.startsWith("http") || photoUrl.startsWith("/"))) {
+          if (photoUrl && !isPrivateBlobUrl(photoUrl) && (photoUrl.startsWith("data:") || photoUrl.startsWith("/"))) {
             setSrc(photoUrl);
             setLoading(false);
           } else {
