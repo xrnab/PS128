@@ -51,6 +51,7 @@ export function MotionWorkflowTimeline() {
           const isActive = activeStep === s.step;
           return (
             <button
+              suppressHydrationWarning
               key={s.step}
               type="button"
               onClick={() => setActiveStep(s.step)}

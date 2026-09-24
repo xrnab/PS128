@@ -84,7 +84,10 @@ export default async function Home() {
             {t("deptTitle")}
           </span>
           <HelplineModal>
-            <button className="rounded-full border border-white/80 bg-white/70 px-3.5 py-1.5 tracking-normal text-[#1E3A2B] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl transition hover:bg-white/95 font-medium cursor-pointer">
+            <button
+              suppressHydrationWarning
+              className="rounded-full border border-white/80 bg-white/70 px-3.5 py-1.5 tracking-normal text-[#1E3A2B] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-xl transition hover:bg-white/95 font-medium cursor-pointer"
+            >
               {t("helpline1962")}
             </button>
           </HelplineModal>
@@ -288,11 +291,14 @@ export default async function Home() {
             {/* High-Contrast, 100% Visible CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Show when="signed-in">
-                <Link href="/dashboard">
-                  <button className="bg-[#F4EEE1] text-[#1E3A2B] hover:bg-white active:scale-95 font-bold px-7 py-3 rounded-full text-sm shadow-lg transition-all cursor-pointer">
-                    {t("openDashboard")}
-                  </button>
-                </Link>
+                  <Link href="/dashboard">
+                    <button
+                      suppressHydrationWarning
+                      className="bg-[#F4EEE1] text-[#1E3A2B] hover:bg-white active:scale-95 font-bold px-7 py-3 rounded-full text-sm shadow-lg transition-all cursor-pointer"
+                    >
+                      {t("openDashboard")}
+                    </button>
+                  </Link>
               </Show>
               <Show when="signed-out">
                 <SignUpButton mode="modal">
@@ -303,7 +309,10 @@ export default async function Home() {
               </Show>
 
               <HelplineModal>
-                <button className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/12 px-6 py-3 text-sm font-semibold text-[#F4EEE1] backdrop-blur-md transition hover:bg-white/25 cursor-pointer">
+                <button
+                  suppressHydrationWarning
+                  className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/12 px-6 py-3 text-sm font-semibold text-[#F4EEE1] backdrop-blur-md transition hover:bg-white/25 cursor-pointer"
+                >
                   <PhoneCall className="h-4 w-4 text-[#BDEEC5]" />
                   <span>{t("orCallHelpline")}</span>
                 </button>

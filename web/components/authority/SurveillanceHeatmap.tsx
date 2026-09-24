@@ -257,6 +257,7 @@ export function SurveillanceHeatmap({
             />
             {searchQuery && (
               <button
+                suppressHydrationWarning
                 onClick={() => setSearchQuery("")}
                 className="absolute right-2.5 top-2 text-stone-400 hover:text-stone-700 cursor-pointer"
               >
@@ -273,6 +274,7 @@ export function SurveillanceHeatmap({
             </span>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("heatmap")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.heatmap
@@ -285,6 +287,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("farms")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.farms
@@ -297,6 +300,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("cases")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.cases
@@ -309,6 +313,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("vets")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.vets
@@ -321,6 +326,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("agents")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.agents
@@ -333,6 +339,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("visits")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.visits
@@ -345,6 +352,7 @@ export function SurveillanceHeatmap({
             </button>
 
             <button
+              suppressHydrationWarning
               onClick={() => toggleLayer("alerts")}
               className={`h-7 px-2.5 rounded-full text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 layers.alerts
@@ -398,6 +406,7 @@ export function SurveillanceHeatmap({
                       </h3>
                     </div>
                     <button
+                      suppressHydrationWarning
                       onClick={() => setSelectedEntity(null)}
                       className="p-1 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-900 cursor-pointer"
                     >
