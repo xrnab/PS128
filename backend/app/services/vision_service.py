@@ -1,8 +1,16 @@
 import io
+import gc
+import logging
 import base64
 from pathlib import Path
 from PIL import Image
+import torch
 from ultralytics import YOLO
+
+logger = logging.getLogger(__name__)
+
+# Force single-threaded PyTorch execution across the process
+torch.set_num_threads(1)
 
 LABEL_MAP = {
     "lumpy": "Lumpy Skin Disease",
@@ -91,13 +99,12 @@ class VisionService:
         else:
             self.models_dir = Path(models_dir)
 
-        self._pet_model = None
-        self._cow_model = None
+        self._active_disease_model = None
+        self._active_model_type = None
         self._coco_model = None
 
     @property
     def coco_model(self) -> YOLO:
-        # Tier 1 Pre-filter Model (loads from local artifacts without network calls)
         if self._coco_model is None:
             coco_path = self.models_dir / "yolov8n.pt"
             if not coco_path.exists():
@@ -108,23 +115,26 @@ class VisionService:
                 self._coco_model = YOLO("yolov8n.pt")
         return self._coco_model
 
-    @property
-    def pet_model(self) -> YOLO:
-        if self._pet_model is None:
-            pet_path = self.models_dir / "model_pet.pt"
-            if not pet_path.exists():
-                raise FileNotFoundError(f"Pet YOLO model file not found at: {pet_path}")
-            self._pet_model = YOLO(str(pet_path))
-        return self._pet_model
-
-    @property
-    def cow_model(self) -> YOLO:
-        if self._cow_model is None:
-            cow_path = self.models_dir / "model_cow.pt"
-            if not cow_path.exists():
-                raise FileNotFoundError(f"Cow YOLO model file not found at: {cow_path}")
-            self._cow_model = YOLO(str(cow_path))
-        return self._cow_model
+    def get_disease_model(self, animal_lower: str) -> YOLO:
+        target_type = "pet" if animal_lower in ["pet", "dog", "cat"] else "cow"
+        
+        # Avoid holding multiple heavy models in RAM at once on 512MB RAM free tier
+        if self._active_model_type != target_type:
+            self._active_disease_model = None
+            gc.collect()
+            
+            if target_type == "pet":
+                model_path = self.models_dir / "model_pet.pt"
+            else:
+                model_path = self.models_dir / "model_cow.pt"
+                
+            if not model_path.exists():
+                raise FileNotFoundError(f"YOLO model file not found at: {model_path}")
+                
+            self._active_disease_model = YOLO(str(model_path))
+            self._active_model_type = target_type
+            
+        return self._active_disease_model
 
     def predict_image_lesions(
         self,
@@ -147,7 +157,6 @@ class VisionService:
 
         prediction = self.predict(image_bytes, animal_type=animal_type)
         
-        # Ensure visual anomaly is False if rejected
         prediction["visual_anomaly_detected"] = (
             prediction.get("primary_prediction") != "Healthy"
             and prediction.get("primary_prediction") != "No disease detected"
@@ -157,189 +166,118 @@ class VisionService:
         return prediction
 
     def predict(self, image_bytes: bytes, animal_type: str = "cow") -> dict:
-        import torch
-        import gc
-
-        # Enforce single-thread execution to prevent memory spikes on Render 512MB RAM
-        if torch.get_num_threads() > 1:
-            torch.set_num_threads(1)
+        torch.set_num_threads(1)
 
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        # Downscale large phone captures to max 1024x1024 to keep RAM usage minimal
-        if image.width > 1024 or image.height > 1024:
-            image.thumbnail((1024, 1024), Image.Resampling.LANCZOS)
+        # Resize to max 640x640 to keep inference memory under 200MB
+        if image.width > 640 or image.height > 640:
+            image.thumbnail((640, 640), Image.Resampling.LANCZOS)
 
-        with torch.inference_mode():
-            # =======================================================
-            # TIER 1: STRICT REJECTION FILTER (Humans, Objects & Mismatched Animals)
-            # =======================================================
-            detected_coco_classes = []
-            try:
-                coco_results = self.coco_model(image, imgsz=320, verbose=False)[0]
-                if coco_results.boxes:
-                    detected_coco_classes = [
-                        coco_results.names[int(box.cls[0])] for box in coco_results.boxes
-                    ]
-            except Exception as coco_err:
-                import logging
-                logging.getLogger(__name__).warning(f"Tier 1 COCO pre-filter error (proceeding to Tier 2): {coco_err}")
+        try:
+            with torch.inference_mode():
+                # Tier 1 COCO pre-filter
+                detected_coco_classes = []
+                try:
+                    coco_results = self.coco_model(image, imgsz=224, verbose=False)[0]
+                    if coco_results.boxes:
+                        detected_coco_classes = [
+                            coco_results.names[int(box.cls[0])] for box in coco_results.boxes
+                        ]
+                except Exception as coco_err:
+                    logger.warning(f"Tier 1 COCO pre-filter warning: {coco_err}")
 
-            animal_lower = str(animal_type).strip().lower()
-            is_pet_request = animal_lower in ["pet", "dog", "cat"]
-            
-            coco_animal_classes = {
-                "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"
-            }
-            livestock_allowed_classes = {"cow", "sheep", "horse"}
-            pet_allowed_classes = {"dog", "cat"}
-
-            # 1. Any person detected -> Always reject immediately
-            if "person" in detected_coco_classes:
-                return {
-                    "success": True,
-                    "primary_prediction": "Rejected: Person",
-                    "confidence": 0.0,
-                    "visual_anomaly_detected": False,
-                    "message": "Invalid photo. Person detected."
+                animal_lower = str(animal_type).strip().lower()
+                is_pet_request = animal_lower in ["pet", "dog", "cat"]
+                
+                coco_animal_classes = {
+                    "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"
                 }
+                livestock_allowed_classes = {"cow", "sheep", "horse"}
+                pet_allowed_classes = {"dog", "cat"}
 
-            # 2. Any non-animal object detected -> Reject immediately
-            detected_non_animals = [cls for cls in detected_coco_classes if cls not in coco_animal_classes]
-            if detected_non_animals:
-                reason = detected_non_animals[0].replace("_", " ").title()
-                return {
-                    "success": True,
-                    "primary_prediction": f"Rejected: {reason}",
-                    "confidence": 0.0,
-                    "visual_anomaly_detected": False,
-                    "message": f"Invalid photo. {reason} detected."
-                }
+                if "person" in detected_coco_classes:
+                    return {
+                        "success": True,
+                        "primary_prediction": "Rejected: Person",
+                        "confidence": 0.0,
+                        "visual_anomaly_detected": False,
+                        "message": "Invalid photo. Person detected."
+                    }
 
-            # 3. Mismatched animal category detected
-            if is_pet_request:
-                mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in pet_allowed_classes]
-                if mismatched_animals:
-                    reason = mismatched_animals[0].replace("_", " ").title()
+                detected_non_animals = [cls for cls in detected_coco_classes if cls not in coco_animal_classes]
+                if detected_non_animals:
+                    reason = detected_non_animals[0].replace("_", " ").title()
                     return {
                         "success": True,
                         "primary_prediction": f"Rejected: {reason}",
                         "confidence": 0.0,
                         "visual_anomaly_detected": False,
-                        "message": f"Invalid photo. {reason} detected (expected pet)."
-                    }
-            else:
-                mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in livestock_allowed_classes]
-                if mismatched_animals:
-                    reason = mismatched_animals[0].replace("_", " ").title()
-                    return {
-                        "success": True,
-                        "primary_prediction": f"Rejected: {reason}",
-                        "confidence": 0.0,
-                        "visual_anomaly_detected": False,
-                        "message": f"Invalid photo. {reason} detected (expected livestock)."
+                        "message": f"Invalid photo. {reason} detected."
                     }
 
-            # =======================================================
-            # TIER 2: CUSTOM DISEASE CLASSIFICATION
-            # =======================================================
-            # Select the requested model on-demand
-            if animal_lower in ["pet", "dog", "cat"]:
-                model = self.pet_model
-                pet_labels = {str(label).strip().lower() for label in model.names.values()}
-                if pet_labels == CATTLE_MODEL_LABELS:
-                    raise ValueError(
-                        "The pet model contains cattle disease classes. "
-                        "Replace app/ml_artifacts/model_pet.pt with a pet-trained model."
-                    )
-            elif animal_lower in ["cow", "cattle", "livestock", "buffalo", "sheep", "goat"]:
-                model = self.cow_model
-            else:
-                model = self.cow_model
-
-            # Perform inference with task-optimal image size (224 for classification)
-            try:
+                # Tier 2 Custom Disease Classification
+                model = self.get_disease_model(animal_lower)
                 results = model(image, imgsz=224, verbose=False)
                 result = results[0]
-            except Exception as model_err:
-                import logging
-                logging.getLogger(__name__).warning(f"Tier 2 model inference error: {model_err}")
-                return {
+
+                if hasattr(result, "probs") and result.probs is not None:
+                    top_idx = int(result.probs.top1)
+                    top_conf = float(result.probs.top1conf)
+                    class_name = format_label(result.names[top_idx])
+
+                    if top_conf < 0.50:
+                        return {
+                            "success": True,
+                            "primary_prediction": "Rejected: Unrecognized Image",
+                            "confidence": round(top_conf * 100, 2),
+                            "visual_anomaly_detected": False,
+                            "message": "No clear animal lesion patterns recognized. Please try again."
+                        }
+
+                    top_predictions = []
+                    if hasattr(result.probs, "top5") and hasattr(result.probs, "top5conf"):
+                        for idx, conf in zip(result.probs.top5, result.probs.top5conf):
+                            top_predictions.append({
+                                "condition": format_label(result.names[int(idx)]),
+                                "confidence": round(float(conf) * 100, 2)
+                            })
+
+                    return {
+                        "success": True,
+                        "primary_prediction": class_name,
+                        "confidence": round(top_conf * 100, 2),
+                        **disease_metadata(result.names[top_idx], animal_lower),
+                        "top_predictions": top_predictions
+                    }
+
+                # Fallback Detection Model
+                detections = []
+                highest_conf = 0.0
+                if hasattr(result, "boxes") and result.boxes is not None:
+                    for box in result.boxes:
+                        cls_id = int(box.cls[0].item() if hasattr(box.cls[0], "item") else box.cls[0])
+                        conf = float(box.conf[0].item() if hasattr(box.conf[0], "item") else box.conf[0])
+                        if conf > highest_conf:
+                            highest_conf = conf
+                        detections.append({
+                            "condition": format_label(result.names[cls_id]),
+                            "confidence": round(conf * 100, 2)
+                        })
+
+                primary_prediction = detections[0]["condition"] if detections else "No disease detected"
+                response = {
                     "success": True,
-                    "primary_prediction": "Unrecognized Image",
-                    "confidence": 0.0,
-                    "visual_anomaly_detected": False,
-                    "message": "AI model inference could not process this image."
+                    "primary_prediction": primary_prediction,
+                    "confidence": detections[0]["confidence"] if detections else 0.0,
+                    "all_detections": detections,
                 }
-
-        # For Classification Models (YOLOv8-cls)
-        if hasattr(result, "probs") and result.probs is not None:
-            top_idx = int(result.probs.top1)
-            top_conf = float(result.probs.top1conf)
-            class_name = format_label(result.names[top_idx])
-
-            # Apply Confidence Threshold (Reject blurry/unrecognized images)
-            if top_conf < 0.60:
-                return {
-                    "success": True,
-                    "primary_prediction": "Rejected: Unrecognized Image",
-                    "confidence": round(top_conf * 100, 2),
-                    "visual_anomaly_detected": False,
-                    "message": "No clear animal lesion patterns recognized. Please try again."
-                }
-
-            top_predictions = []
-            if hasattr(result.probs, "top5") and hasattr(result.probs, "top5conf"):
-                for idx, conf in zip(result.probs.top5, result.probs.top5conf):
-                    top_predictions.append({
-                        "condition": format_label(result.names[int(idx)]),
-                        "confidence": round(float(conf) * 100, 2)
-                    })
-
-            return {
-                "success": True,
-                "primary_prediction": class_name,
-                "confidence": round(top_conf * 100, 2),
-                **disease_metadata(result.names[top_idx], animal_lower),
-                "top_predictions": top_predictions
-            }
-
-        # For Object Detection Models (YOLOv8-det fallback)
-        detections = []
-        highest_conf = 0.0
-        if hasattr(result, "boxes") and result.boxes is not None:
-            for box in result.boxes:
-                cls_id = int(box.cls[0].item() if hasattr(box.cls[0], "item") else box.cls[0])
-                conf = float(box.conf[0].item() if hasattr(box.conf[0], "item") else box.conf[0])
-                if conf > highest_conf:
-                    highest_conf = conf
-                detections.append({
-                    "condition": format_label(result.names[cls_id]),
-                    "confidence": round(conf * 100, 2)
-                })
-
-        # Apply Confidence Threshold for Detection Models
-        if not detections or highest_conf < 0.60:
-             return {
-                "success": True,
-                "primary_prediction": "Rejected: Unrecognized Image",
-                "confidence": round(highest_conf * 100, 2),
-                "visual_anomaly_detected": False,
-                "message": "No clear animal lesion patterns recognized."
-            }
-
-        primary_prediction = detections[0]["condition"] if detections else "No disease detected"
-        response = {
-            "success": True,
-            "primary_prediction": primary_prediction,
-            "confidence": detections[0]["confidence"] if detections else 0.0,
-            "all_detections": detections,
-        }
-        if animal_lower in ["pet", "dog", "cat"]:
-            response.update(disease_metadata(primary_prediction, animal_lower))
-        
-        # Free memory immediately on low-RAM free tier
-        gc.collect()
-        return response
+                if is_pet_request:
+                    response.update(disease_metadata(primary_prediction, animal_lower))
+                
+                return response
+        finally:
+            # Force garbage collection to free RAM instantly
+            gc.collect()
 
 
 vision_engine = VisionService()
