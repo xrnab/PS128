@@ -173,10 +173,16 @@ class VisionService:
             # =======================================================
             # TIER 1: STRICT REJECTION FILTER (Humans, Objects & Mismatched Animals)
             # =======================================================
-            coco_results = self.coco_model(image, verbose=False)[0]
-            detected_coco_classes = [
-                coco_results.names[int(box.cls[0])] for box in coco_results.boxes
-            ] if coco_results.boxes else []
+            detected_coco_classes = []
+            try:
+                coco_results = self.coco_model(image, imgsz=320, verbose=False)[0]
+                if coco_results.boxes:
+                    detected_coco_classes = [
+                        coco_results.names[int(box.cls[0])] for box in coco_results.boxes
+                    ]
+            except Exception as coco_err:
+                import logging
+                logging.getLogger(__name__).warning(f"Tier 1 COCO pre-filter error (proceeding to Tier 2): {coco_err}")
 
             animal_lower = str(animal_type).strip().lower()
             is_pet_request = animal_lower in ["pet", "dog", "cat"]
@@ -250,9 +256,20 @@ class VisionService:
             else:
                 model = self.cow_model
 
-            # Perform inference
-            results = model(image, verbose=False)
-            result = results[0]
+            # Perform inference with task-optimal image size (224 for classification)
+            try:
+                results = model(image, imgsz=224, verbose=False)
+                result = results[0]
+            except Exception as model_err:
+                import logging
+                logging.getLogger(__name__).warning(f"Tier 2 model inference error: {model_err}")
+                return {
+                    "success": True,
+                    "primary_prediction": "Unrecognized Image",
+                    "confidence": 0.0,
+                    "visual_anomaly_detected": False,
+                    "message": "AI model inference could not process this image."
+                }
 
         # For Classification Models (YOLOv8-cls)
         if hasattr(result, "probs") and result.probs is not None:
