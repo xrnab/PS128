@@ -22,8 +22,8 @@ class TelegramPoller:
 
     async def start(self):
         token = settings.TELEGRAM_BOT_TOKEN
-        if not token:
-            logger.info("[Telegram Poller] TELEGRAM_BOT_TOKEN is not configured, skipping background polling.")
+        if not token or settings.ENVIRONMENT == "production":
+            logger.info("[Telegram Poller] Skipping background polling in production/unconfigured environment.")
             return
 
         self._running = True

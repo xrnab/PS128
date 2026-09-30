@@ -29,6 +29,12 @@ export function getApiBaseUrl(): string {
       window.location.hostname === "127.0.0.1" ||
       window.location.hostname.startsWith("192.168."));
 
+  // In deployed browser (e.g. ps-128-mea4.vercel.app), use relative URLs (same origin)
+  // to route through Next.js API routes, completely eliminating all CORS blocks and net::ERR_FAILED errors
+  if (isBrowser && !isBrowserLocalhost) {
+    return "";
+  }
+
   const isProduction =
     process.env.NODE_ENV === "production" ||
     process.env.VERCEL === "1" ||

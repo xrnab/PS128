@@ -23,7 +23,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: ALLOWED_ORIGINS
-        value: "*"
+        value: "http://localhost:3000,http://localhost:5173,https://ps-128-mea4.vercel.app,*"
       - key: PORT
         value: "10000"
     healthCheckPath: /api/health
