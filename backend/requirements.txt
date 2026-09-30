@@ -30,9 +30,7 @@ threadpoolctl==3.6.0
 typing_extensions==4.16.0
 tzdata==2026.3
 uvicorn==0.34.0
-ultralytics==8.4.138
+onnxruntime>=1.19.0
+pillow>=10.0.0
 watchfiles==1.2.0
 websockets==17.1
-# torch, torchvision, pillow are installed separately in the Dockerfile
-# with CPU-only builds (--index-url https://download.pytorch.org/whl/cpu)
-pillow

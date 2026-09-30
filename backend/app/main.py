@@ -1,12 +1,9 @@
 import os
 import gc
 
-# Keep PyTorch CPU memory lightweight and prevent multi-thread memory spikes on 512MB RAM
+# Keep CPU memory lightweight and prevent multi-thread memory spikes on 512MB RAM
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
-
-import torch
-torch.set_num_threads(1)
 
 import asyncio
 from fastapi import FastAPI

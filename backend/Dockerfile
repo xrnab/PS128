@@ -10,36 +10,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 
-# Install CPU-only PyTorch first (saves ~1.5GB vs full CUDA build)
+# Install dependencies including lightweight ONNX Runtime
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir \
-    torch torchvision --index-url https://download.pytorch.org/whl/cpu
-
-# Install remaining dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Swap full OpenCV for headless variant (no X11/GUI libs needed on a server)
-RUN pip uninstall -y opencv-python 2>/dev/null || true; \
-    pip install --no-cache-dir opencv-python-headless
+    pip install --no-cache-dir -r requirements.txt
 
 # ── Stage 2: Runtime ─────────────────────────────────────────────
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install minimal runtime system libraries including libgomp1 (OpenMP for PyTorch) and GLib/GL for OpenCV
+# Minimal runtime dependencies: libgomp1 for OpenMP acceleration in ONNX Runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgomp1 libglib2.0-0 libgl1 && \
+    libgomp1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy application code and ML artifacts
+# Copy application code and ML artifacts (including .onnx models)
 COPY app/ ./app/
 COPY data/ ./data/
-COPY yolov8n.pt* ./
 
 # Render uses PORT env var (defaults to 10000)
 ENV PORT=10000
@@ -50,6 +41,6 @@ ENV MKL_NUM_THREADS=1
 
 EXPOSE ${PORT}
 
-# Start uvicorn – bind to 0.0.0.0 on $PORT as Render expects
+# Start uvicorn – single worker keeps RAM strictly under 60-100MB
 CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"
 
