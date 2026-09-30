@@ -97,9 +97,15 @@ class VisionService:
 
     @property
     def coco_model(self) -> YOLO:
-        # Tier 1 Pre-filter Model (loads automatically from Ultralytics)
+        # Tier 1 Pre-filter Model (loads from local artifacts without network calls)
         if self._coco_model is None:
-            self._coco_model = YOLO("yolov8n.pt")
+            coco_path = self.models_dir / "yolov8n.pt"
+            if not coco_path.exists():
+                coco_path = Path(__file__).resolve().parents[2] / "yolov8n.pt"
+            if coco_path.exists():
+                self._coco_model = YOLO(str(coco_path))
+            else:
+                self._coco_model = YOLO("yolov8n.pt")
         return self._coco_model
 
     @property
@@ -151,93 +157,102 @@ class VisionService:
         return prediction
 
     def predict(self, image_bytes: bytes, animal_type: str = "cow") -> dict:
+        import torch
+        import gc
+
+        # Enforce single-thread execution to prevent memory spikes on Render 512MB RAM
+        if torch.get_num_threads() > 1:
+            torch.set_num_threads(1)
+
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        # Downscale large phone captures to max 1024x1024 to keep RAM usage minimal
+        if image.width > 1024 or image.height > 1024:
+            image.thumbnail((1024, 1024), Image.Resampling.LANCZOS)
 
-        # =======================================================
-        # TIER 1: STRICT REJECTION FILTER (Humans, Objects & Mismatched Animals)
-        # =======================================================
-        coco_results = self.coco_model(image, verbose=False)[0]
-        detected_coco_classes = [
-            coco_results.names[int(box.cls[0])] for box in coco_results.boxes
-        ] if coco_results.boxes else []
+        with torch.inference_mode():
+            # =======================================================
+            # TIER 1: STRICT REJECTION FILTER (Humans, Objects & Mismatched Animals)
+            # =======================================================
+            coco_results = self.coco_model(image, verbose=False)[0]
+            detected_coco_classes = [
+                coco_results.names[int(box.cls[0])] for box in coco_results.boxes
+            ] if coco_results.boxes else []
 
-        animal_lower = str(animal_type).strip().lower()
-        is_pet_request = animal_lower in ["pet", "dog", "cat"]
-        
-        coco_animal_classes = {
-            "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"
-        }
-        livestock_allowed_classes = {"cow", "sheep", "horse"}
-        pet_allowed_classes = {"dog", "cat"}
-
-        # 1. Any person detected -> Always reject immediately
-        if "person" in detected_coco_classes:
-            return {
-                "success": True,
-                "primary_prediction": "Rejected: Person",
-                "confidence": 0.0,
-                "visual_anomaly_detected": False,
-                "message": "Invalid photo. Person detected."
+            animal_lower = str(animal_type).strip().lower()
+            is_pet_request = animal_lower in ["pet", "dog", "cat"]
+            
+            coco_animal_classes = {
+                "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"
             }
+            livestock_allowed_classes = {"cow", "sheep", "horse"}
+            pet_allowed_classes = {"dog", "cat"}
 
-        # 2. Any non-animal object detected -> Reject immediately
-        detected_non_animals = [cls for cls in detected_coco_classes if cls not in coco_animal_classes]
-        if detected_non_animals:
-            reason = detected_non_animals[0].replace("_", " ").title()
-            return {
-                "success": True,
-                "primary_prediction": f"Rejected: {reason}",
-                "confidence": 0.0,
-                "visual_anomaly_detected": False,
-                "message": f"Invalid photo. {reason} detected."
-            }
+            # 1. Any person detected -> Always reject immediately
+            if "person" in detected_coco_classes:
+                return {
+                    "success": True,
+                    "primary_prediction": "Rejected: Person",
+                    "confidence": 0.0,
+                    "visual_anomaly_detected": False,
+                    "message": "Invalid photo. Person detected."
+                }
 
-        # 3. Mismatched animal category detected
-        if is_pet_request:
-            mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in pet_allowed_classes]
-            if mismatched_animals:
-                reason = mismatched_animals[0].replace("_", " ").title()
+            # 2. Any non-animal object detected -> Reject immediately
+            detected_non_animals = [cls for cls in detected_coco_classes if cls not in coco_animal_classes]
+            if detected_non_animals:
+                reason = detected_non_animals[0].replace("_", " ").title()
                 return {
                     "success": True,
                     "primary_prediction": f"Rejected: {reason}",
                     "confidence": 0.0,
                     "visual_anomaly_detected": False,
-                    "message": f"Invalid photo. {reason} detected (expected pet)."
-                }
-        else:
-            mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in livestock_allowed_classes]
-            if mismatched_animals:
-                reason = mismatched_animals[0].replace("_", " ").title()
-                return {
-                    "success": True,
-                    "primary_prediction": f"Rejected: {reason}",
-                    "confidence": 0.0,
-                    "visual_anomaly_detected": False,
-                    "message": f"Invalid photo. {reason} detected (expected livestock)."
+                    "message": f"Invalid photo. {reason} detected."
                 }
 
-        # =======================================================
-        # TIER 2: CUSTOM DISEASE CLASSIFICATION
-        # =======================================================
-        animal_lower = str(animal_type).strip().lower()
+            # 3. Mismatched animal category detected
+            if is_pet_request:
+                mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in pet_allowed_classes]
+                if mismatched_animals:
+                    reason = mismatched_animals[0].replace("_", " ").title()
+                    return {
+                        "success": True,
+                        "primary_prediction": f"Rejected: {reason}",
+                        "confidence": 0.0,
+                        "visual_anomaly_detected": False,
+                        "message": f"Invalid photo. {reason} detected (expected pet)."
+                    }
+            else:
+                mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in livestock_allowed_classes]
+                if mismatched_animals:
+                    reason = mismatched_animals[0].replace("_", " ").title()
+                    return {
+                        "success": True,
+                        "primary_prediction": f"Rejected: {reason}",
+                        "confidence": 0.0,
+                        "visual_anomaly_detected": False,
+                        "message": f"Invalid photo. {reason} detected (expected livestock)."
+                    }
 
-        # Select the requested model on-demand
-        if animal_lower in ["pet", "dog", "cat"]:
-            model = self.pet_model
-            pet_labels = {str(label).strip().lower() for label in model.names.values()}
-            if pet_labels == CATTLE_MODEL_LABELS:
-                raise ValueError(
-                    "The pet model contains cattle disease classes. "
-                    "Replace app/ml_artifacts/model_pet.pt with a pet-trained model."
-                )
-        elif animal_lower in ["cow", "cattle", "livestock", "buffalo", "sheep", "goat"]:
-            model = self.cow_model
-        else:
-            model = self.cow_model
+            # =======================================================
+            # TIER 2: CUSTOM DISEASE CLASSIFICATION
+            # =======================================================
+            # Select the requested model on-demand
+            if animal_lower in ["pet", "dog", "cat"]:
+                model = self.pet_model
+                pet_labels = {str(label).strip().lower() for label in model.names.values()}
+                if pet_labels == CATTLE_MODEL_LABELS:
+                    raise ValueError(
+                        "The pet model contains cattle disease classes. "
+                        "Replace app/ml_artifacts/model_pet.pt with a pet-trained model."
+                    )
+            elif animal_lower in ["cow", "cattle", "livestock", "buffalo", "sheep", "goat"]:
+                model = self.cow_model
+            else:
+                model = self.cow_model
 
-        # Perform inference
-        results = model(image, verbose=False)
-        result = results[0]
+            # Perform inference
+            results = model(image, verbose=False)
+            result = results[0]
 
         # For Classification Models (YOLOv8-cls)
         if hasattr(result, "probs") and result.probs is not None:
@@ -304,6 +319,9 @@ class VisionService:
         }
         if animal_lower in ["pet", "dog", "cat"]:
             response.update(disease_metadata(primary_prediction, animal_lower))
+        
+        # Free memory immediately on low-RAM free tier
+        gc.collect()
         return response
 
 

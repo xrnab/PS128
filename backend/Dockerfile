@@ -39,11 +39,14 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code and ML artifacts
 COPY app/ ./app/
 COPY data/ ./data/
+COPY yolov8n.pt* ./
 
 # Render uses PORT env var (defaults to 10000)
 ENV PORT=10000
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=production
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
 
 EXPOSE ${PORT}
 

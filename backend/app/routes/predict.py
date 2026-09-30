@@ -1,4 +1,5 @@
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from starlette.concurrency import run_in_threadpool
 import logging
 from app.services.vision_service import vision_engine
 
@@ -23,8 +24,8 @@ async def predict_disease(
         if not image_bytes or len(image_bytes) == 0:
             raise HTTPException(status_code=400, detail="Uploaded image file is empty.")
 
-        # Run Prediction (Tier 1 & Tier 2)
-        prediction = vision_engine.predict(image_bytes, animal_type=category)
+        # Run Prediction off the asyncio event loop to keep server responsive to keepalives
+        prediction = await run_in_threadpool(vision_engine.predict, image_bytes, animal_type=category)
         
         # Pass directly to frontend so the UI badge updates to "Rejected"
         return {
