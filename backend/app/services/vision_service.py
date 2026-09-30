@@ -215,6 +215,30 @@ class VisionService:
                         "message": f"Invalid photo. {reason} detected."
                     }
 
+                # 3. Mismatched animal category detected
+                if is_pet_request:
+                    mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in pet_allowed_classes]
+                    if mismatched_animals:
+                        reason = mismatched_animals[0].replace("_", " ").title()
+                        return {
+                            "success": True,
+                            "primary_prediction": f"Rejected: {reason}",
+                            "confidence": 0.0,
+                            "visual_anomaly_detected": False,
+                            "message": f"Invalid photo. {reason} detected (expected pet)."
+                        }
+                else:
+                    mismatched_animals = [cls for cls in detected_coco_classes if cls in coco_animal_classes and cls not in livestock_allowed_classes]
+                    if mismatched_animals:
+                        reason = mismatched_animals[0].replace("_", " ").title()
+                        return {
+                            "success": True,
+                            "primary_prediction": f"Rejected: {reason}",
+                            "confidence": 0.0,
+                            "visual_anomaly_detected": False,
+                            "message": f"Invalid photo. {reason} detected (expected livestock)."
+                        }
+
                 # Tier 2 Custom Disease Classification
                 model = self.get_disease_model(animal_lower)
                 results = model(image, imgsz=224, verbose=False)

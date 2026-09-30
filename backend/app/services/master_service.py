@@ -3,7 +3,6 @@ import logging
 from app.services.ml_service import predictor
 from app.services.weather_service import fetch_weather_risk
 from app.services.iot_simulator import generate_simulated_telemetry
-from app.services.vision_service import vision_engine
 from app.services.advisory_service import generate_farmer_advisory
 
 logger = logging.getLogger(__name__)
@@ -13,14 +12,28 @@ class MasterAnalysisEngine:
         health_report = payload.get("health_report", {})
         species = health_report.get("animal", "Cow")
 
-        # STEP 1: Use the uploaded-image result when the frontend already ran YOLO.
-        vision_res = payload.get("yolo_vision_analysis")
-        if vision_res is None:
+        # STEP 1: Lazy-Load AI / Heavy YOLO models inside /api/analyze
+        # Skip YOLO import and model initialization entirely if no image is submitted
+        yolo_vision = payload.get("yolo_vision_analysis")
+        if isinstance(yolo_vision, dict) and (yolo_vision.get("image_bytes") or yolo_vision.get("image_base64")):
+            from app.services.vision_service import vision_engine
+            raw_img = yolo_vision.get("image_base64") or yolo_vision.get("image_bytes")
+            vision_res = vision_engine.predict_image_lesions(
+                raw_img,
+                animal_type=species if isinstance(species, str) else "Cow",
+            )
+        elif isinstance(yolo_vision, dict) and yolo_vision.get("primary_prediction"):
+            # Pass through pre-computed frontend YOLO prediction directly
+            vision_res = yolo_vision
+        elif payload.get("image_data") or payload.get("image_url"):
+            from app.services.vision_service import vision_engine
             image_input = payload.get("image_data") or payload.get("image_url")
             vision_res = vision_engine.predict_image_lesions(
                 image_input,
                 animal_type=species if isinstance(species, str) else "Cow",
             )
+        else:
+            vision_res = {"visual_anomaly_detected": False, "message": "No visual inspection submitted."}
 
         # STEP 2: Weather Service (Open-Meteo)
         lat = payload.get("latitude", 28.6139)
