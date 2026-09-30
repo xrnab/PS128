@@ -120,9 +120,15 @@ async def process_telegram_update(update: Dict[str, Any]) -> Dict[str, Any]:
 
     import re
 
-    # 3. Check for 64-character hex linking token anywhere in message text
-    token_match = re.search(r"([a-f0-9]{64})", text, re.IGNORECASE)
-    token = token_match.group(1).lower() if token_match else None
+    # 3. Check for linking token from /start <token> or any 64-char hex token in text
+    token = None
+    if text.startswith("/start"):
+        parts = text.split(None, 1)
+        if len(parts) > 1 and parts[1].strip():
+            token = parts[1].strip()
+    if not token:
+        token_match = re.search(r"([a-f0-9]{64})", text, re.IGNORECASE)
+        token = token_match.group(1).lower() if token_match else None
 
     # Case A: No token provided in the message
     if not token:
@@ -154,15 +160,9 @@ async def process_telegram_update(update: Dict[str, Any]) -> Dict[str, Any]:
             return {"ok": True, "status": "active_status_sent"}
 
         # Not connected yet: send welcome instructions
-        reply_markup = {
-            "inline_keyboard": [
-                [{"text": "Connect from Maitri", "url": "https://ps-128-mea4.vercel.app/farmer/profile"}]
-            ]
-        }
         await telegram_client.send_message(
             chat_id=chat_id,
             text=MSG_WELCOME_PROMPT,
-            reply_markup=reply_markup,
         )
         return {"ok": True, "status": "welcome_prompt_sent"}
 
@@ -216,7 +216,7 @@ async def process_telegram_update(update: Dict[str, Any]) -> Dict[str, Any]:
         # 10. Send Confirmation Message
         reply_markup = None
         frontend_url = settings.FRONTEND_URL or "https://ps-128-mea4.vercel.app"
-        if frontend_url and not ("localhost" in frontend_url or "127.0.0.1" in frontend_url):
+        if frontend_url:
             reply_markup = {
                 "inline_keyboard": [
                     [{"text": "Open Maitri", "url": frontend_url}]

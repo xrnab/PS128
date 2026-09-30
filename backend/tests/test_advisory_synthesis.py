@@ -3,6 +3,24 @@ from app.services.advisory_service import generate_farmer_advisory
 
 
 class TestAdvisorySynthesis(unittest.TestCase):
+    def setUp(self):
+        import os
+        self._old_k1 = os.environ.get("GEMINI_API_KEY_1")
+        self._old_k2 = os.environ.get("GEMINI_API_KEY_2")
+        self._old_groq = os.environ.get("GROQ_API_KEY")
+        os.environ.pop("GEMINI_API_KEY_1", None)
+        os.environ.pop("GEMINI_API_KEY_2", None)
+        os.environ.pop("GROQ_API_KEY", None)
+
+    def tearDown(self):
+        import os
+        if self._old_k1 is not None:
+            os.environ["GEMINI_API_KEY_1"] = self._old_k1
+        if self._old_k2 is not None:
+            os.environ["GEMINI_API_KEY_2"] = self._old_k2
+        if self._old_groq is not None:
+            os.environ["GROQ_API_KEY"] = self._old_groq
+
     def test_low_risk_no_strong_disease_signal_fixes_interpolation_bug(self):
         """
         Confirms that when disease_prediction is 'No strong disease signal' and risk is LOW,

@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 from app.services.master_service import master_engine
@@ -35,7 +35,7 @@ class MasterAnalysisRequest(BaseModel):
     )
 
 @router.post("/analyze", tags=["Master Analysis Engine"])
-async def analyze_livestock_health_endpoint(payload: MasterAnalysisRequest):
+def analyze_livestock_health_endpoint(payload: MasterAnalysisRequest):
     try:
         data_dict = payload.model_dump()
         result = master_engine.analyze_livestock_health(data_dict)

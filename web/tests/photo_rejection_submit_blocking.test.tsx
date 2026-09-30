@@ -29,6 +29,7 @@ vi.mock("@/lib/actions/cases", () => ({
 // Mock AI vision prediction
 vi.mock("@/lib/api/livestock", () => ({
   predictYoloImage: vi.fn(),
+  prewarmBackend: vi.fn(),
 }));
 
 // Mock LocaleProvider

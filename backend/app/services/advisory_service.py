@@ -13,7 +13,29 @@ GEMINI_KEY_1 = os.getenv("GEMINI_API_KEY_1", os.getenv("GEMINI_API_KEY", "")).st
 GEMINI_KEY_2 = os.getenv("GEMINI_API_KEY_2", "").strip()
 GROQ_KEY = os.getenv("GROQ_API_KEY", "").strip()
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+
+raw_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+if "gemini-3" in raw_model or not raw_model:
+    GEMINI_MODEL = "gemini-2.5-flash"
+else:
+    GEMINI_MODEL = raw_model
+
+# In-memory circuit breaker to prevent repeated 401 delays
+_unauthorized_keys = set()
+
+
+def _is_valid_gemini_key(key: str) -> bool:
+    if not key or key in _unauthorized_keys:
+        return False
+    # Google AI Studio Gemini API keys start with 'AIzaSy'
+    # Tokens starting with 'AQ.' or other prefixes are OAuth/session tokens and will always 401 on the key= query param
+    return key.startswith("AIzaSy")
+
+
+def _is_valid_groq_key(key: str) -> bool:
+    if not key or key in _unauthorized_keys:
+        return False
+    return key.startswith("gsk_")
 
 
 def _call_gemini(api_key: str, prompt: str) -> str:
@@ -28,10 +50,15 @@ def _call_gemini(api_key: str, prompt: str) -> str:
             "maxOutputTokens": 300
         }
     }
-    response = requests.post(url, json=payload, headers=headers, timeout=12)
-    response.raise_for_status()
-    data = response.json()
-    return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=4)
+        response.raise_for_status()
+        data = response.json()
+        return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except requests.exceptions.HTTPError as http_err:
+        if http_err.response is not None and http_err.response.status_code == 401:
+            _unauthorized_keys.add(api_key)
+        raise
 
 
 def _call_groq(api_key: str, model_name: str, prompt: str) -> str:
@@ -59,10 +86,15 @@ def _call_groq(api_key: str, model_name: str, prompt: str) -> str:
         "temperature": 0.2,
         "max_tokens": 300
     }
-    response = requests.post(url, json=payload, headers=headers, timeout=12)
-    response.raise_for_status()
-    data = response.json()
-    return data["choices"][0]["message"]["content"].strip()
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=4)
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"].strip()
+    except requests.exceptions.HTTPError as http_err:
+        if http_err.response is not None and http_err.response.status_code == 401:
+            _unauthorized_keys.add(api_key)
+        raise
 
 
 def _extract_stream_context(analysis_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -461,12 +493,17 @@ def generate_farmer_advisory(analysis_data: Dict[str, Any], language: str = "Eng
 
     # 4. Multi-provider LLM execution with graceful fallback
     providers = []
-    if GEMINI_KEY_1:
-        providers.append(("Gemini (Key 1)", lambda: _call_gemini(GEMINI_KEY_1, prompt)))
-    if GEMINI_KEY_2:
-        providers.append(("Gemini (Key 2)", lambda: _call_gemini(GEMINI_KEY_2, prompt)))
-    if GROQ_KEY:
-        providers.append((f"Groq ({GROQ_MODEL})", lambda: _call_groq(GROQ_KEY, GROQ_MODEL, prompt)))
+    k1 = os.getenv("GEMINI_API_KEY_1", os.getenv("GEMINI_API_KEY", "")).strip()
+    k2 = os.getenv("GEMINI_API_KEY_2", "").strip()
+    g_key = os.getenv("GROQ_API_KEY", "").strip()
+    g_model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
+
+    if _is_valid_gemini_key(k1):
+        providers.append(("Gemini (Key 1)", lambda: _call_gemini(k1, prompt)))
+    if _is_valid_gemini_key(k2):
+        providers.append(("Gemini (Key 2)", lambda: _call_gemini(k2, prompt)))
+    if _is_valid_groq_key(g_key):
+        providers.append((f"Groq ({g_model})", lambda: _call_groq(g_key, g_model, prompt)))
 
     advisory_text = None
     used_provider = None

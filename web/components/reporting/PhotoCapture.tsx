@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, Trash2, Image as ImageIcon, Loader2, AlertCircle, RefreshCw, Sparkles, CheckCircle2, ShieldAlert } from "lucide-react";
-import { predictYoloImage } from "@/lib/api/livestock";
+import { predictYoloImage, prewarmBackend } from "@/lib/api/livestock";
+import { optimizeImageForInference } from "@/lib/utils/image-compression";
 import type { YoloVisionAnalysis } from "@/lib/types/livestock";
 import { Badge } from "@/components/ui/badge";
 import { useLocale } from "@/components/layout/LocaleProvider";
@@ -41,9 +42,16 @@ export function PhotoCapture({
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<PhotoUploadStatus>(photoUrl ? "uploaded" : "idle");
   const [analyzing, setAnalyzing] = useState<boolean>(false);
+  const [warmingUp, setWarmingUp] = useState<boolean>(false);
   const [visionResult, setVisionResult] = useState<YoloVisionAnalysis | null>(null);
+  const [visionError, setVisionError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  // Pre-warm backend idle containers on mount so cold-start delay is eliminated by the time user selects a photo
+  useEffect(() => {
+    prewarmBackend();
+  }, []);
 
   const MAX_SIZE = 10 * 1024 * 1024; // 10MB
   const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -53,8 +61,45 @@ export function PhotoCapture({
     onUploadStatusChange?.(status);
   };
 
+  const runVision = async (targetFile: File) => {
+    try {
+      setAnalyzing(true);
+      setWarmingUp(false);
+      setVisionError(null);
+      onAnalyzingChange?.(true);
+
+      const warmTimer = setTimeout(() => {
+        setWarmingUp(true);
+      }, 5000);
+
+      const result = await predictYoloImage(targetFile, animalCategory, {
+        onRetry: () => {
+          setWarmingUp(true);
+        },
+      });
+
+      clearTimeout(warmTimer);
+
+      if (result) {
+        setVisionResult(result);
+        onVisionResult?.(result);
+        setVisionError(null);
+      } else {
+        setVisionError("AI scan unavailable");
+      }
+    } catch (visionErr) {
+      console.warn("[PhotoCapture AI Warning]:", visionErr);
+      setVisionError("AI scan unavailable");
+    } finally {
+      setAnalyzing(false);
+      setWarmingUp(false);
+      onAnalyzingChange?.(false);
+    }
+  };
+
   const processFile = async (file: File) => {
     setError(null);
+    setVisionError(null);
     setCurrentFile(file);
 
     // 1. Client-side UX Validation
@@ -78,30 +123,16 @@ export function PhotoCapture({
     onChangePhotoUrl?.(null);
     setStatus("uploading");
 
-    // 3. Trigger AI Vision Prediction in parallel
-    const runVision = async () => {
-      try {
-        setAnalyzing(true);
-        onAnalyzingChange?.(true);
-        const result = await predictYoloImage(file, animalCategory);
-        if (result) {
-          setVisionResult(result);
-          onVisionResult?.(result);
-        }
-      } catch (visionErr) {
-        console.warn("[PhotoCapture AI Warning]:", visionErr);
-      } finally {
-        setAnalyzing(false);
-        onAnalyzingChange?.(false);
-      }
-    };
-
-    runVision();
+    // 3. Trigger AI Vision Prediction in parallel with automatic retries and cold-start resilience
+    runVision(file);
 
     try {
-      // 4. Attempt upload to secure endpoint (private Vercel Blob)
+      // 4. Optimize image client-side to minimize upload bandwidth
+      const uploadableFile = await optimizeImageForInference(file);
+
+      // 5. Attempt upload to secure endpoint (private Vercel Blob)
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadableFile);
       formData.append("submissionId", submissionId);
 
       const response = await fetch("/api/storage/upload", {
@@ -115,7 +146,7 @@ export function PhotoCapture({
         throw new Error(data.error || "Failed to upload image to secure storage.");
       }
 
-      // 5. Update parent state with durable private storage reference
+      // 6. Update parent state with durable private storage reference
       onChangePhoto?.(data.url, file);
       onChangePhotoUrl?.(data.url);
       setStatus("uploaded");
@@ -178,6 +209,8 @@ export function PhotoCapture({
     setLocalPreview(null);
     setCurrentFile(null);
     setVisionResult(null);
+    setVisionError(null);
+    setWarmingUp(false);
     setError(null);
     setStatus("idle");
     setAnalyzing(false);
@@ -283,7 +316,29 @@ export function PhotoCapture({
             <div className="absolute bottom-3 left-3">
               <Badge className="bg-blue-600/90 text-white border-blue-400 backdrop-blur-sm gap-1.5 px-2.5 py-1 shadow-lg animate-pulse">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                <span className="text-[10px] font-bold tracking-wide">{t("aiAnalyzing")}</span>
+                <span className="text-[10px] font-bold tracking-wide">
+                  {warmingUp ? "Connecting AI (server waking up)..." : t("aiAnalyzing")}
+                </span>
+              </Badge>
+            </div>
+          )}
+
+          {!visionResult && visionError && !analyzing && currentFile && (
+            <div className="absolute bottom-3 left-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <Badge className="bg-amber-600/95 text-white border-amber-400 backdrop-blur-sm gap-1.5 px-2.5 py-1 shadow-lg flex items-center">
+                <AlertCircle className="h-3 w-3" />
+                <span className="text-[10px] font-bold tracking-wide">AI scan timed out</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    runVision(currentFile);
+                  }}
+                  className="ml-1.5 underline font-extrabold text-amber-100 hover:text-white cursor-pointer inline-flex items-center gap-1"
+                >
+                  <RefreshCw className="h-2.5 w-2.5" />
+                  Retry
+                </button>
               </Badge>
             </div>
           )}

@@ -68,7 +68,7 @@ export interface AnalyzeRequestPayload {
   historical_weekly_cases?: number[];
 }
 
-const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds timeout for Render cold starts and multi-stream AI processing
+const DEFAULT_TIMEOUT_MS = 60000; // 60 seconds timeout for Render cold starts and multi-stream AI processing
 
 /**
  * Resolves the FastAPI AI Microservice Engine base URL across all supported environment variables.
