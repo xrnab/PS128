@@ -1,4 +1,4 @@
-# 🐾 Maitri — AI-Powered Livestock Health Surveillance & Outbreak Intelligence Platform (PS128)
+# 🐾 Maitri — AI-Powered Livestock Health Surveillance & Outbreak Intelligence Platform (PS128) 
 
 > **Maitri** (Problem Statement 128 / Smart India Hackathon) is an offline-first, multilingual livestock disease early warning, IoT collar surveillance, computer vision diagnostic, and veterinary telemedicine platform designed for rural livestock ecosystems (specifically tailored for Indian district veterinary hierarchies: **District → Block / Taluka → Village**).
 >
