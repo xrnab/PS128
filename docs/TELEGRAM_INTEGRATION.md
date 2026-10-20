@@ -5,7 +5,7 @@ This document outlines the complete architecture, security model, notification d
 ---
 
 ## 1. Overview & Architecture
-
+  
 Maitri integrates Telegram as a high-reliability, real-time alert delivery channel. Telegram notifications complement the internal `InAppNotification` system without replacing or interfering with core business workflows.
 
 ### Notification Flow:
